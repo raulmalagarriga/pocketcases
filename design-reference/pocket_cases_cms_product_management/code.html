@@ -1,0 +1,737 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&amp;family=Space+Grotesk:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed":"#ffd9e1","surface-container":"#e7eff3","on-tertiary-fixed-variant":"#07521d","surface-container-low":"#edf5f9","on-secondary":"#ffffff","surface-container-highest":"#dce4e7","primary":"#ab2c5d","on-tertiary":"#ffffff","error-container":"#ffdad6","primary-fixed-dim":"#ffb1c5","primary-container":"#f06292","inverse-primary":"#ffb1c5","on-primary-fixed":"#3f001b","on-background":"#151d20","secondary-container":"#c9e7ca","on-secondary-container":"#4e6952","tertiary-fixed":"#abf4ac","on-primary-container":"#5e002b","on-secondary-fixed-variant":"#334d37","surface":"#f3fbfe","tertiary-fixed-dim":"#90d792","tertiary-container":"#5fa364","tertiary":"#286b33","on-error":"#ffffff","secondary-fixed":"#cceacd","surface-dim":"#d3dbdf","surface-container-high":"#e1e9ed","surface-tint":"#ab2c5d","surface-bright":"#f3fbfe","error":"#ba1a1a","inverse-on-surface":"#eaf2f6","on-surface-variant":"#574146","surface-container-lowest":"#ffffff","on-tertiary-fixed":"#002107","surface-variant":"#dce4e7","on-surface":"#151d20","on-tertiary-container":"#00350f","on-error-container":"#93000a","on-secondary-fixed":"#07200e","inverse-surface":"#2a3235","outline":"#8a7176","outline-variant":"#ddbfc5","secondary-fixed-dim":"#b1ceb2","on-primary":"#ffffff","background":"#f3fbfe","secondary":"#4a654e","on-primary-fixed-variant":"#8b0e45"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"gutter":"1.25rem","space-xs":"0.25rem","margin-desktop":"2.5rem","space-lg":"1.5rem","margin":"1rem","space-2xl":"4rem","gutter-desktop":"1.75rem","space-md":"1rem","space-sm":"0.5rem","space-xl":"2.5rem"},fontFamily:{"display-hero-mobile":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Space Grotesk"],"label-lg":["Space Grotesk"],"label-badge":["Space Grotesk"],"headline-sm":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"]},fontSize:{"display-hero-mobile":["36px",{lineHeight:"42px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-md":["22px",{lineHeight:"28px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"500"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"700"}],"label-lg":["14px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"700"}],"label-badge":["10px",{lineHeight:"12px",letterSpacing:"0.06em",fontWeight:"700"}],"headline-sm":["18px",{lineHeight:"24px",fontWeight:"700"}],"display-hero":["56px",{lineHeight:"64px",letterSpacing:"-0.03em",fontWeight:"800"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"500"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"800"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col justify-between py-space-md shadow-[2px_0_12px_rgba(42,50,53,0.04)]"><div class="flex flex-col"><div class="px-space-md pb-space-lg flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shadow-[2px_2px_0px_#2a3235]"><span class="material-symbols-outlined text-on-primary-container text-[20px]">cases</span></div><div><h1 class="font-headline-sm text-headline-sm text-primary leading-tight font-extrabold">Pocket Cases</h1><span class="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-1.5 py-0.5 rounded-full font-bold">ADMIN CMS</span></div></div></div><nav class="flex flex-col gap-1 px-space-sm font-label-md text-label-md" data-active-classes="bg-primary text-on-primary font-bold shadow-[2px_2px_0px_#2a3235]"><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="dashboard-overview" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span>Dashboard Overview</span></a><a aria-current="page" class="flex items-center gap-3 px-space-md py-2.5 rounded-lg transition-all bg-primary text-on-primary font-bold shadow-[2px_2px_0px_#2a3235]" data-path="product-catalog" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span>Product Catalog</span></a><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventory-stock" href="#"><span class="material-symbols-outlined text-[20px]">warehouse</span><span>Inventory &amp; Stock</span></a><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="orders" href="#"><span class="material-symbols-outlined text-[20px]">local_shipping</span><span>Orders</span></a><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="customers" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span>Customers</span></a><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="analytics" href="#"><span class="material-symbols-outlined text-[20px]">monitoring</span><span>Analytics</span></a><a class="flex items-center gap-3 px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="store-settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span><span>Store Settings</span></a></nav></div><div class="px-space-sm pt-space-md"><div class="bg-surface-container p-space-sm rounded-lg flex items-center gap-space-sm shadow-[2px_2px_0px_#2a3235]"><div class="w-9 h-9 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-xs">MS</div><div class="flex-1 min-w-0"><p class="font-label-md text-label-md text-on-surface truncate">Maya Stone</p><p class="font-label-badge text-label-badge text-on-surface-variant truncate">Store Manager</p></div><button class="text-on-surface-variant hover:text-error transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_2px_10px_rgba(42,50,53,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><img alt="Logo (1).png" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrBY2o-dJJ4aAQPt6clR8QZ-0EqgobsGiR0ZuIK8HARrdcganj6i7aZ4Yi_yl2_2lEIqSepZgxwcHHrBKN5VIGYMxeMVEHzouto06XO07iXTUKmPbtg0ZF5RK2QCUHfpzMWnOUjksLVomygo9kHkGCgkjR4tSkq6SneiaXUcELnlwMI3uNyMFJlCDC4SBqzlkcrIArvKOQAxRnLB_A5hcqONokfhonH0ve2exd_sK8e_-Ts4FSCvEnJd"><div class="relative flex items-center"><input class="w-72 pl-9 pr-space-md py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-[1px_1px_0px_#2a3235]" placeholder="Search orders, SKUs, customers..." type="text"><span class="material-symbols-outlined absolute left-2.5 text-outline text-[18px]">search</span></div></div><div class="flex items-center gap-space-md"><a class="flex items-center gap-1.5 bg-secondary-container text-on-secondary-container font-label-md text-label-md px-space-md py-1.5 rounded-full shadow-[2px_2px_0px_#4e6952] hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-all" href="#"><span class="material-symbols-outlined text-[16px]">visibility</span><span>Live Store View</span></a><button class="relative p-2 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all shadow-[1px_1px_0px_#2a3235]" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[2px_2px_0px_#2a3235]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-background w-full px-space-lg"><div class="flex flex-col w-full pb-space-2xl">
+<!-- Page Header & Key Operational Metrics Bar -->
+<div class="flex flex-col gap-space-lg mb-space-xl">
+<!-- Breadcrumb & Top Title Flex Row -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<nav class="flex items-center gap-2 font-label-badge text-label-badge text-on-surface-variant uppercase tracking-wider mb-1">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-[12px] text-outline">chevron_right</span>
+<span>Products</span>
+<span class="material-symbols-outlined text-[12px] text-outline">chevron_right</span>
+<span class="text-primary font-bold">All Catalog</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
+          Product Catalog &amp; Inventory Management
+        </h1>
+</div>
+<!-- Action Button Group -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span>Inventory Sync</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Bulk Export CSV</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-lg py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:opacity-95 transition-transform active:translate-x-0.5 active:translate-y-0.5" onclick="openDrawer()" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Add New Product</span>
+</button>
+</div>
+</div>
+<!-- Operational Metrics Chips Strip -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-md">
+<!-- Total Products -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+<div>
+<span class="font-label-badge text-label-badge text-on-surface-variant uppercase">Total Products</span>
+<p class="font-headline-sm text-headline-sm text-on-surface font-extrabold mt-0.5">48 Active</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[20px]">cases</span>
+</div>
+</div>
+<!-- Live in Store -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+<div>
+<span class="font-label-badge text-label-badge text-tertiary uppercase">Live in Store</span>
+<p class="font-headline-sm text-headline-sm text-tertiary font-extrabold mt-0.5">42 Visible</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed text-on-tertiary-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+</div>
+<!-- Out of Stock -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+<div>
+<span class="font-label-badge text-label-badge text-error uppercase">Stockout Alerts</span>
+<p class="font-headline-sm text-headline-sm text-error font-extrabold mt-0.5">6 Items</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[20px]">inventory</span>
+</div>
+</div>
+<!-- Low Inventory Alerts -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+<div>
+<span class="font-label-badge text-label-badge text-primary font-bold uppercase">Low Stock Warning</span>
+<p class="font-headline-sm text-headline-sm text-primary font-extrabold mt-0.5">3 Cases</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[20px]">notification_important</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Search, Filter & Bulk Action Controls Strip -->
+<div class="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] mb-space-lg flex flex-col gap-space-md">
+<!-- Top Filter Controls -->
+<div class="flex flex-col lg:flex-row gap-space-md items-stretch lg:items-center justify-between">
+<!-- Search Input -->
+<div class="relative flex-1 min-w-[260px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]" placeholder="Search by product title, SKU, or phone model..." type="text">
+</div>
+<!-- Filter Dropdowns Group -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<!-- Category Filter -->
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
+<span class="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">Category:</span>
+<select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option>All Types</option>
+<option>MagSafe Tough</option>
+<option>Dual Shock</option>
+<option>Bio-Resin</option>
+<option>Heavy Duty Armor</option>
+<option>Crystal Clear</option>
+<option>Vegan Leather</option>
+</select>
+</div>
+<!-- Stock Status Filter -->
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
+<span class="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">Stock:</span>
+<select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option>All Status</option>
+<option>In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
+</select>
+</div>
+<!-- Visibility Filter -->
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
+<span class="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">Visibility:</span>
+<select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option>All Items</option>
+<option>Active on Web</option>
+<option>Draft / Hidden</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Bulk Action Strip (Selected items banner) -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm bg-secondary-container/40 p-2.5 rounded-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md">
+          2
+        </div>
+<span class="font-label-md text-label-md text-on-surface">Products selected for batch operations</span>
+</div>
+<div class="flex items-center flex-wrap gap-space-xs">
+<button class="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+          Change Status
+        </button>
+<button class="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+          Apply Discount (-15%)
+        </button>
+<button class="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+          Set Out of Stock
+        </button>
+<button class="px-3 py-1 bg-error-container text-on-error-container rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:opacity-90 transition-transform active:translate-x-0.5 active:translate-y-0.5" type="button">
+          Delete Selected
+        </button>
+</div>
+</div>
+</div>
+<!-- Rich Product Management Table -->
+<div class="bg-surface-container-lowest rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high text-on-surface font-label-badge text-label-badge uppercase tracking-wider">
+<th class="py-3.5 px-4 w-12 text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</th>
+<th class="py-3.5 px-4">Product &amp; SKU</th>
+<th class="py-3.5 px-4">Category</th>
+<th class="py-3.5 px-4">Price / Margin</th>
+<th class="py-3.5 px-4">Inventory Level</th>
+<th class="py-3.5 px-4 text-center">Storefront Live</th>
+<th class="py-3.5 px-4">Stock Status</th>
+<th class="py-3.5 px-4 text-right">Quick Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 font-body-sm text-body-sm">
+<!-- Product Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 text-center">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-secondary-container/40 p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235]">
+<img class="w-full h-full object-cover rounded" data-alt="Vibrant 70s retro floral groove smartphone case mockup resting on a pastel pistachio green background, candy pop aesthetics with warm studio rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1bmxqyGmJHdRVSACui3dlyVMWJYdC5lxiyR2pwGOvV6k6N46xpFNTfl4h5gD09L_yHugmxsLOAEVP1LoLyEZU0lWj7ZVqhaqQdf9U6vu0s4O9gXvAeTt9Rf5ASOMR8jGsCczgLWKZoIIYKX2S9dR5yxHm-HJIIIdin8A4Lbhafp1O879A6sK86OZtFToF8xBHmnDfadp2_jJF8iuZl0SIjTQ-Its68jQ9kjRNuw">
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Retro Floral Groove</p>
+<span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-secondary-fixed text-on-secondary-fixed font-bold">BESTSELLER</span>
+</div>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-FLR-01</p><div class="flex items-center gap-1.5 mt-1"><span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-surface-container-high text-on-surface-variant font-bold">iPhone 13 - 16 Pro Max (12 models)</span><div class="flex items-center gap-1 ml-0.5" title="Active Color Variants: Butter Yellow, Pastel Blossom, Mint Glaze, Lilac Haze"><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #FDE047;"></span><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #F472B6;"></span><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #86EFAC;"></span><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #C084FC;"></span><span class="font-label-badge text-[9px] text-outline font-bold">+4 colors</span></div></div>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              MagSafe Tough
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$28.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $7.20 (74% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md font-bold text-on-surface">24 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 48%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<!-- Live Toggle Switch ON -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<select class="bg-tertiary-fixed text-on-tertiary-container font-label-badge text-label-badge px-2 py-1 rounded-md font-bold focus:outline-none cursor-pointer">
+<option selected="">In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
+</select>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary transition-colors" onclick="openDrawer()" title="Edit Product" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" title="Duplicate SKU" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" title="Quick Analytics" type="button">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Product Row 2 (Featured Strawberry Milkshake) -->
+<tr class="hover:bg-surface-container-low transition-colors bg-primary-fixed/10 group">
+<td class="py-3 px-4 text-center">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed/40 p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235]">
+<img class="w-full h-full object-cover rounded" data-alt="Playful strawberry milkshake swirl iPhone protective phone case lying on light pink silk canvas, early 2000s glossy aesthetic with subtle glitter highlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2ajvUPdz8mOV2m-QBSbzTbR1Xq6yf87COrzM57G1_UUrkaxQxXL2PHSdLRlM_0gD7TPyubjUsQk8NGjEeUvi2XehMalss_xIP-2DYlomHYcGKyRn8mcGofVk8yuPNMLvsD4INOPqcKnAcT9tYxCJDZAHRfi0dt7MhjH5lmhh-0DE0sPuw5JIvSII-vu0gycpoouDUkb3_35yjUWdy7ojGDFPxtdGEIQEHKU2Bmw">
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Strawberry Milkshake Wave</p>
+<span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-primary-container text-on-primary-container font-bold">HOT DROP</span>
+</div>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-STW-02</p><div class="flex items-center gap-1.5 mt-1"><span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-primary-fixed/40 text-on-primary-fixed-variant font-bold">iPhone 13 - 16 Pro (8 models)</span><div class="flex items-center gap-1 ml-0.5" title="Active Color Variants: Strawberry Milk, Cream Gloss, Rosy Tint"><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #FDA4AF;"></span><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #FFF1F2;"></span><span class="w-3 h-3 rounded-full border shadow-[1px_1px_0px_#2a3235]" style="background-color: #FB7185;"></span><span class="font-label-badge text-[9px] text-outline font-bold">+3 colors</span></div></div>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              Dual Shock
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$32.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $8.10 (75% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md font-bold text-on-surface">88 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 88%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<select class="bg-tertiary-fixed text-on-tertiary-container font-label-badge text-label-badge px-2 py-1 rounded-md font-bold focus:outline-none cursor-pointer">
+<option selected="">In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
+</select>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded bg-primary text-on-primary hover:opacity-90 transition-colors shadow-[1px_1px_0px_#2a3235]" onclick="openDrawer()" title="Quick Edit" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" title="Duplicate SKU" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Product Row 3 (Low stock) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235]">
+<img class="w-full h-full object-cover rounded" data-alt="Lilac purple and butter yellow checkerboard design biodegradable phone case placed on smooth neutral limestone, editorial product shot with soft natural shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvDGtqlKuHZhwUcfol5zmf2IeRyEd0TsBNAMGLbF9sgvpQsoqEvO4blj9Y2O6xJ3arqXpwTcN325LTwUOwd-ycWOpc9zn2ZTpo4glENUWVkXcEVd5t8OHap_YMMBJC9yJfnyBlodaGhFNeR34V2xeiggYUjYSVP6eFrkUQGaQMXdhsRX2EK3HiybgBTs_v8WsIIwo56ZWTyUn0FKMRbNbL9JZbtOdc1AaehrS3mA">
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Lilac Butter Checker</p>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-LIL-03</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              Bio-Resin
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$26.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $6.50 (75% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-md text-label-md font-bold text-primary">3 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 12%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<select class="bg-primary-fixed text-on-primary-fixed font-label-badge text-label-badge px-2 py-1 rounded-md font-bold focus:outline-none cursor-pointer">
+<option>In Stock</option>
+<option selected="">Low Stock</option>
+<option>Out of Stock</option>
+</select>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="px-2 py-1 rounded bg-primary text-on-primary font-label-badge text-[10px] uppercase font-bold shadow-[1px_1px_0px_#2a3235] hover:opacity-90" type="button">
+                  Restock
+                </button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" onclick="openDrawer()" title="Edit Product" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Product Row 4 (Out of Stock) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235] opacity-60">
+<img class="w-full h-full object-cover rounded" data-alt="Matcha latte creamy marble swirled protective phone case sitting on soft pale green linen, minimalist Japanese aesthetic, clean lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdrerItfNYyDy-batQxdIXLC9UCouVAznWJ9M9EJWBjpMe9FfiRTdsYV0cpXmTVPoZMH99RI5QGA4ESZGXmF7Hb1xq_6_wM6Pta2iYU45JkgPlZ-kxXG_IEtXBLZJlhlowd162wG6VnT2GXZLUQa2oHSCtWn5VQADWhO98IsR2npVQkx1XPaJ2QGDfwx-0OF8wcwMODjMp23lH-7uqOyyOPaaujanIsx8p5J7kvQ">
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Matcha Latte Swirl</p>
+<span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-surface-container-highest text-on-surface-variant font-bold">WAITLIST</span>
+</div>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-MCH-04</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              Heavy Duty Armor
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$30.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $7.80 (74% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-label-md text-label-md font-bold text-error">0 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-error h-1.5 rounded-full" style="width: 0%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<select class="bg-error-container text-on-error-container font-label-badge text-label-badge px-2 py-1 rounded-md font-bold focus:outline-none cursor-pointer">
+<option>In Stock</option>
+<option>Low Stock</option>
+<option selected="">Out of Stock</option>
+</select>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="px-2 py-1 rounded bg-error text-on-error font-label-badge text-[10px] uppercase font-bold shadow-[1px_1px_0px_#2a3235] hover:opacity-90" type="button">
+                  Restock PO
+                </button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" onclick="openDrawer()" title="Edit Product" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Product Row 5 (Cosmic Cherry) -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235]">
+<img class="w-full h-full object-cover rounded" data-alt="Clear high-gloss smartphone case featuring small glossy candy cherries and silver star sparkles, Y2K retro chic vibe on soft pastel surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLXHqp0eQ1syQdd7lYOliwIEoUBZr74lh1Q_dSx0Z9Aa0A78TNym37MqTxCohvokykm-jTRP03Wp6lvJDeYEm8hs6TuvYQfQcZjqLUIQA0LGDUkv4ofIYd_uGzrYqPDC7e-k1Ew6UMmcXiB8iBkjMSfE_1rJzQ-Dey4U3lwUjrpTk6Y86l_ssMHzW_B1HV40qgpfHsa5flfhHqfavL7J_O6PfEl3n2Q9AspGTitQ">
+</div>
+<div class="min-w-0">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Cosmic Cherry Pop</p>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-CHR-05</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              Crystal Clear
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$28.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $6.90 (75% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md font-bold text-on-surface">45 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 55%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<select class="bg-tertiary-fixed text-on-tertiary-container font-label-badge text-label-badge px-2 py-1 rounded-md font-bold focus:outline-none cursor-pointer">
+<option selected="">In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
+</select>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-primary hover:text-on-primary transition-colors" onclick="openDrawer()" title="Edit Product" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" title="Duplicate SKU" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Product Row 6 (Hidden/Draft) -->
+<tr class="hover:bg-surface-container-low transition-colors bg-surface-container/30 group">
+<td class="py-3 px-4 text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container p-1 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#2a3235]">
+<img class="w-full h-full object-cover rounded" data-alt="Midnight black textured vegan leather phone case with embossed metallic logo accent, moody overhead lighting, premium accessories collection" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoO47GzVrs0Qf7u0v1pTG-Xq8nUYA71Z2vsS6c38x1Qe4hudtkCchId0cWcFXksBla8QURnf9_TGaNs5wORPabW-tUdR7v_WY8pjahhruTYcNTVC5w_DBM1o4XA3CVPuXRj10E26QuTAeSMmiSR6VJXCTtA3rlQhp7OY-IlFhTBRQXvp1qypUubN1C3isXoEhtFWsjVw30IIJidFW9is6yMRMbESjVLhwaNV6VBg">
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-headline-sm text-body-md text-on-surface font-bold truncate">Midnight Velvet Noir</p>
+<span class="px-1.5 py-0.2 rounded font-label-badge text-[9px] bg-surface-container-highest text-on-surface-variant font-bold">UNPUBLISHED</span>
+</div>
+<p class="font-label-badge text-label-badge text-outline">SKU: PKT-MID-06</p>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">
+              Vegan Leather
+            </td>
+<td class="py-3 px-4">
+<div class="font-label-md text-label-md text-on-surface font-bold">$35.00</div>
+<span class="font-label-badge text-label-badge text-tertiary">Cost $9.50 (73% GM)</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+<span class="font-label-md text-label-md font-bold text-on-surface-variant">12 units</span>
+</div>
+<div class="w-24 bg-surface-container rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="bg-outline h-1.5 rounded-full" style="width: 25%"></div>
+</div>
+</td>
+<td class="py-3 px-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</td>
+<td class="py-3 px-4">
+<span class="bg-surface-container-highest text-on-surface-variant font-label-badge text-label-badge px-2 py-1 rounded-md font-bold">
+                Draft
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1.5">
+<button class="px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-badge text-[10px] uppercase font-bold shadow-[1px_1px_0px_#2a3235] hover:opacity-90" type="button">
+                  Publish
+                </button>
+<button class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" onclick="openDrawer()" title="Edit Product" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="flex flex-col sm:flex-row items-center justify-between px-space-md py-3 bg-surface-container-low border-t-0 gap-space-sm font-label-md text-label-md text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span>Showing 1 to 6 of 48 items</span>
+<select class="bg-surface-container-lowest text-on-surface rounded px-2 py-0.5 text-xs shadow-[1px_1px_0px_#2a3235] focus:outline-none">
+<option>10 per page</option>
+<option>25 per page</option>
+<option>50 per page</option>
+</select>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high disabled:opacity-40" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold shadow-[1px_1px_0px_#2a3235]" type="button">
+          1
+        </button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high" type="button">
+          2
+        </button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high" type="button">
+          3
+        </button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Interactive Slide-out Quick Edit Drawer -->
+<div class="fixed inset-0 z-50 overflow-hidden hidden transition-opacity" id="productDrawer">
+<!-- Backdrop Overlay -->
+<div class="absolute inset-0 bg-inverse-surface/40 backdrop-blur-sm transition-opacity" onclick="closeDrawer()"></div>
+<div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+<div class="w-screen max-w-4xl bg-surface-container-lowest shadow-[-8px_0px_24px_rgba(42,50,53,0.15)] flex flex-col justify-between overflow-y-auto">
+<!-- Drawer Header -->
+<div class="p-space-lg bg-surface-container-low flex items-center justify-between shadow-[0_2px_8px_rgba(42,50,53,0.05)]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[2px_2px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold">Edit: Strawberry Milkshake Wave</h2>
+<span class="font-label-badge text-label-badge bg-tertiary-fixed text-on-tertiary-container px-2 py-0.5 rounded-full font-bold">ONLINE</span>
+</div>
+<p class="font-label-badge text-label-badge text-outline uppercase tracking-wider">SKU: PKT-STW-02 • Last updated today at 11:42 AM</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="flex items-center gap-1 font-label-md text-label-md text-primary hover:underline px-2 py-1" href="#" target="_blank">
+<span>View Live on Storefront</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+<button class="p-1.5 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="closeDrawer()" type="button">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+</div>
+<!-- Drawer Content Grid (Two Columns) -->
+<div class="p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-xl flex-1">
+<!-- Left Column: Media Gallery Manager (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<div>
+<label class="font-label-md text-label-md text-on-surface font-bold block mb-1">Product Media &amp; Mockups</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Upload multi-angle photos and 3D device renders (2000 × 2000px, PNG or WEBP recommended).</p>
+</div>
+<!-- Primary Featured Mockup Slot -->
+<div class="relative group rounded-DEFAULT bg-primary-fixed/20 p-2 shadow-[2px_2px_0px_#2a3235]">
+<img class="w-full h-56 object-cover rounded-DEFAULT" data-alt="High resolution primary product mockup of Strawberry Milkshake Wave case on iPhone 16 Pro, pastel studio pedestal background with soft diffused drop shadow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPJzbgU-02_BVyJCLt7cVdXWf3F-ndekRHY7ZS5lfxlhX46pJ2b_PEV8eVPn75rnvZquerkrRuzALZxKgoUJENnbVuZvn5_AQXNiB_N3zA3VBSsY_afWTW-1CTub6rxQrg2uylgPPjggGcgqbd0mcCbJOAHhkz037nSiH4emSlZxbwFZ-SbbGB68zQyBU-AJmw3enmbbJcX4kHwb5kCIjdoIWmk6Ys_BB6MCRgZA">
+<div class="absolute top-4 left-4 bg-primary text-on-primary font-label-badge text-[10px] px-2 py-0.5 rounded-full font-bold shadow-[1px_1px_0px_#2a3235]">
+                PRIMARY DISPLAY
+              </div>
+<div class="absolute bottom-4 right-4 flex items-center gap-1">
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined text-[16px]">crop</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest text-error flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Thumbnail Reel (Reorderable) -->
+<div class="grid grid-cols-3 gap-2">
+<div class="relative rounded-lg bg-surface-container-low p-1 shadow-[1px_1px_0px_#2a3235] group">
+<img class="w-full h-20 object-cover rounded" data-alt="Angled side shot showing raised camera ring protection and candy-pink responsive buttons on strawberry phone case" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfAmOfzZaA4Vc6Ya8AuHP4mkN7PQ5tR75FJZFpe_0JcvVMaNu6QjXFhfpORmoukcG9cS9V_3BhkuR6pMc1cgOioE1Naz8uoiW_4BeKtRc3yK1BWPesoLaKKCUEvW6MjPGKvwpzLzrU3gyJAtv0f4FjAJjWgo6LWiof6JaqXonmb3JmTNsMZ-sREZAMrs37-KCQTpbSedv1TPZut2GBbW0BlhzZHfCiBE44NygXwA">
+<span class="material-symbols-outlined absolute top-2 right-2 text-[14px] text-on-surface-variant cursor-grab">drag_indicator</span>
+</div>
+<div class="relative rounded-lg bg-surface-container-low p-1 shadow-[1px_1px_0px_#2a3235] group">
+<img class="w-full h-20 object-cover rounded" data-alt="Lifestyle photo of a young trendy person holding the pink strawberry wave phone case in a vibrant sunlit urban cafe setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADQ1ABhJhdWqSa_pm1jW7XPR0T5dZ6ojOlpUsZ1Q-oK0a8IGIomDMRHqbfeWhcH29_mXnAIaJUKdPSpvVTNKjTRozXjFf7jppSTF_2M7beNf7yhI-kkX2F8IqBJ6tEDtotekZWqYenEYWgJNUtcpEzNaLGfQxzz7d502XMG_GYGEUQXaBFN_itANhGb_i5GvnVNrVcwxQylFPvWfIs-vsgsf8I9ZkhypHFSy4fYA">
+<span class="material-symbols-outlined absolute top-2 right-2 text-[14px] text-on-surface-variant cursor-grab">drag_indicator</span>
+</div>
+<!-- Upload Slot -->
+<div class="rounded-lg bg-surface-container-low flex flex-col items-center justify-center h-20 text-outline hover:text-primary hover:bg-surface-container transition-colors cursor-pointer shadow-[1px_1px_0px_#2a3235]">
+<span class="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+<span class="font-label-badge text-[9px] uppercase font-bold mt-1">+ Upload</span>
+</div>
+</div>
+<!-- Dimensions spec info pill -->
+<div class="bg-secondary-container/30 p-2.5 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">info</span>
+<p class="font-body-sm text-body-sm text-on-secondary-container">Square aspect ratio (1:1) keeps storefront grid seamlessly aligned across all devices.</p>
+</div>
+</div>
+<!-- Right Column: Product Attributes & Pricing (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Product Title & URL Slug -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-bold">Product Title</label>
+<input class="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]" type="text" value="Strawberry Milkshake Wave">
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-bold">Storefront URL Handle</label>
+<div class="flex items-center">
+<span class="bg-surface-container-high px-3 py-2 rounded-l-lg font-label-badge text-label-badge text-on-surface-variant shadow-[1px_1px_0px_#2a3235]">pocketcases.co/products/</span>
+<input class="flex-1 px-3 py-2 rounded-r-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]" type="text" value="strawberry-milkshake-wave">
+</div>
+</div>
+<!-- Supported Phone Models Pills Multi-select -->
+<div class="flex flex-col gap-space-xs"><div class="flex items-center justify-between"><label class="font-label-md text-label-md text-on-surface font-bold flex items-center gap-1.5"><span>Supported iPhone Models (iPhone 13 &amp; Newer)</span><span class="font-label-badge text-label-badge bg-secondary-fixed text-on-secondary-fixed px-2 py-0.2 rounded-full font-bold">12 Supported</span></label><div class="flex items-center gap-2"><button type="button" class="text-primary hover:underline font-label-badge text-[10px] uppercase font-bold">Select All (13-16)</button><span class="text-outline text-xs">•</span><button type="button" class="text-on-surface-variant hover:text-error font-label-badge text-[10px] uppercase font-bold">Clear</button></div></div><div class="flex flex-wrap gap-1.5 mt-1"><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 16 Pro Max</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 16 Pro</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 16 Plus</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 16</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 15 Pro Max</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 15 Pro</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 15</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 14 Pro Max</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 14 Pro</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 14</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 13 Pro Max</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 13 Pro</span></label><label class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer"><input type="checkbox" checked="" class="accent-primary w-3 h-3 rounded"><span>iPhone 13</span></label></div></div>
+<!-- Pricing & Cost Grid -->
+<div class="bg-surface-container-low p-space-md rounded-lg shadow-[1px_1px_0px_#2a3235] flex flex-col gap-space-sm border border-outline-variant/50"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[20px]">palette</span><span class="font-label-md text-label-md text-on-surface font-bold">Color Variant Manager &amp; Hex Codes</span></div><span class="font-label-badge text-[10px] bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold uppercase">4 Swatches Configured</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Configure color shades with precise hexadecimal codes, individual inventory pools, and SKU suffixes.</p><div class="flex flex-col gap-2"><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant" style="background-color: #FDE047;"></div><div><p class="font-label-md text-label-md text-on-surface font-bold leading-tight">Butter Yellow</p><p class="font-label-badge text-[10px] text-outline">#FDE047 • SKU: -YLW</p></div></div><div class="flex items-center gap-2"><span class="font-label-badge text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold">28 in stock</span><button type="button" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button></div></div><div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant" style="background-color: #F472B6;"></div><div><p class="font-label-md text-label-md text-on-surface font-bold leading-tight">Pastel Blossom</p><p class="font-label-badge text-[10px] text-outline">#F472B6 • SKU: -BLS</p></div></div><div class="flex items-center gap-2"><span class="font-label-badge text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold">32 in stock</span><button type="button" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button></div></div><div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant" style="background-color: #86EFAC;"></div><div><p class="font-label-md text-label-md text-on-surface font-bold leading-tight">Mint Glaze</p><p class="font-label-badge text-[10px] text-outline">#86EFAC • SKU: -MNT</p></div></div><div class="flex items-center gap-2"><span class="font-label-badge text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold">16 in stock</span><button type="button" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button></div></div><div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant" style="background-color: #C084FC;"></div><div><p class="font-label-md text-label-md text-on-surface font-bold leading-tight">Lilac Haze</p><p class="font-label-badge text-[10px] text-outline">#C084FC • SKU: -LLC</p></div></div><div class="flex items-center gap-2"><span class="font-label-badge text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold">12 in stock</span><button type="button" class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button></div></div></div><div class="bg-surface-container p-2.5 rounded-lg flex flex-col gap-2 mt-1"><span class="font-label-badge text-label-badge text-on-surface-variant uppercase font-bold">+ Add New Color Variant</span><div class="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center"><div class="sm:col-span-1"><input class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none shadow-[1px_1px_0px_#2a3235]" placeholder="Name (e.g. Cream Puff)" type="text" value="Baby Peach"></div><div class="sm:col-span-1 flex items-center gap-1.5"><input type="color" value="#FDBA74" class="w-8 h-8 rounded border border-outline-variant cursor-pointer p-0 bg-transparent"><input class="w-full px-2 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface uppercase focus:outline-none shadow-[1px_1px_0px_#2a3235]" placeholder="#HEX" type="text" value="#FDBA74"></div><div class="sm:col-span-1"><input class="w-full px-2.5 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none shadow-[1px_1px_0px_#2a3235]" placeholder="Units (e.g. 20)" type="number" value="24"></div><div class="sm:col-span-1"><button type="button" class="w-full py-1.5 px-3 rounded-lg bg-primary text-on-primary font-label-badge text-label-badge uppercase font-bold shadow-[1px_1px_0px_#2a3235] hover:opacity-90 flex items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5"><span class="material-symbols-outlined text-[16px]">add</span><span>Add Color</span></button></div></div></div></div></div><div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-bold">Retail Price ($ USD)</label>
+<input class="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]" type="text" value="32.00">
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-bold">Compare-at Price (Was)</label>
+<input class="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]" type="text" value="38.00">
+</div>
+</div>
+<!-- Inventory & Stock Controls -->
+<div class="bg-surface-container-low p-space-md rounded-lg shadow-[1px_1px_0px_#2a3235] flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-bold">Inventory Levels &amp; Thresholds</span>
+<label class="flex items-center gap-1.5 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer" type="checkbox">
+<span class="font-label-badge text-label-badge text-on-surface">Track live quantity</span>
+</label>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-badge text-label-badge text-on-surface-variant uppercase">Current Available Stock</label>
+<input class="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]" type="number" value="88">
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-badge text-label-badge text-on-surface-variant uppercase">Low Stock Notification Threshold</label>
+<input class="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]" type="number" value="10">
+</div>
+</div>
+</div>
+<!-- Instant Toggle Switches Group -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Product Active on Storefront</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visible in catalog and search listings</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Allow WhatsApp Direct Order</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enables quick checkout button on product view</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-bold">Display Low Stock Urgency Badge</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pops up "Only 3 left!" notification pill</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Drawer Action Footer -->
+<div class="p-space-md bg-surface-container-low border-t-0 flex items-center justify-between shadow-[0_-2px_8px_rgba(42,50,53,0.05)]">
+<button class="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5" onclick="closeDrawer()" type="button">
+            Discard Changes
+          </button>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-lg py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:opacity-95 transition-transform active:translate-x-0.5 active:translate-y-0.5" onclick="closeDrawer()" type="button">
+              Save Changes
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    function openDrawer() {
+      const drawer = document.getElementById('productDrawer');
+      if (drawer) {
+        drawer.classList.remove('hidden');
+      }
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('productDrawer');
+      if (drawer) {
+        drawer.classList.add('hidden');
+      }
+    }
+  </script>
+</div></main></div>
+
+</body></html>
