@@ -1,4 +1,5 @@
 import React from "react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const REELS = [
   {
@@ -47,75 +48,81 @@ export function SocialProofReel() {
   return (
     <section
       id="social-proof"
-      className="w-full max-w-7xl mx-auto px-margin md:px-margin-desktop py-space-2xl"
+      className="w-full max-w-7xl mx-auto px-margin md:px-margin-desktop py-space-2xl scroll-mt-24"
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
-        <div>
-          <span className="inline-flex items-center gap-1 font-label-badge text-label-badge text-primary uppercase font-bold tracking-wider">
-            <span className="material-symbols-outlined text-[14px]">
-              photo_camera
-            </span>{" "}
-            #POCKETCASESENLACALLE
-          </span>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">
-            En la Calle con Pocket Cases
-          </h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">
-            Fotos reales compartidas por nuestra comunidad en Caracas, Lechería,
-            Maracaibo y más.
-          </p>
-        </div>
-        <div className="flex items-center gap-space-sm">
-          <a
-            className="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-primary-fixed transition-all flex items-center gap-1.5"
-            href="https://instagram.com"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              photo_camera
+      <ScrollReveal direction="up">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+          <div>
+            <span className="inline-flex items-center gap-1 font-label-badge text-label-badge text-primary uppercase font-bold tracking-wider">
+              <span className="material-symbols-outlined text-[14px]">
+                photo_camera
+              </span>{" "}
+              #POCKETCASESENLACALLE
             </span>
-            <span>Etiqueta a @pocketcases para aparecer</span>
-          </a>
+            <h2 className="font-headline-lg text-headline-lg text-on-surface">
+              En la Calle con Pocket Cases
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              Fotos reales compartidas por nuestra comunidad en Caracas, Lechería,
+              Maracaibo y más.
+            </p>
+          </div>
+          <div className="flex items-center gap-space-sm">
+            <a
+              className="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-primary-fixed transition-all flex items-center gap-1.5"
+              href="https://instagram.com"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                photo_camera
+              </span>
+              <span>Etiqueta a @pocketcases para aparecer</span>
+            </a>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* 4-Card Photo Reel Carousel Preview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-md">
-        {REELS.map((reel) => (
-          <div
+        {REELS.map((reel, idx) => (
+          <ScrollReveal
             key={reel.id}
-            className="group relative rounded-lg overflow-hidden bg-surface-container shadow-[3px_3px_0px_#2a3235]"
+            direction="scale"
+            delayMs={idx * 100}
+            className="h-full"
           >
-            <div className="aspect-[4/5] w-full overflow-hidden">
-              <img
-                alt={reel.alt}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                src={reel.imageUrl}
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-space-md text-white">
-              <div className="flex items-center gap-1 text-[#f59e0b] text-[14px] mb-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className="material-symbols-outlined text-[14px]"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    star
-                  </span>
-                ))}
+            <div className="group relative rounded-lg overflow-hidden bg-surface-container shadow-[3px_3px_0px_#2a3235] h-full">
+              <div className="aspect-[4/5] w-full overflow-hidden">
+                <img
+                  alt={reel.alt}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  src={reel.imageUrl}
+                />
               </div>
-              <p className="font-body-sm text-body-sm font-semibold text-white line-clamp-2">
-                {reel.quote}
-              </p>
-              <span
-                className={`font-label-badge text-label-badge ${reel.badgeClass} mt-1`}
-              >
-                {reel.handle}
-              </span>
+              <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-space-md text-white">
+                <div className="flex items-center gap-1 text-[#f59e0b] text-[14px] mb-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className="material-symbols-outlined text-[14px]"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      star
+                    </span>
+                  ))}
+                </div>
+                <p className="font-body-sm text-body-sm font-semibold text-white line-clamp-2">
+                  {reel.quote}
+                </p>
+                <span
+                  className={`font-label-badge text-label-badge ${reel.badgeClass} mt-1`}
+                >
+                  {reel.handle}
+                </span>
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
         ))}
       </div>
     </section>

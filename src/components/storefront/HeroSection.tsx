@@ -2,15 +2,13 @@
 
 import React from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { ScrollReveal, smoothScrollTo } from "@/components/ui/ScrollReveal";
 
 export function HeroSection() {
   const { setActiveCategory, setSearchQuery } = useCartStore();
 
   const scrollToCatalog = () => {
-    const el = document.getElementById("product-catalog");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+    smoothScrollTo("#product-catalog");
   };
 
   return (
@@ -21,7 +19,11 @@ export function HeroSection() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
         {/* Left Hero Editorial Column */}
-        <div className="lg:col-span-6 flex flex-col items-start space-y-space-md">
+        <ScrollReveal
+          direction="left"
+          durationMs={700}
+          className="lg:col-span-6 flex flex-col items-start space-y-space-md"
+        >
           {/* Brand Pill Chip with Logo */}
           <div className="inline-flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-1.5 rounded-full shadow-[2px_2px_0px_#2a3235]">
             <img
@@ -143,10 +145,15 @@ export function HeroSection() {
               </span>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Right Visual Showcase / Dynamic Asymmetric Collage */}
-        <div className="lg:col-span-6 relative flex justify-center items-center">
+        <ScrollReveal
+          direction="right"
+          delayMs={120}
+          durationMs={750}
+          className="lg:col-span-6 relative flex justify-center items-center"
+        >
           {/* Giant Rotating Retro Stamp Badge */}
           <div className="absolute -top-4 -right-2 md:top-2 md:right-4 z-20 w-24 h-24 rounded-full bg-primary-container text-on-primary-container p-2 flex flex-col items-center justify-center text-center shadow-[3px_3px_0px_#2a3235] rotate-12 hover:rotate-0 transition-transform">
             <span className="material-symbols-outlined text-[20px]">
@@ -235,7 +242,7 @@ export function HeroSection() {
               </span>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );

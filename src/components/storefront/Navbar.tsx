@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
+import { smoothScrollTo } from "@/components/ui/ScrollReveal";
 
 interface NavbarProps {
   settings: StoreSettings;
@@ -41,10 +42,7 @@ export function Navbar({ settings }: NavbarProps) {
     if (path !== "about") {
       setActiveCategory(path);
     }
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+    smoothScrollTo(href);
   };
 
   return (
@@ -97,9 +95,8 @@ export function Navbar({ settings }: NavbarProps) {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  const catalogEl = document.getElementById("product-catalog");
-                  if (catalogEl && e.target.value.length === 1) {
-                    catalogEl.scrollIntoView({ behavior: "smooth" });
+                  if (e.target.value.length === 1) {
+                    smoothScrollTo("#product-catalog");
                   }
                 }}
                 className="w-64 pl-9 pr-space-md py-1.5 rounded-full bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-[2px_2px_0px_#2a3235] transition-all"

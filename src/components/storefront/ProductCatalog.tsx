@@ -7,6 +7,7 @@ import { WaitlistModal } from "./WaitlistModal";
 import { useCartStore } from "@/store/useCartStore";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { ALL_SUPPORTED_MODELS } from "@/lib/seed-data";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface ProductCatalogProps {
   initialProducts: Product[];
@@ -189,91 +190,93 @@ export function ProductCatalog({
 
   return (
     <section
-      className="w-full max-w-7xl mx-auto px-margin md:px-margin-desktop pt-space-xl pb-space-2xl"
+      className="w-full max-w-7xl mx-auto px-margin md:px-margin-desktop pt-space-xl pb-space-2xl scroll-mt-24"
       id="product-catalog"
     >
       {/* Header with Filter Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pb-space-lg">
-        <div className="space-y-space-xs">
-          <div className="inline-flex items-center gap-1.5 font-label-badge text-label-badge text-primary uppercase font-bold tracking-wider">
-            <span className="material-symbols-outlined text-[14px]">
-              grid_view
-            </span>{" "}
-            COLECCIÓN POCKET CANDY 2025
+      <ScrollReveal direction="up">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pb-space-lg">
+          <div className="space-y-space-xs">
+            <div className="inline-flex items-center gap-1.5 font-label-badge text-label-badge text-primary uppercase font-bold tracking-wider">
+              <span className="material-symbols-outlined text-[14px]">
+                grid_view
+              </span>{" "}
+              COLECCIÓN POCKET CANDY 2025
+            </div>
+            <h2 className="font-headline-lg text-headline-lg text-on-surface">
+              Colección para tu cel
+            </h2>
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              Selecciona el modelo de tu teléfono, personaliza el acabado y
+              agrégalo directo a tu bolsa.
+            </p>
           </div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">
-            Colección para tu cel
-          </h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">
-            Selecciona el modelo de tu teléfono, personaliza el acabado y
-            agrégalo directo a tu bolsa.
-          </p>
-        </div>
 
-        {/* Sort Selection Control */}
-        <div className="flex items-center gap-space-sm">
-          <span className="font-label-md text-label-md text-on-surface-variant">
-            Ordenar por:
-          </span>
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-surface-container-lowest font-label-md text-label-md text-on-surface px-space-md py-2 pr-8 rounded-full shadow-[2px_2px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-              id="catalogSort"
-            >
-              <option value="featured">Lanzamientos Destacados</option>
-              <option value="price-asc">Precio: de Menor a Mayor</option>
-              <option value="price-desc">Precio: de Mayor a Menor</option>
-              <option value="newest">Lo Más Nuevo</option>
-              <option value="available">Disponibilidad: Para Envío Ya</option>
-            </select>
-            <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-primary text-[18px]">
-              expand_more
+          {/* Sort Selection Control */}
+          <div className="flex items-center gap-space-sm">
+            <span className="font-label-md text-label-md text-on-surface-variant">
+              Ordenar por:
             </span>
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none bg-surface-container-lowest font-label-md text-label-md text-on-surface px-space-md py-2 pr-8 rounded-full shadow-[2px_2px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+                id="catalogSort"
+              >
+                <option value="featured">Lanzamientos Destacados</option>
+                <option value="price-asc">Precio: de Menor a Mayor</option>
+                <option value="price-desc">Precio: de Mayor a Menor</option>
+                <option value="newest">Lo Más Nuevo</option>
+                <option value="available">Disponibilidad: Para Envío Ya</option>
+              </select>
+              <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-primary text-[18px]">
+                expand_more
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Filter Category Pills Strip */}
-      <div
-        className="flex items-center gap-space-xs overflow-x-auto pb-space-md scrollbar-none"
-        id="filterPillsContainer"
-      >
-        {FILTER_PILLS.map((pill) => {
-          const isActive = activeCategory === pill.id;
-          const label =
-            pill.id === "all"
-              ? `${pill.label} (${products.length})`
-              : pill.label;
+        {/* Filter Category Pills Strip */}
+        <div
+          className="flex items-center gap-space-xs overflow-x-auto pb-space-md scrollbar-none"
+          id="filterPillsContainer"
+        >
+          {FILTER_PILLS.map((pill) => {
+            const isActive = activeCategory === pill.id;
+            const label =
+              pill.id === "all"
+                ? `${pill.label} (${products.length})`
+                : pill.label;
 
-          return (
+            return (
+              <button
+                key={pill.id}
+                type="button"
+                onClick={() => setActiveCategory(pill.id)}
+                className={
+                  isActive
+                    ? "filter-pill px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-inverse-surface text-surface shadow-[2px_2px_0px_#ab2c5d] whitespace-nowrap"
+                    : "filter-pill px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-surface-container-lowest text-on-surface shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container whitespace-nowrap"
+                }
+              >
+                {label}
+              </button>
+            );
+          })}
+
+          {searchQuery && (
             <button
-              key={pill.id}
               type="button"
-              onClick={() => setActiveCategory(pill.id)}
-              className={
-                isActive
-                  ? "filter-pill px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-inverse-surface text-surface shadow-[2px_2px_0px_#ab2c5d] whitespace-nowrap"
-                  : "filter-pill px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-surface-container-lowest text-on-surface shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container whitespace-nowrap"
-              }
+              onClick={() => setSearchQuery("")}
+              className="px-space-md py-1.5 rounded-full font-label-md text-label-md bg-primary-fixed text-primary shadow-[2px_2px_0px_#2a3235] flex items-center gap-1 whitespace-nowrap"
             >
-              {label}
+              <span>Búsqueda: &ldquo;{searchQuery}&rdquo;</span>
+              <span className="material-symbols-outlined text-[14px]">close</span>
             </button>
-          );
-        })}
-
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery("")}
-            className="px-space-md py-1.5 rounded-full font-label-md text-label-md bg-primary-fixed text-primary shadow-[2px_2px_0px_#2a3235] flex items-center gap-1 whitespace-nowrap"
-          >
-            <span>Búsqueda: &ldquo;{searchQuery}&rdquo;</span>
-            <span className="material-symbols-outlined text-[14px]">close</span>
-          </button>
-        )}
-      </div>
+          )}
+        </div>
+      </ScrollReveal>
 
       {/* 8 Product Grid Cards */}
       {filteredAndSortedProducts.length === 0 ? (
@@ -300,13 +303,19 @@ export function ProductCatalog({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md pt-space-md">
-          {filteredAndSortedProducts.map((product) => (
-            <ProductCard
+          {filteredAndSortedProducts.map((product, idx) => (
+            <ScrollReveal
               key={product.id}
-              product={product}
-              settings={settings}
-              onJoinWaitlist={(prod) => setWaitlistProduct(prod)}
-            />
+              direction="up"
+              delayMs={(idx % 4) * 80}
+              className="h-full"
+            >
+              <ProductCard
+                product={product}
+                settings={settings}
+                onJoinWaitlist={(prod) => setWaitlistProduct(prod)}
+              />
+            </ScrollReveal>
           ))}
         </div>
       )}

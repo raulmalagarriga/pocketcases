@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const FAQS = [
   {
@@ -39,41 +40,53 @@ export function FaqSection() {
   return (
     <section
       id="faq-section"
-      className="w-full max-w-4xl mx-auto px-margin md:px-margin-desktop pb-space-2xl"
+      className="w-full max-w-4xl mx-auto px-margin md:px-margin-desktop pb-space-2xl scroll-mt-24"
     >
-      <div className="text-center space-y-space-xs mb-space-lg">
-        <span className="font-label-badge text-label-badge text-tertiary uppercase font-bold tracking-widest">
-          Ayuda y Compatibilidad
-        </span>
-        <h3 className="font-headline-lg text-headline-lg text-on-surface">
-          Preguntas Frecuentes
-        </h3>
-      </div>
+      <ScrollReveal direction="up">
+        <div className="text-center space-y-space-xs mb-space-lg">
+          <span className="font-label-badge text-label-badge text-tertiary uppercase font-bold tracking-widest">
+            Ayuda y Compatibilidad
+          </span>
+          <h3 className="font-headline-lg text-headline-lg text-on-surface">
+            Preguntas Frecuentes
+          </h3>
+        </div>
+      </ScrollReveal>
+
       <div className="space-y-space-sm">
-        {FAQS.map((faq) => {
+        {FAQS.map((faq, idx) => {
           const isOpen = openIds.includes(faq.id);
           return (
-            <div
-              key={faq.id}
-              onClick={() => toggleFaq(faq.id)}
-              className="bg-surface-container-lowest p-space-md rounded-lg shadow-[2px_2px_0px_#2a3235] cursor-pointer"
-            >
-              <h4 className="font-headline-sm text-headline-sm text-on-surface flex items-center justify-between">
-                <span>{faq.question}</span>
-                <span
-                  className={`material-symbols-outlined ${faq.iconColor} text-[20px] transition-transform duration-200 ${
-                    isOpen ? "rotate-45" : ""
+            <ScrollReveal key={faq.id} direction="up" delayMs={idx * 80}>
+              <div
+                onClick={() => toggleFaq(faq.id)}
+                className="bg-surface-container-lowest p-space-md rounded-lg shadow-[2px_2px_0px_#2a3235] cursor-pointer transition-shadow hover:shadow-[3px_3px_0px_#2a3235]"
+              >
+                <h4 className="font-headline-sm text-headline-sm text-on-surface flex items-center justify-between gap-2">
+                  <span>{faq.question}</span>
+                  <span
+                    className={`material-symbols-outlined ${faq.iconColor} text-[20px] transition-transform duration-300 flex-shrink-0 ${
+                      isOpen ? "rotate-45" : ""
+                    }`}
+                  >
+                    add
+                  </span>
+                </h4>
+                <div
+                  className={`grid transition-all duration-300 ease-out ${
+                    isOpen
+                      ? "grid-rows-[1fr] opacity-100 mt-2"
+                      : "grid-rows-[0fr] opacity-0 mt-0"
                   }`}
                 >
-                  add
-                </span>
-              </h4>
-              {isOpen && (
-                <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                  {faq.answer}
-                </p>
-              )}
-            </div>
+                  <div className="overflow-hidden">
+                    <p className="font-body-md text-body-md text-on-surface-variant">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
           );
         })}
       </div>

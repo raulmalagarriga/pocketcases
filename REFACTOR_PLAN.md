@@ -23,8 +23,8 @@
 - [x] **Campana de notificaciones en `AdminHeader.tsx`**: El botón de notificaciones abre un popover interactivo con las alertas reales de stock agotado, stock bajo y borradores.
 
 ### 3. Animaciones On-Scroll y Smooth Scroll
-- [ ] **Falta de animaciones de entrada (On-Scroll Reveal)**: Las secciones (`HeroSection`, `TrustMetricsBar`, `ProductCatalog`, `SocialProofReel`, `FaqSection`, `Footer`) aparecen estáticas sin transiciones progresivas al hacer scroll.
-- [ ] **Smooth Scroll con compensación de Header Sticky**: Navegar a secciones ancla (`#product-catalog`, `#social-proof`, `#faq-section`) necesita `scroll-mt-24` y transiciones suaves acordes al estilo `Retro Pastel Pop`.
+- [x] **Animaciones de entrada (On-Scroll Reveal)**: Las secciones (`HeroSection`, `TrustMetricsBar`, `ProductCatalog`, `SocialProofReel`, `FaqSection`, `Footer`) cuentan con transiciones progresivas escalonadas (`ScrollReveal`) al hacer scroll.
+- [x] **Smooth Scroll con compensación de Header Sticky**: Navegar a secciones ancla (`#product-catalog`, `#social-proof`, `#faq-section`) usa `scroll-mt-24`, `scroll-padding-top: 5.5rem` y `smoothScrollTo`.
 
 ---
 
@@ -64,7 +64,7 @@
   6. `Store Settings` (`src/components/cms/views/StoreSettingsView.tsx`): Formulario conectado a `public.store_settings` en Supabase para actualizar en vivo la **Tasa BCV (`bcv_exchange_rate`)**, número de WhatsApp de la tienda, monto de envío gratis (`$35`), datos de **Pago Móvil** y datos de **Zelle**.
 
 ### FASE R4: Animaciones On-Scroll (`ScrollReveal`) y Smooth Scroll
-- **Estado**: `PENDIENTE`
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
   1. Crear componente reutilizable `src/components/ui/ScrollReveal.tsx` basado en `IntersectionObserver` (con soporte de `delay`, `direction`: `'up' | 'left' | 'right' | 'scale'`, y respeto a `prefers-reduced-motion`).
   2. Configurar `scroll-margin-top` (`scroll-mt-24`) en las secciones ancla del Storefront y navegación fluida.
@@ -84,5 +84,5 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | `b434c14` |
 | **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | `6455a47` |
-| **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | Commit Fase R3 |
-| **FASE R4** | ⏳ Pendiente | — | — | — |
+| **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | `0b63f34` |
+| **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | Commit Fase R4 |
