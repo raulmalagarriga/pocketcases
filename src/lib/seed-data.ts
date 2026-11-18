@@ -1,8 +1,51 @@
-import { Product, StoreSettings, PhoneModel, Category } from "@/types/database";
+import {
+  Product,
+  StoreSettings,
+  PhoneModel,
+  Category,
+  HeroBannerConfig,
+} from "@/types/database";
+
+export const DEFAULT_HERO_CONFIG: HeroBannerConfig = {
+  badge_text: "EDICIÓN 2025 • NUEVO LANZAMIENTO",
+  headline_prefix: "Viste tu cel con",
+  headline_highlight: "puro estilo",
+  headline_suffix: "brutal.",
+  subheadline:
+    "Fundas estéticas y resistentes contra caídas, con protección militar y ese brillo retro Y2K que convierte tus fotos de espejo en sesiones de fotos.",
+  rating_score: "4.9 / 5",
+  rating_text: "de más de 12.000 clientes felices",
+  primary_cta_text: "Ver Más Vendidos",
+  secondary_cta_text: "Explorar MagSafe",
+  stamp_line_1: "DROP Y2K",
+  stamp_line_2: "GEN-5 CORE",
+  feature_bubble_title: "Amortiguación Doble Capa",
+  feature_bubble_subtitle: "Esquinas con bolsas de aire anticaída",
+  feature_bubble_badge: "Ultra Resistente",
+  card_1: {
+    badge: "MÁS VENDIDO",
+    title: "Strawberry Wave",
+    price_text: "$32.00",
+    image_url:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBU-bAWiHhlC25-gUa_bsY4bZsc0C_TsocUBjFSU_tQgwJaIj3D0ewmAYzpZ4-aoIEgFqChwtA1B_ZzDmeWwqdmtyAlOCQuhNM0Hid7QrUvYuRU_0BGpFW7-O_vche5I4zV5tjKd-DNXXU7Gsaua_CU7NsbJwXJriM4QuMQho97gF2y15XZ592b-fu-JuioG4U9wJiXvWLwvWQjr2akKE6-86wb-eiMu7fwW_NHXw",
+    search_keyword: "Strawberry",
+    category_filter: "all",
+  },
+  card_2: {
+    badge: "MAGSAFE",
+    title: "Floral Groove",
+    price_text: "$28.00",
+    image_url:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBASnbmHvN39wn7Eh9sH4dAalUgUKOtOuapRBZi5TU4aBAuPFcza2GG3Z5LiI_-Sli2FPhjDvmNKJSSS2qXyMetthjhbJM8skqM7c3LrnnjKqROqENmzDkItNO4TGqB22ef8-2ch6CcWAXOdWzAH371vnQBj9z_FHGMU6HjkOEsWUhlaINYAoqTtyPDnfeXnqEx0VdgS504P_fmvtnhyEb7gAhQ4iNTuty4dq9eRA",
+    search_keyword: "",
+    category_filter: "magsafe",
+  },
+};
 
 export const INITIAL_STORE_SETTINGS: StoreSettings = {
   id: 1,
   store_name: "Pocket Cases",
+  logo_url: "/logo.png",
   whatsapp_number:
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "584120000000",
   bcv_exchange_rate: 45.8,
@@ -18,7 +61,93 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
     email: "pagos@pocketcases.co",
     holder: "Pocket Cases Inc.",
   },
+  hero_config: DEFAULT_HERO_CONFIG,
 };
+
+export function normalizeStoreSettings(
+  raw?: Partial<StoreSettings> | Record<string, unknown> | null
+): StoreSettings {
+  if (!raw || typeof raw !== "object") {
+    return INITIAL_STORE_SETTINGS;
+  }
+
+  const rawLogo =
+    typeof raw.logo_url === "string" ? raw.logo_url.trim() : "";
+  const logo_url =
+    !rawLogo ||
+    rawLogo.includes("lh3.googleusercontent.com/aida/ALJJyrBY2o")
+      ? "/logo.png"
+      : rawLogo;
+
+  const rawHero =
+    raw.hero_config && typeof raw.hero_config === "object"
+      ? (raw.hero_config as Partial<HeroBannerConfig>)
+      : {};
+
+  const hero_config: HeroBannerConfig = {
+    ...DEFAULT_HERO_CONFIG,
+    ...rawHero,
+    card_1: {
+      ...DEFAULT_HERO_CONFIG.card_1,
+      ...(rawHero.card_1 && typeof rawHero.card_1 === "object"
+        ? rawHero.card_1
+        : {}),
+    },
+    card_2: {
+      ...DEFAULT_HERO_CONFIG.card_2,
+      ...(rawHero.card_2 && typeof rawHero.card_2 === "object"
+        ? rawHero.card_2
+        : {}),
+    },
+  };
+
+  const rawPagoMovil =
+    raw.pago_movil_details && typeof raw.pago_movil_details === "object"
+      ? (raw.pago_movil_details as StoreSettings["pago_movil_details"])
+      : INITIAL_STORE_SETTINGS.pago_movil_details;
+
+  const rawZelle =
+    raw.zelle_details && typeof raw.zelle_details === "object"
+      ? (raw.zelle_details as StoreSettings["zelle_details"])
+      : INITIAL_STORE_SETTINGS.zelle_details;
+
+  return {
+    id: 1,
+    store_name:
+      typeof raw.store_name === "string" && raw.store_name.trim()
+        ? raw.store_name
+        : INITIAL_STORE_SETTINGS.store_name,
+    logo_url,
+    whatsapp_number:
+      typeof raw.whatsapp_number === "string" && raw.whatsapp_number.trim()
+        ? raw.whatsapp_number
+        : INITIAL_STORE_SETTINGS.whatsapp_number,
+    bcv_exchange_rate: Number(
+      raw.bcv_exchange_rate ?? INITIAL_STORE_SETTINGS.bcv_exchange_rate
+    ),
+    show_ves_reference:
+      raw.show_ves_reference !== undefined
+        ? Boolean(raw.show_ves_reference)
+        : INITIAL_STORE_SETTINGS.show_ves_reference,
+    free_shipping_threshold_usd: Number(
+      raw.free_shipping_threshold_usd ??
+        INITIAL_STORE_SETTINGS.free_shipping_threshold_usd
+    ),
+    shipping_flat_rate_usd: Number(
+      raw.shipping_flat_rate_usd ??
+        INITIAL_STORE_SETTINGS.shipping_flat_rate_usd
+    ),
+    pago_movil_details: {
+      ...INITIAL_STORE_SETTINGS.pago_movil_details,
+      ...rawPagoMovil,
+    },
+    zelle_details: {
+      ...INITIAL_STORE_SETTINGS.zelle_details,
+      ...rawZelle,
+    },
+    hero_config,
+  };
+}
 
 export const INITIAL_CATEGORIES: Category[] = [
   { id: "cat-1", name: "MagSafe Tough", slug: "magsafe-tough", description: "Doble armadura con anillo magnético MagSafe", sort_order: 1 },

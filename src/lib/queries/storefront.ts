@@ -4,6 +4,7 @@ import {
   INITIAL_PRODUCTS,
   INITIAL_STORE_SETTINGS,
   ALL_SUPPORTED_MODELS,
+  normalizeStoreSettings,
 } from "@/lib/seed-data";
 import { Product, StoreSettings } from "@/types/database";
 
@@ -43,7 +44,7 @@ export async function getStorefrontData(): Promise<{
     if (productsError || !productsData || productsData.length === 0) {
       return {
         products: INITIAL_PRODUCTS.filter((p) => p.is_live),
-        settings: (settingsData as StoreSettings) || INITIAL_STORE_SETTINGS,
+        settings: normalizeStoreSettings(settingsData as Record<string, unknown>),
       };
     }
 
@@ -79,18 +80,7 @@ export async function getStorefrontData(): Promise<{
 
     return {
       products: mappedProducts,
-      settings: settingsData
-        ? {
-            ...(settingsData as StoreSettings),
-            bcv_exchange_rate: Number(settingsData.bcv_exchange_rate ?? 45.8),
-            free_shipping_threshold_usd: Number(
-              settingsData.free_shipping_threshold_usd ?? 35
-            ),
-            shipping_flat_rate_usd: Number(
-              settingsData.shipping_flat_rate_usd ?? 4
-            ),
-          }
-        : INITIAL_STORE_SETTINGS,
+      settings: normalizeStoreSettings(settingsData as Record<string, unknown>),
     };
   } catch {
     return {

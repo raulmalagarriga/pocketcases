@@ -390,6 +390,7 @@ export function CmsProductManager({
         activeSection={activeSection}
         onSelectSection={setActiveSection}
         userEmail={userEmail}
+        logoUrl={settings.logo_url}
       />
 
       <div className="pl-64">
@@ -478,6 +479,7 @@ export function CmsProductManager({
             {activeSection === "store-settings" && (
               <StoreSettingsView
                 settings={settings}
+                products={products}
                 onUpdateSettings={setSettings}
                 onShowToast={showToast}
               />

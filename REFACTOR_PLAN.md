@@ -76,6 +76,20 @@
      - `FaqSection` (transición suave de apertura/cierre de acordeones y entrada on-scroll).
      - `Footer` (reveal suave del bloque Pocket Club y métodos de pago).
 
+### FASE R5: Logo Oficial Configurable (Sin Texto Redundante) y Editor del Banner Principal (`HeroSection`) en el CMS
+- **Estado**: `COMPLETADA ✅`
+- **Alcance**:
+  1. **Logo Oficial (`/logo.png`) y Eliminación de Texto Redundante**:
+     - Usar el logo oficial subido por el usuario (`public/logo.png` y `public/logo-full.png`) como valor por defecto (`logo_url: "/logo.png"`).
+     - En `Navbar.tsx`, `Footer.tsx`, `AdminSidebar.tsx`, `AdminHeader.tsx` y `admin/login/page.tsx`: mostrar **únicamente el logo** (eliminando el texto `"Pocket Cases"` al lado por ser redundante con el diseño del logo). En `AdminHeader.tsx` quitar el logo repetido junto al buscador ya que ya está visible en `AdminSidebar.tsx`.
+     - Permitir **subir/cambiar el logo desde el Admin CMS** (subida directa a Supabase Storage `product-images` y persistencia en `store_settings.logo_url`).
+  2. **Banner Principal (`HeroSection.tsx`) 100% Configurable desde el CMS**:
+     - Crear migración `supabase/migrations/0002_logo_and_hero_config.sql` añadiendo `logo_url TEXT DEFAULT '/logo.png'` y `hero_config JSONB` a `public.store_settings`.
+     - Conectar `HeroSection.tsx` y `Footer.tsx` a `settings` (`logo_url` y `hero_config`).
+     - En el CMS (`StoreSettingsView.tsx` y pestaña/sección de **Identidad & Banner Principal**), permitir editar:
+       - Logo de la tienda (con botón de subida de imagen).
+       - Píldora superior (`badge_text`), Título principal (`headline_prefix`, `headline_highlight` con onda SVG, `headline_suffix`), Subtítulo (`subheadline`), Rating (`rating_score`, `rating_text`), Textos de los 2 botones CTA (`primary_cta_text`, `secondary_cta_text`), Sello rotatorio (`stamp_line_1`, `stamp_line_2`), Burbuja inferior (`feature_bubble_title`, `feature_bubble_subtitle`, `feature_bubble_badge`) y las **2 Tarjetas Destacadas del Mosaico** (con opción de autocompletar desde cualquier producto del catálogo o subir imagen/título/precio/etiqueta propios).
+
 ---
 
 ## Registro de Progreso y Commits
@@ -85,4 +99,5 @@
 | **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | `b434c14` |
 | **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | `6455a47` |
 | **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | `0b63f34` |
-| **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | Commit Fase R4 |
+| **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | `f945274` |
+| **FASE R5** | ✅ Completada | Subagente `68bc5611` | `tsc --noEmit` OK (0 errores) | Commit Fase R5 |

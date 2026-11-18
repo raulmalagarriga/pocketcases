@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
+import { getLocalCachedSettings } from "@/lib/queries/cms";
 import { smoothScrollTo } from "@/components/ui/ScrollReveal";
 
 interface NavbarProps {
@@ -19,6 +20,21 @@ const NAV_ITEMS = [
 ];
 
 export function Navbar({ settings }: NavbarProps) {
+  const [liveSettings, setLiveSettings] = useState<StoreSettings>(settings);
+
+  useEffect(() => {
+    const cached = getLocalCachedSettings();
+    if (cached) {
+      setLiveSettings((prev) => ({
+        ...prev,
+        ...cached,
+        logo_url: cached.logo_url || prev.logo_url || "/logo.png",
+      }));
+    } else {
+      setLiveSettings(settings);
+    }
+  }, [settings]);
+
   const {
     items,
     toggleCart,
@@ -31,7 +47,7 @@ export function Navbar({ settings }: NavbarProps) {
   } = useCartStore();
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const whatsappUrl = `https://wa.me/${settings.whatsapp_number.replace(
+  const whatsappUrl = `https://wa.me/${liveSettings.whatsapp_number.replace(
     /[^0-9]/g,
     ""
   )}?text=${encodeURIComponent(
@@ -50,15 +66,12 @@ export function Navbar({ settings }: NavbarProps) {
       <div className="h-20 bg-surface/90 backdrop-blur-xl shadow-[0_2px_12px_rgba(42,50,53,0.06)]">
         <div className="h-full max-w-7xl mx-auto px-margin md:px-margin-desktop flex items-center justify-between gap-space-md">
           {/* Brand Logo */}
-          <a href="#" className="flex items-center gap-space-md">
+          <a href="#" className="flex items-center">
             <img
-              alt="Logo (1).png"
-              className="h-8 w-auto object-contain"
-              src="https://lh3.googleusercontent.com/aida/ALJJyrBY2o-dJJ4aAQPt6clR8QZ-0EqgobsGiR0ZuIK8HARrdcganj6i7aZ4Yi_yl2_2lEIqSepZgxwcHHrBKN5VIGYMxeMVEHzouto06XO07iXTUKmPbtg0ZF5RK2QCUHfpzMWnOUjksLVomygo9kHkGCgkjR4tSkq6SneiaXUcELnlwMI3uNyMFJlCDC4SBqzlkcrIArvKOQAxRnLB_A5hcqONokfhonH0ve2exd_sK8e_-Ts4FSCvEnJd"
+              alt={liveSettings.store_name || "Pocket Cases"}
+              className="h-11 w-auto object-contain rounded-lg shadow-[2px_2px_0px_#2a3235] hover:scale-[1.02] transition-transform"
+              src={liveSettings.logo_url || "/logo.png"}
             />
-            <span className="font-headline-sm text-headline-sm text-primary font-extrabold tracking-tight hidden sm:inline-block">
-              Pocket Cases
-            </span>
           </a>
 
           {/* Navigation Pills */}

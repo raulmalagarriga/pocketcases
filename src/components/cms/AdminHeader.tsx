@@ -102,11 +102,6 @@ export function AdminHeader({
   return (
     <header className="fixed top-0 left-64 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_2px_10px_rgba(42,50,53,0.04)] z-40 flex items-center justify-between px-space-lg">
       <div className="flex items-center gap-space-md">
-        <img
-          alt="Logo (1).png"
-          className="h-8 w-auto object-contain"
-          src="https://lh3.googleusercontent.com/aida/ALJJyrBY2o-dJJ4aAQPt6clR8QZ-0EqgobsGiR0ZuIK8HARrdcganj6i7aZ4Yi_yl2_2lEIqSepZgxwcHHrBKN5VIGYMxeMVEHzouto06XO07iXTUKmPbtg0ZF5RK2QCUHfpzMWnOUjksLVomygo9kHkGCgkjR4tSkq6SneiaXUcELnlwMI3uNyMFJlCDC4SBqzlkcrIArvKOQAxRnLB_A5hcqONokfhonH0ve2exd_sK8e_-Ts4FSCvEnJd"
-        />
         <div className="relative flex items-center">
           <input
             value={searchQuery}

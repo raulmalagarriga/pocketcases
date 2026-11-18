@@ -1,13 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { StoreSettings } from "@/types/database";
+import { getLocalCachedSettings } from "@/lib/queries/cms";
 import { ScrollReveal, smoothScrollTo } from "@/components/ui/ScrollReveal";
 
-export function Footer() {
+interface FooterProps {
+  settings?: StoreSettings;
+}
+
+export function Footer({ settings }: FooterProps) {
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
+  const [liveLogoUrl, setLiveLogoUrl] = useState<string>(
+    settings?.logo_url || "/logo.png"
+  );
   const { setActiveCategory, setSearchQuery } = useCartStore();
+
+  useEffect(() => {
+    const cached = getLocalCachedSettings();
+    if (cached?.logo_url) {
+      setLiveLogoUrl(cached.logo_url);
+    } else if (settings?.logo_url) {
+      setLiveLogoUrl(settings.logo_url);
+    }
+  }, [settings]);
 
   const handleJoin = () => {
     if (!email.trim()) return;
@@ -39,15 +57,12 @@ export function Footer() {
         <ScrollReveal direction="up">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl pb-space-2xl">
             <div className="lg:col-span-2 space-y-space-md">
-              <div className="flex items-center gap-space-sm">
+              <div className="flex items-center">
                 <img
-                  alt="Logo (1).png"
-                  className="h-7 w-auto object-contain"
-                  src="https://lh3.googleusercontent.com/aida/ALJJyrBY2o-dJJ4aAQPt6clR8QZ-0EqgobsGiR0ZuIK8HARrdcganj6i7aZ4Yi_yl2_2lEIqSepZgxwcHHrBKN5VIGYMxeMVEHzouto06XO07iXTUKmPbtg0ZF5RK2QCUHfpzMWnOUjksLVomygo9kHkGCgkjR4tSkq6SneiaXUcELnlwMI3uNyMFJlCDC4SBqzlkcrIArvKOQAxRnLB_A5hcqONokfhonH0ve2exd_sK8e_-Ts4FSCvEnJd"
+                  alt={settings?.store_name || "Pocket Cases"}
+                  className="h-11 w-auto object-contain rounded-lg shadow-[2px_2px_0px_#2a3235]"
+                  src={liveLogoUrl || "/logo.png"}
                 />
-                <span className="font-headline-sm text-headline-sm text-primary font-extrabold">
-                  Pocket Cases
-                </span>
               </div>
               <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">
                 Accesorios para tu teléfono con vibra Y2K y protección MagSafe

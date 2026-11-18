@@ -8,6 +8,7 @@ interface AdminSidebarProps {
   activeSection: string;
   onSelectSection: (section: string) => void;
   userEmail?: string;
+  logoUrl?: string;
 }
 
 const SIDEBAR_ITEMS = [
@@ -24,6 +25,7 @@ export function AdminSidebar({
   activeSection,
   onSelectSection,
   userEmail,
+  logoUrl,
 }: AdminSidebarProps) {
   const router = useRouter();
 
@@ -38,22 +40,15 @@ export function AdminSidebar({
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col justify-between py-space-md shadow-[2px_0_12px_rgba(42,50,53,0.04)]">
       <div className="flex flex-col">
-        <div className="px-space-md pb-space-lg flex items-center justify-between">
-          <div className="flex items-center gap-space-sm">
-            <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center shadow-[2px_2px_0px_#2a3235]">
-              <span className="material-symbols-outlined text-on-primary-container text-[20px]">
-                cases
-              </span>
-            </div>
-            <div>
-              <h1 className="font-headline-sm text-headline-sm text-primary leading-tight font-extrabold">
-                Pocket Cases
-              </h1>
-              <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-1.5 py-0.5 rounded-full font-bold">
-                ADMIN CMS
-              </span>
-            </div>
-          </div>
+        <div className="px-space-md pb-space-lg flex items-center justify-between gap-2">
+          <img
+            src={logoUrl || "/logo.png"}
+            alt="Pocket Cases"
+            className="h-10 w-auto object-contain rounded-lg shadow-[2px_2px_0px_#2a3235]"
+          />
+          <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-2 py-0.5 rounded-full font-bold shadow-[1px_1px_0px_#2a3235] shrink-0">
+            ADMIN CMS
+          </span>
         </div>
 
         <nav className="flex flex-col gap-1 px-space-sm font-label-md text-label-md">

@@ -1,11 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { StoreSettings } from "@/types/database";
+import { DEFAULT_HERO_CONFIG } from "@/lib/seed-data";
+import { getLocalCachedSettings } from "@/lib/queries/cms";
 import { ScrollReveal, smoothScrollTo } from "@/components/ui/ScrollReveal";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  settings: StoreSettings;
+}
+
+export function HeroSection({ settings }: HeroSectionProps) {
   const { setActiveCategory, setSearchQuery } = useCartStore();
+  const [liveSettings, setLiveSettings] = useState<StoreSettings>(settings);
+
+  useEffect(() => {
+    const cached = getLocalCachedSettings();
+    if (cached) {
+      setLiveSettings((prev) => ({
+        ...prev,
+        ...cached,
+        logo_url: cached.logo_url || prev.logo_url || "/logo.png",
+        hero_config: cached.hero_config || prev.hero_config || DEFAULT_HERO_CONFIG,
+      }));
+    } else {
+      setLiveSettings(settings);
+    }
+  }, [settings]);
+
+  const hero = liveSettings?.hero_config || DEFAULT_HERO_CONFIG;
+  const card1 = hero.card_1 || DEFAULT_HERO_CONFIG.card_1;
+  const card2 = hero.card_2 || DEFAULT_HERO_CONFIG.card_2;
 
   const scrollToCatalog = () => {
     smoothScrollTo("#product-catalog");
@@ -27,21 +53,21 @@ export function HeroSection() {
           {/* Brand Pill Chip with Logo */}
           <div className="inline-flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-1.5 rounded-full shadow-[2px_2px_0px_#2a3235]">
             <img
-              alt="Pocket Cases Official Logo"
+              alt={liveSettings?.store_name || "Pocket Cases"}
               className="w-6 h-6 object-contain rounded-full bg-primary-fixed"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS-s4In6W_RTGsuOy7GiEv-SpyZIYDboLKJ6DRqio-SxWAep-2eJ7SRIGVljOR1gm6-i4dgbc7V1UfSICAQqCQK0mEq8gqXY5nJcOv6VDF58MZUBnyCc6gTE6vYvNSMCWCkrjzzYi6Iy6MWO355PBhcYLwRXTbCQ3qFKsdgR7SZ6ocYlkv0J3Qh1Pge3vC-GQjso4m3swRe-QPfsDy9kn2YZg3iGWQm75Hgi2GxK6Zed7Uibt2EO8"
+              src={liveSettings?.logo_url || "/logo-full.png"}
             />
             <span className="font-label-md text-label-md text-primary font-extrabold uppercase tracking-wide">
-              EDICIÓN 2025 • NUEVO LANZAMIENTO
+              {hero.badge_text}
             </span>
             <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
           </div>
 
           {/* Main Display Headline */}
           <h1 className="font-display-hero text-display-hero-mobile md:text-display-hero text-on-surface">
-            Viste tu cel con{" "}
+            {hero.headline_prefix}{" "}
             <span className="relative inline-block text-primary">
-              puro estilo
+              {hero.headline_highlight}
               <svg
                 className="absolute -bottom-2 left-0 w-full h-3 text-primary-fixed -z-10"
                 preserveAspectRatio="none"
@@ -53,14 +79,12 @@ export function HeroSection() {
                 ></path>
               </svg>
             </span>{" "}
-            brutal.
+            {hero.headline_suffix}
           </h1>
 
           {/* Subheading */}
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
-            Fundas estéticas y resistentes contra caídas, con protección militar
-            y ese brillo retro Y2K que convierte tus fotos de espejo en sesiones
-            de fotos.
+            {hero.subheadline}
           </p>
 
           {/* Social Proof Pill Badge */}
@@ -77,10 +101,10 @@ export function HeroSection() {
               ))}
             </div>
             <span className="font-label-lg text-label-lg text-on-surface font-extrabold">
-              4.9 / 5
+              {hero.rating_score}
             </span>
             <span className="text-on-surface-variant font-body-sm text-body-sm">
-              de más de 12.000 clientes felices
+              {hero.rating_text}
             </span>
           </div>
 
@@ -96,7 +120,7 @@ export function HeroSection() {
               className="w-full sm:w-auto text-center px-space-xl py-3.5 bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-[3px_3px_0px_#2a3235] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#2a3235] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
               href="#product-catalog"
             >
-              <span>Ver Más Vendidos</span>
+              <span>{hero.primary_cta_text}</span>
               <span className="material-symbols-outlined text-[20px]">
                 arrow_downward
               </span>
@@ -114,7 +138,7 @@ export function HeroSection() {
               <span className="material-symbols-outlined text-[20px]">
                 trip_origin
               </span>
-              <span>Explorar MagSafe</span>
+              <span>{hero.secondary_cta_text}</span>
             </a>
           </div>
 
@@ -133,7 +157,7 @@ export function HeroSection() {
                 local_shipping
               </span>
               <span className="font-label-md text-label-md text-on-surface">
-                Gratis $35+
+                Gratis ${settings?.free_shipping_threshold_usd ?? 35}+
               </span>
             </div>
             <div className="flex items-center gap-2 bg-surface-container-lowest p-2 rounded-DEFAULT shadow-[1px_1px_0px_#2a3235]">
@@ -160,66 +184,70 @@ export function HeroSection() {
               auto_awesome
             </span>
             <span className="font-label-badge text-label-badge leading-tight uppercase font-extrabold">
-              DROP Y2K
+              {hero.stamp_line_1}
               <br />
-              GEN-5 CORE
+              {hero.stamp_line_2}
             </span>
           </div>
 
           {/* Main Phone Showcase Mosaic */}
           <div className="relative w-full max-w-lg grid grid-cols-2 gap-space-md p-space-md bg-surface-container-lowest rounded-xl shadow-[4px_4px_0px_#2a3235]">
-            {/* Card Mockup 1: Strawberry Wave */}
+            {/* Card Mockup 1 */}
             <a
               href="#product-catalog"
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory("all");
-                setSearchQuery("Strawberry");
+                setActiveCategory(card1.category_filter || "all");
+                setSearchQuery(card1.search_keyword || "");
                 scrollToCatalog();
               }}
               className="group relative rounded-lg overflow-hidden bg-primary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235]"
             >
-              <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-primary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235]">
-                MÁS VENDIDO
+              <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-primary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235] z-10">
+                {card1.badge}
               </span>
               <div className="w-full h-44 rounded-DEFAULT overflow-hidden bg-surface-container-lowest flex items-center justify-center p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
                 <img
-                  alt="Strawberry Wave Case"
+                  alt={card1.title}
                   className="w-full h-full object-cover rounded-DEFAULT group-hover:scale-105 transition-transform duration-300"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU-bAWiHhlC25-gUa_bsY4bZsc0C_TsocUBjFSU_tQgwJaIj3D0ewmAYzpZ4-aoIEgFqChwtA1B_ZzDmeWwqdmtyAlOCQuhNM0Hid7QrUvYuRU_0BGpFW7-O_vche5I4zV5tjKd-DNXXU7Gsaua_CU7NsbJwXJriM4QuMQho97gF2y15XZ592b-fu-JuioG4U9wJiXvWLwvWQjr2akKE6-86wb-eiMu7fwW_NHXw"
+                  src={card1.image_url}
                 />
               </div>
               <p className="font-headline-sm text-headline-sm text-on-surface mt-space-sm font-bold">
-                Strawberry Wave
+                {card1.title}
               </p>
-              <p className="font-label-md text-label-md text-primary">$32.00</p>
+              <p className="font-label-md text-label-md text-primary">
+                {card1.price_text}
+              </p>
             </a>
 
-            {/* Card Mockup 2: Retro Floral Disco */}
+            {/* Card Mockup 2 */}
             <a
               href="#product-catalog"
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory("magsafe");
-                setSearchQuery("");
+                setActiveCategory(card2.category_filter || "magsafe");
+                setSearchQuery(card2.search_keyword || "");
                 scrollToCatalog();
               }}
               className="group relative rounded-lg overflow-hidden bg-secondary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235] mt-6"
             >
-              <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-tertiary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235]">
-                MAGSAFE
+              <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-tertiary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235] z-10">
+                {card2.badge}
               </span>
               <div className="w-full h-44 rounded-DEFAULT overflow-hidden bg-surface-container-lowest flex items-center justify-center p-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]">
                 <img
-                  alt="Floral Groove Case"
+                  alt={card2.title}
                   className="w-full h-full object-cover rounded-DEFAULT group-hover:scale-105 transition-transform duration-300"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBASnbmHvN39wn7Eh9sH4dAalUgUKOtOuapRBZi5TU4aBAuPFcza2GG3Z5LiI_-Sli2FPhjDvmNKJSSS2qXyMetthjhbJM8skqM7c3LrnnjKqROqENmzDkItNO4TGqB22ef8-2ch6CcWAXOdWzAH371vnQBj9z_FHGMU6HjkOEsWUhlaINYAoqTtyPDnfeXnqEx0VdgS504P_fmvtnhyEb7gAhQ4iNTuty4dq9eRA"
+                  src={card2.image_url}
                 />
               </div>
               <p className="font-headline-sm text-headline-sm text-on-surface mt-space-sm font-bold">
-                Floral Groove
+                {card2.title}
               </p>
-              <p className="font-label-md text-label-md text-tertiary">$28.00</p>
+              <p className="font-label-md text-label-md text-tertiary">
+                {card2.price_text}
+              </p>
             </a>
 
             {/* Mini floating bubble detail */}
@@ -230,15 +258,15 @@ export function HeroSection() {
                 </span>
                 <div>
                   <p className="font-label-md text-label-md text-on-surface">
-                    Amortiguación Doble Capa
+                    {hero.feature_bubble_title}
                   </p>
                   <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Esquinas con bolsas de aire anticaída
+                    {hero.feature_bubble_subtitle}
                   </p>
                 </div>
               </div>
               <span className="bg-primary text-on-primary font-label-badge text-label-badge px-2 py-1 rounded-full uppercase font-bold">
-                Ultra Resistente
+                {hero.feature_bubble_badge}
               </span>
             </div>
           </div>

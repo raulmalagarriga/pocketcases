@@ -81,9 +81,38 @@ export interface Product {
   supported_models: string[];
 }
 
+export interface HeroShowcaseCard {
+  badge: string;
+  title: string;
+  price_text: string;
+  image_url: string;
+  search_keyword: string;
+  category_filter: string;
+}
+
+export interface HeroBannerConfig {
+  badge_text: string;
+  headline_prefix: string;
+  headline_highlight: string;
+  headline_suffix: string;
+  subheadline: string;
+  rating_score: string;
+  rating_text: string;
+  primary_cta_text: string;
+  secondary_cta_text: string;
+  stamp_line_1: string;
+  stamp_line_2: string;
+  feature_bubble_title: string;
+  feature_bubble_subtitle: string;
+  feature_bubble_badge: string;
+  card_1: HeroShowcaseCard;
+  card_2: HeroShowcaseCard;
+}
+
 export interface StoreSettings {
   id: number;
   store_name: string;
+  logo_url: string;
   whatsapp_number: string;
   bcv_exchange_rate: number;
   show_ves_reference: boolean;
@@ -98,6 +127,7 @@ export interface StoreSettings {
     email: string;
     holder: string;
   };
+  hero_config: HeroBannerConfig;
 }
 
 export interface CartItem {

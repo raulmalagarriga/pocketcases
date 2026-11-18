@@ -3,6 +3,7 @@ import {
   INITIAL_PRODUCTS,
   ALL_SUPPORTED_MODELS,
   INITIAL_STORE_SETTINGS,
+  normalizeStoreSettings,
 } from "@/lib/seed-data";
 import {
   Order,
@@ -724,12 +725,12 @@ export async function deleteWaitlistSubscriptionInSupabase(
   }
 }
 
-function getLocalCachedSettings(): StoreSettings | null {
+export function getLocalCachedSettings(): StoreSettings | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(LOCAL_SETTINGS_STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as StoreSettings;
+    return normalizeStoreSettings(JSON.parse(raw) as Record<string, unknown>);
   } catch {
     return null;
   }
@@ -758,38 +759,7 @@ export async function fetchStoreSettingsCms(): Promise<StoreSettings> {
         .maybeSingle();
 
       if (!error && data) {
-        const parsed: StoreSettings = {
-          id: 1,
-          store_name: String(
-            data.store_name ?? INITIAL_STORE_SETTINGS.store_name
-          ),
-          whatsapp_number: String(
-            data.whatsapp_number ?? INITIAL_STORE_SETTINGS.whatsapp_number
-          ),
-          bcv_exchange_rate: Number(
-            data.bcv_exchange_rate ?? INITIAL_STORE_SETTINGS.bcv_exchange_rate
-          ),
-          show_ves_reference: Boolean(
-            data.show_ves_reference ?? INITIAL_STORE_SETTINGS.show_ves_reference
-          ),
-          free_shipping_threshold_usd: Number(
-            data.free_shipping_threshold_usd ??
-              INITIAL_STORE_SETTINGS.free_shipping_threshold_usd
-          ),
-          shipping_flat_rate_usd: Number(
-            data.shipping_flat_rate_usd ??
-              INITIAL_STORE_SETTINGS.shipping_flat_rate_usd
-          ),
-          pago_movil_details:
-            data.pago_movil_details &&
-            typeof data.pago_movil_details === "object"
-              ? (data.pago_movil_details as StoreSettings["pago_movil_details"])
-              : INITIAL_STORE_SETTINGS.pago_movil_details,
-          zelle_details:
-            data.zelle_details && typeof data.zelle_details === "object"
-              ? (data.zelle_details as StoreSettings["zelle_details"])
-              : INITIAL_STORE_SETTINGS.zelle_details,
-        };
+        const parsed = normalizeStoreSettings(data as Record<string, unknown>);
         setLocalCachedSettings(parsed);
         return parsed;
       }
@@ -804,33 +774,39 @@ export async function fetchStoreSettingsCms(): Promise<StoreSettings> {
 export async function saveStoreSettingsToSupabase(
   settings: StoreSettings
 ): Promise<StoreSettings> {
-  const normalized: StoreSettings = {
-    ...settings,
-    id: 1,
-    bcv_exchange_rate: Number(settings.bcv_exchange_rate),
-    free_shipping_threshold_usd: Number(settings.free_shipping_threshold_usd),
-    shipping_flat_rate_usd: Number(settings.shipping_flat_rate_usd),
-  };
+  const normalized = normalizeStoreSettings(settings);
 
   setLocalCachedSettings(normalized);
 
   if (isSupabaseConfigured()) {
     try {
       const supabase = createClient();
-      await supabase.from("store_settings").upsert(
+      const basePayload = {
+        id: 1,
+        store_name: normalized.store_name,
+        whatsapp_number: normalized.whatsapp_number,
+        bcv_exchange_rate: normalized.bcv_exchange_rate,
+        show_ves_reference: normalized.show_ves_reference,
+        free_shipping_threshold_usd: normalized.free_shipping_threshold_usd,
+        shipping_flat_rate_usd: normalized.shipping_flat_rate_usd,
+        pago_movil_details: normalized.pago_movil_details,
+        zelle_details: normalized.zelle_details,
+      };
+
+      const { error } = await supabase.from("store_settings").upsert(
         {
-          id: 1,
-          store_name: normalized.store_name,
-          whatsapp_number: normalized.whatsapp_number,
-          bcv_exchange_rate: normalized.bcv_exchange_rate,
-          show_ves_reference: normalized.show_ves_reference,
-          free_shipping_threshold_usd: normalized.free_shipping_threshold_usd,
-          shipping_flat_rate_usd: normalized.shipping_flat_rate_usd,
-          pago_movil_details: normalized.pago_movil_details,
-          zelle_details: normalized.zelle_details,
+          ...basePayload,
+          logo_url: normalized.logo_url,
+          hero_config: normalized.hero_config,
         },
         { onConflict: "id" }
       );
+
+      if (error) {
+        await supabase
+          .from("store_settings")
+          .upsert(basePayload, { onConflict: "id" });
+      }
     } catch {
       // Fallback to local
     }

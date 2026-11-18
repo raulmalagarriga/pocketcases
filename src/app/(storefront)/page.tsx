@@ -21,7 +21,7 @@ export default async function StorefrontPage() {
       <main className="w-full bg-background">
         <div className="flex flex-col w-full">
           <TopMarquee />
-          <HeroSection />
+          <HeroSection settings={settings} />
           <TrustMetricsBar />
           <ProductCatalog initialProducts={products} settings={settings} />
           <CartDrawer settings={settings} />
@@ -29,7 +29,7 @@ export default async function StorefrontPage() {
           <FaqSection />
         </div>
       </main>
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }

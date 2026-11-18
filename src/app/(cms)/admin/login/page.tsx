@@ -51,15 +51,14 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md bg-surface-container-lowest rounded-lg p-space-xl shadow-[4px_4px_0px_#2a3235]">
         <div className="flex flex-col items-center text-center mb-space-lg">
-          <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[2px_2px_0px_#2a3235] mb-space-sm">
-            <span className="material-symbols-outlined text-[24px]">cases</span>
-          </div>
-          <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-2.5 py-0.5 rounded-full font-bold uppercase mb-1">
+          <img
+            src="/logo.png"
+            alt="Pocket Cases"
+            className="h-14 w-auto object-contain rounded-xl shadow-[2px_2px_0px_#2a3235] mb-space-sm"
+          />
+          <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-2.5 py-0.5 rounded-full font-bold uppercase mb-1 shadow-[1px_1px_0px_#2a3235]">
             ADMIN CMS PORTAL
           </span>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface font-extrabold">
-            Pocket Cases
-          </h1>
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
             Ingresa con tu cuenta administrativa de Supabase para gestionar el
             catálogo e inventario.

@@ -105,10 +105,11 @@ CREATE TABLE IF NOT EXISTS public.product_phone_models (
   UNIQUE(product_id, phone_model_id)
 );
 
--- 3.6 Store Settings (Venezuela Payments, BCV Rate & WhatsApp Config)
+-- 3.6 Store Settings (Venezuela Payments, BCV Rate, Brand Logo & Hero Banner Config)
 CREATE TABLE IF NOT EXISTS public.store_settings (
   id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   store_name TEXT NOT NULL DEFAULT 'Pocket Cases',
+  logo_url TEXT NOT NULL DEFAULT '/logo.png',
   whatsapp_number TEXT NOT NULL DEFAULT '584120000000',
   bcv_exchange_rate NUMERIC(10, 2) NOT NULL DEFAULT 45.80,
   show_ves_reference BOOLEAN NOT NULL DEFAULT TRUE,
@@ -116,6 +117,38 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
   shipping_flat_rate_usd NUMERIC(10, 2) NOT NULL DEFAULT 4.00,
   pago_movil_details JSONB NOT NULL DEFAULT '{"bank": "Banesco (0134)", "phone": "0412-0000000", "rif": "J-50123456-0"}'::JSONB,
   zelle_details JSONB NOT NULL DEFAULT '{"email": "pagos@pocketcases.co", "holder": "Pocket Cases Inc."}'::JSONB,
+  hero_config JSONB NOT NULL DEFAULT '{
+    "badge_text": "EDICIÓN 2025 • NUEVO LANZAMIENTO",
+    "headline_prefix": "Viste tu cel con",
+    "headline_highlight": "puro estilo",
+    "headline_suffix": "brutal.",
+    "subheadline": "Fundas estéticas y resistentes contra caídas, con protección militar y ese brillo retro Y2K que convierte tus fotos de espejo en sesiones de fotos.",
+    "rating_score": "4.9 / 5",
+    "rating_text": "de más de 12.000 clientes felices",
+    "primary_cta_text": "Ver Más Vendidos",
+    "secondary_cta_text": "Explorar MagSafe",
+    "stamp_line_1": "DROP Y2K",
+    "stamp_line_2": "GEN-5 CORE",
+    "feature_bubble_title": "Amortiguación Doble Capa",
+    "feature_bubble_subtitle": "Esquinas con bolsas de aire anticaída",
+    "feature_bubble_badge": "Ultra Resistente",
+    "card_1": {
+      "badge": "MÁS VENDIDO",
+      "title": "Strawberry Wave",
+      "price_text": "$32.00",
+      "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBU-bAWiHhlC25-gUa_bsY4bZsc0C_TsocUBjFSU_tQgwJaIj3D0ewmAYzpZ4-aoIEgFqChwtA1B_ZzDmeWwqdmtyAlOCQuhNM0Hid7QrUvYuRU_0BGpFW7-O_vche5I4zV5tjKd-DNXXU7Gsaua_CU7NsbJwXJriM4QuMQho97gF2y15XZ592b-fu-JuioG4U9wJiXvWLwvWQjr2akKE6-86wb-eiMu7fwW_NHXw",
+      "search_keyword": "Strawberry",
+      "category_filter": "all"
+    },
+    "card_2": {
+      "badge": "MAGSAFE",
+      "title": "Floral Groove",
+      "price_text": "$28.00",
+      "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBASnbmHvN39wn7Eh9sH4dAalUgUKOtOuapRBZi5TU4aBAuPFcza2GG3Z5LiI_-Sli2FPhjDvmNKJSSS2qXyMetthjhbJM8skqM7c3LrnnjKqROqENmzDkItNO4TGqB22ef8-2ch6CcWAXOdWzAH371vnQBj9z_FHGMU6HjkOEsWUhlaINYAoqTtyPDnfeXnqEx0VdgS504P_fmvtnhyEb7gAhQ4iNTuty4dq9eRA",
+      "search_keyword": "",
+      "category_filter": "magsafe"
+    }
+  }'::JSONB,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
