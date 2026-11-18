@@ -15,12 +15,12 @@
 
 ### 2. Panel Administrativo CMS (`(cms)/admin`) — Opciones sin funcionalidad
 - [ ] **Menú Lateral (`AdminSidebar.tsx`) sin vistas reales**: Los 7 módulos del sidebar (`Dashboard Overview`, `Product Catalog`, `Inventory & Stock`, `Orders`, `Customers`, `Analytics`, `Store Settings`) solo cambian un estado local sin renderizar sus vistas correspondientes.
-- [ ] **Paginación de la tabla estática**: El selector `10 / 25 / 50 per page` y los botones de página `1, 2, 3, <, >` son HTML estático y no paginan los productos.
-- [ ] **Acciones por lote (Batch Operations) sin persistencia en Supabase**: `Change Status`, `Apply Discount (-15%)` y `Set Out of Stock` solo mutaban el estado en memoria de React sin hacer `UPDATE` en la tabla `products` de Supabase.
-- [ ] **Sincronización incompleta en `ProductFormDrawer.tsx`**:
-  - Al guardar un producto, no se sincronizaba la tabla intermedia `product_phone_models` en Supabase.
-  - Los swatches de color (`Color Variant Manager`) no permitían editar inline las unidades de stock (`stock_units`) de un color existente sin borrarlo y crearlo de nuevo.
-- [ ] **Campana de notificaciones en `AdminHeader.tsx`**: El botón de notificaciones no abre ningún panel con las alertas reales de stock agotado / stock bajo / órdenes pendientes.
+- [x] **Paginación de la tabla estática**: El selector `10 / 25 / 50 per page` y los botones de página `1, 2, 3, <, >` paginan dinámicamente los productos.
+- [x] **Acciones por lote (Batch Operations) con persistencia en Supabase**: `Change Status`, `Apply Discount (-15%)`, `Set Out of Stock` y `Delete Selected` persisten directamente en la tabla `products` de Supabase.
+- [x] **Sincronización completa en `ProductFormDrawer.tsx`**:
+  - Al guardar un producto, se sincroniza la tabla intermedia `product_phone_models` en Supabase.
+  - Los swatches de color (`Color Variant Manager`) permiten editar inline las unidades de stock (`stock_units`) y el nombre de cada color existente.
+- [x] **Campana de notificaciones en `AdminHeader.tsx`**: El botón de notificaciones abre un popover interactivo con las alertas reales de stock agotado, stock bajo y borradores.
 
 ### 3. Animaciones On-Scroll y Smooth Scroll
 - [ ] **Falta de animaciones de entrada (On-Scroll Reveal)**: Las secciones (`HeroSection`, `TrustMetricsBar`, `ProductCatalog`, `SocialProofReel`, `FaqSection`, `Footer`) aparecen estáticas sin transiciones progresivas al hacer scroll.
@@ -39,7 +39,7 @@
   4. En `src/components/storefront/HeroSection.tsx` y `src/components/storefront/Footer.tsx`: Conectar enlaces de categorías (`Serie iPhone 16`, `Grips MagSafe`, etc.) con `setActiveCategory(...)` + scroll suave a `#product-catalog`.
 
 ### FASE R2: Completitud del Tabla de Productos, Drawer CRUD y Persistencia Supabase en CMS
-- **Estado**: `PENDIENTE`
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
   1. En `src/lib/queries/cms.ts`:
      - Sincronizar `product_phone_models` en Supabase al guardar un producto en `saveProductToSupabase`.
@@ -82,7 +82,7 @@
 
 | Fase | Estado | Subagente / Ejecución | Revisión TypeScript | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- |
-| **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | Commit Fase R1 |
-| **FASE R2** | ⏳ Pendiente | — | — | — |
+| **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | `b434c14` |
+| **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | Commit Fase R2 |
 | **FASE R3** | ⏳ Pendiente | — | — | — |
 | **FASE R4** | ⏳ Pendiente | — | — | — |

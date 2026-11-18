@@ -124,7 +124,7 @@ export function ProductFormDrawer({
         slug: product.slug,
         subtitle: product.subtitle,
         category_badge: product.category_badge,
-        promo_tag: product.promo_tag,
+        promo_tag: product.promo_tag || "",
         price_usd: product.price_usd,
         compare_at_price_usd: product.compare_at_price_usd,
         cost_usd: product.cost_usd,
@@ -307,6 +307,32 @@ export function ProductFormDrawer({
       0
     );
     setValue("total_stock", sumUnits);
+  };
+
+  const handleUpdateColorVariantStock = (variantId: string, units: number) => {
+    const safeUnits = Math.max(0, Number.isNaN(units) ? 0 : units);
+    const nextVariants = watchedColorVariants.map((c) =>
+      c.id === variantId ? { ...c, stock_units: safeUnits } : c
+    );
+    setValue("color_variants", nextVariants, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    const sumUnits = nextVariants.reduce(
+      (sum, item) => sum + Number(item.stock_units || 0),
+      0
+    );
+    setValue("total_stock", sumUnits, { shouldDirty: true });
+  };
+
+  const handleUpdateColorVariantName = (variantId: string, name: string) => {
+    const nextVariants = watchedColorVariants.map((c) =>
+      c.id === variantId ? { ...c, name, name_en: name } : c
+    );
+    setValue("color_variants", nextVariants, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const onSubmit = async (values: ProductFormValues) => {
@@ -598,6 +624,50 @@ export function ProductFormDrawer({
                 </div>
               </div>
 
+              {/* Subtitle / Protection Spec, Promo Badge Tag & Default Finish */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+                <div className="flex flex-col gap-space-xs">
+                  <label className="font-label-md text-label-md text-on-surface font-bold">
+                    Subtitle / Protection Spec
+                  </label>
+                  <input
+                    {...register("subtitle")}
+                    placeholder="e.g. Doble Armadura MagSafe"
+                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
+                    type="text"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-space-xs">
+                  <label className="font-label-md text-label-md text-on-surface font-bold">
+                    Promo Badge Tag
+                  </label>
+                  <select
+                    {...register("promo_tag")}
+                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
+                  >
+                    <option value="">None (Sin etiqueta)</option>
+                    <option value="BESTSELLER">BESTSELLER</option>
+                    <option value="HOT DROP">HOT DROP</option>
+                    <option value="WAITLIST">WAITLIST</option>
+                    <option value="UNPUBLISHED">UNPUBLISHED</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-space-xs">
+                  <label className="font-label-md text-label-md text-on-surface font-bold">
+                    Default Finish
+                  </label>
+                  <select
+                    {...register("default_finish")}
+                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
+                  >
+                    <option value="Grip Mate">Grip Mate</option>
+                    <option value="Brillo Jelly">Brillo Jelly</option>
+                  </select>
+                </div>
+              </div>
+
               {/* Supported Phone Models Pills Multi-select */}
               <div className="flex flex-col gap-space-xs">
                 <div className="flex items-center justify-between">
@@ -687,30 +757,55 @@ export function ProductFormDrawer({
                     {watchedColorVariants.map((variant) => (
                       <div
                         key={variant.id}
-                        className="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
+                        className="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
                       >
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
                           <div
                             className="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant"
                             style={{ backgroundColor: variant.hex_code }}
                           ></div>
-                          <div>
-                            <p className="font-label-md text-label-md text-on-surface font-bold leading-tight">
-                              {variant.name_en || variant.name}
-                            </p>
-                            <p className="font-label-badge text-[10px] text-outline">
+                          <div className="min-w-0 flex-1">
+                            <input
+                              type="text"
+                              value={variant.name}
+                              onChange={(e) =>
+                                handleUpdateColorVariantName(
+                                  variant.id,
+                                  e.target.value
+                                )
+                              }
+                              aria-label="Color variant name"
+                              className="w-full bg-transparent font-label-md text-label-md text-on-surface font-bold leading-tight focus:outline-none focus:bg-surface-container-low rounded px-1 -ml-1"
+                            />
+                            <p className="font-label-badge text-[10px] text-outline truncate">
                               {variant.hex_code} • SKU: {variant.sku_suffix}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-label-badge text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold">
-                            {variant.stock_units} in stock
-                          </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center gap-1 bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded">
+                            <input
+                              type="number"
+                              min={0}
+                              value={variant.stock_units}
+                              onChange={(e) =>
+                                handleUpdateColorVariantStock(
+                                  variant.id,
+                                  parseInt(e.target.value, 10)
+                                )
+                              }
+                              aria-label="Color variant stock units"
+                              className="w-12 bg-surface-container-lowest text-on-surface font-label-badge text-[11px] font-bold text-center rounded px-1 py-0.5 focus:outline-none shadow-[1px_1px_0px_#2a3235]"
+                            />
+                            <span className="font-label-badge text-[9px] font-bold uppercase">
+                              uds
+                            </span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => handleRemoveColorVariant(variant.id)}
                             className="text-on-surface-variant hover:text-error transition-colors"
+                            title="Remove color variant"
                           >
                             <span className="material-symbols-outlined text-[16px]">
                               delete

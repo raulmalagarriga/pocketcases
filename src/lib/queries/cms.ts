@@ -258,6 +258,41 @@ export async function saveProductToSupabase(
             sort_order: idx + 1,
           }))
         );
+
+        // Synchronize product_phone_models
+        const { data: phoneModels } = await supabase
+          .from("phone_models")
+          .select("id, name");
+
+        if (phoneModels && phoneModels.length > 0) {
+          await supabase
+            .from("product_phone_models")
+            .delete()
+            .eq("product_id", savedId);
+
+          const perModelStock = Math.max(
+            1,
+            Math.floor(
+              constructedProduct.total_stock /
+                Math.max(1, values.supported_models.length)
+            )
+          );
+
+          const modelRows = phoneModels
+            .filter((pm: { id: string; name: string }) =>
+              values.supported_models.includes(pm.name)
+            )
+            .map((pm: { id: string; name: string }) => ({
+              product_id: savedId,
+              phone_model_id: pm.id,
+              is_available: true,
+              stock_units: perModelStock,
+            }));
+
+          if (modelRows.length > 0) {
+            await supabase.from("product_phone_models").insert(modelRows);
+          }
+        }
       }
     } catch {
       // Fallback to local state persistence
@@ -266,3 +301,35 @@ export async function saveProductToSupabase(
 
   return constructedProduct;
 }
+
+export async function batchUpdateProductsInSupabase(
+  ids: string[],
+  patch: Record<string, unknown>
+): Promise<boolean> {
+  if (!isSupabaseConfigured() || ids.length === 0) return false;
+  const validIds = ids.filter((id) => !id.startsWith("prod-"));
+  if (validIds.length === 0) return false;
+
+  try {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("products")
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .in("id", validIds);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteProductInSupabase(id: string): Promise<boolean> {
+  if (!isSupabaseConfigured() || !id || id.startsWith("prod-")) return false;
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+

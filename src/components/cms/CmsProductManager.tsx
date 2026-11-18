@@ -7,6 +7,8 @@ import { AdminHeader } from "./AdminHeader";
 import { MetricsStrip } from "./MetricsStrip";
 import { ProductFormDrawer } from "./ProductFormDrawer";
 import {
+  batchUpdateProductsInSupabase,
+  deleteProductInSupabase,
   fetchCmsProducts,
   setLocalCachedProducts,
 } from "@/lib/queries/cms";
@@ -34,6 +36,23 @@ export function CmsProductManager({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+  };
+
+  useEffect(() => {
+    if (!toastMessage) return;
+    const timer = setTimeout(() => setToastMessage(null), 3500);
+    return () => clearTimeout(timer);
+  }, [toastMessage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter, stockFilter, visibilityFilter, pageSize]);
 
   useEffect(() => {
     const load = async () => {
@@ -144,6 +163,21 @@ export function CmsProductManager({
     visibilityFilter,
   ]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, safeCurrentPage, pageSize]);
+
+  const showingFrom =
+    filteredProducts.length === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1;
+  const showingTo = Math.min(
+    safeCurrentPage * pageSize,
+    filteredProducts.length
+  );
+
   const toggleSelectRow = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -188,38 +222,96 @@ export function CmsProductManager({
       updated_at: new Date().toISOString(),
     };
     persistProductsList([copy, ...products]);
+    showToast(`Producto duplicado: ${copy.sku}`);
+  };
+
+  const handleDeleteProduct = async (product: Product) => {
+    const next = products.filter((p) => p.id !== product.id);
+    persistProductsList(next);
+    setSelectedIds((prev) => prev.filter((id) => id !== product.id));
+    await deleteProductInSupabase(product.id);
+    showToast(`Producto eliminado del catálogo: ${product.sku}`);
   };
 
   // Batch Actions
-  const handleBatchChangeStatus = () => {
+  const handleBatchChangeStatus = async () => {
     if (selectedIds.length === 0) return;
-    const next = products.map((p) =>
-      selectedIds.includes(p.id)
-        ? {
-            ...p,
-            is_live: !p.is_live,
-            stock_status: (!p.is_live ? "in_stock" : "draft") as StockStatus,
-          }
-        : p
-    );
+    const toLiveIds: string[] = [];
+    const toDraftIds: string[] = [];
+
+    const next = products.map((p) => {
+      if (!selectedIds.includes(p.id)) return p;
+      const nextLive = !p.is_live;
+      if (nextLive) {
+        toLiveIds.push(p.id);
+      } else {
+        toDraftIds.push(p.id);
+      }
+      return {
+        ...p,
+        is_live: nextLive,
+        stock_status: (nextLive ? "in_stock" : "draft") as StockStatus,
+      };
+    });
+
     persistProductsList(next);
+    await Promise.all([
+      toLiveIds.length > 0
+        ? batchUpdateProductsInSupabase(toLiveIds, {
+            is_live: true,
+            stock_status: "in_stock",
+          })
+        : Promise.resolve(true),
+      toDraftIds.length > 0
+        ? batchUpdateProductsInSupabase(toDraftIds, {
+            is_live: false,
+            stock_status: "draft",
+          })
+        : Promise.resolve(true),
+    ]);
+    showToast(
+      `Actualizados ${selectedIds.length} productos en el catálogo (Estado)`
+    );
   };
 
-  const handleBatchDiscount = () => {
+  const handleBatchDiscount = async () => {
     if (selectedIds.length === 0) return;
-    const next = products.map((p) =>
-      selectedIds.includes(p.id)
-        ? {
-            ...p,
-            compare_at_price_usd: p.price_usd,
-            price_usd: Number((p.price_usd * 0.85).toFixed(2)),
-          }
-        : p
-    );
+    const discountedItems: {
+      id: string;
+      price_usd: number;
+      compare_at_price_usd: number;
+    }[] = [];
+
+    const next = products.map((p) => {
+      if (!selectedIds.includes(p.id)) return p;
+      const newPrice = Number((p.price_usd * 0.85).toFixed(2));
+      discountedItems.push({
+        id: p.id,
+        price_usd: newPrice,
+        compare_at_price_usd: p.price_usd,
+      });
+      return {
+        ...p,
+        compare_at_price_usd: p.price_usd,
+        price_usd: newPrice,
+      };
+    });
+
     persistProductsList(next);
+    await Promise.all(
+      discountedItems.map((item) =>
+        batchUpdateProductsInSupabase([item.id], {
+          price_usd: item.price_usd,
+          compare_at_price_usd: item.compare_at_price_usd,
+        })
+      )
+    );
+    showToast(
+      `Descuento (-15%) aplicado a ${selectedIds.length} productos en el catálogo`
+    );
   };
 
-  const handleBatchOutOfStock = () => {
+  const handleBatchOutOfStock = async () => {
     if (selectedIds.length === 0) return;
     const next = products.map((p) =>
       selectedIds.includes(p.id)
@@ -231,22 +323,25 @@ export function CmsProductManager({
         : p
     );
     persistProductsList(next);
+    await batchUpdateProductsInSupabase(selectedIds, {
+      total_stock: 0,
+      stock_status: "out_of_stock",
+    });
+    showToast(
+      `Marcados ${selectedIds.length} productos como Agotados (Out of Stock)`
+    );
   };
 
   const handleBatchDelete = async () => {
     if (selectedIds.length === 0) return;
-    const next = products.filter((p) => !selectedIds.includes(p.id));
+    const count = selectedIds.length;
+    const idsToDelete = [...selectedIds];
+    const next = products.filter((p) => !idsToDelete.includes(p.id));
     persistProductsList(next);
-
-    if (isSupabaseConfigured()) {
-      try {
-        const supabase = createClient();
-        await supabase.from("products").delete().in("id", selectedIds);
-      } catch {
-        // Ignore
-      }
-    }
     setSelectedIds([]);
+
+    await Promise.all(idsToDelete.map((id) => deleteProductInSupabase(id)));
+    showToast(`Eliminados ${count} productos del catálogo`);
   };
 
   return (
@@ -261,6 +356,11 @@ export function CmsProductManager({
         <AdminHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          products={products}
+          onSelectAlertProduct={(p) => {
+            setEditingProduct(p);
+            setDrawerOpen(true);
+          }}
         />
 
         <main className="relative pt-20 bg-background w-full px-space-lg">
@@ -484,7 +584,7 @@ export function CmsProductManager({
                   </thead>
 
                   <tbody className="divide-y-0 font-body-sm text-body-sm">
-                    {filteredProducts.map((product) => {
+                    {paginatedProducts.map((product) => {
                       const isSelected = selectedIds.includes(product.id);
                       const gmPercent =
                         product.price_usd > 0
@@ -779,6 +879,17 @@ export function CmsProductManager({
                                   content_copy
                                 </span>
                               </button>
+
+                              <button
+                                onClick={() => handleDeleteProduct(product)}
+                                className="p-1.5 rounded bg-surface-container text-on-surface hover:bg-error-container hover:text-on-error-container transition-colors"
+                                title="Delete Product"
+                                type="button"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">
+                                  delete
+                                </span>
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -792,39 +903,54 @@ export function CmsProductManager({
               <div className="flex flex-col sm:flex-row items-center justify-between px-space-md py-3 bg-surface-container-low border-t-0 gap-space-sm font-label-md text-label-md text-on-surface-variant">
                 <div className="flex items-center gap-2">
                   <span>
-                    Showing 1 to {filteredProducts.length} of {products.length}{" "}
-                    items
+                    Showing {showingFrom} to {showingTo} of{" "}
+                    {filteredProducts.length} items
                   </span>
-                  <select className="bg-surface-container-lowest text-on-surface rounded px-2 py-0.5 text-xs shadow-[1px_1px_0px_#2a3235] focus:outline-none">
-                    <option>10 per page</option>
-                    <option>25 per page</option>
-                    <option>50 per page</option>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value))}
+                    className="bg-surface-container-lowest text-on-surface rounded px-2 py-0.5 text-xs shadow-[1px_1px_0px_#2a3235] focus:outline-none cursor-pointer"
+                  >
+                    <option value={10}>10 per page</option>
+                    <option value={25}>25 per page</option>
+                    <option value={50}>50 per page</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
+                    disabled={safeCurrentPage <= 1}
                     className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high disabled:opacity-40"
-                    disabled
                     type="button"
                   >
                     <span className="material-symbols-outlined text-[18px]">
                       chevron_left
                     </span>
                   </button>
+                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+                    (pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-8 h-8 rounded flex items-center justify-center shadow-[1px_1px_0px_#2a3235] ${
+                          pageNum === safeCurrentPage
+                            ? "bg-primary text-on-primary font-bold"
+                            : "bg-surface-container-lowest text-on-surface hover:bg-surface-container-high"
+                        }`}
+                        type="button"
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  )}
                   <button
-                    className="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold shadow-[1px_1px_0px_#2a3235]"
-                    type="button"
-                  >
-                    1
-                  </button>
-                  <button
-                    className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high"
-                    type="button"
-                  >
-                    2
-                  </button>
-                  <button
-                    className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={safeCurrentPage >= totalPages}
+                    className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high disabled:opacity-40"
                     type="button"
                   >
                     <span className="material-symbols-outlined text-[18px]">
@@ -843,15 +969,38 @@ export function CmsProductManager({
               onSaved={(savedProduct, isNew) => {
                 if (isNew) {
                   persistProductsList([savedProduct, ...products]);
+                  showToast(`Producto creado: ${savedProduct.title}`);
                 } else {
                   persistProductsList(
                     products.map((p) =>
                       p.id === savedProduct.id ? savedProduct : p
                     )
                   );
+                  showToast(`Cambios guardados: ${savedProduct.title}`);
                 }
               }}
             />
+
+            {/* Toast Notification Banner */}
+            {toastMessage && (
+              <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-[3px_3px_0px_#2a3235] border border-outline-variant/40">
+                <span className="material-symbols-outlined text-tertiary-fixed text-[20px]">
+                  check_circle
+                </span>
+                <span className="font-label-md text-label-md font-bold">
+                  {toastMessage}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setToastMessage(null)}
+                  className="ml-2 text-inverse-on-surface/70 hover:text-inverse-on-surface"
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    close
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>
