@@ -5,6 +5,7 @@ import {
   INITIAL_STORE_SETTINGS,
   ALL_SUPPORTED_MODELS,
   normalizeStoreSettings,
+  normalizeProductColorVariants,
 } from "@/lib/seed-data";
 import { Product, StoreSettings } from "@/types/database";
 
@@ -49,11 +50,12 @@ export async function getStorefrontData(): Promise<{
     }
 
     const mappedProducts: Product[] = productsData.map((raw: Record<string, unknown>) => {
-      const variants = Array.isArray(raw.color_variants)
-        ? [...raw.color_variants].sort(
-            (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-          )
-        : [];
+      const variants = normalizeProductColorVariants(
+        Array.isArray(raw.color_variants) ? raw.color_variants : [],
+        String(raw.sku || raw.slug || ""),
+        String(raw.primary_image_url || ""),
+        Array.isArray(raw.gallery_urls) ? (raw.gallery_urls as string[]) : []
+      );
 
       const modelLinks = Array.isArray(raw.product_phone_models)
         ? raw.product_phone_models
@@ -122,11 +124,12 @@ export async function getProductBySlug(slug: string): Promise<{
         .maybeSingle();
 
       if (raw) {
-        const variants = Array.isArray(raw.color_variants)
-          ? [...raw.color_variants].sort(
-              (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-            )
-          : [];
+        const variants = normalizeProductColorVariants(
+          Array.isArray(raw.color_variants) ? raw.color_variants : [],
+          String(raw.sku || raw.slug || ""),
+          String(raw.primary_image_url || ""),
+          Array.isArray(raw.gallery_urls) ? (raw.gallery_urls as string[]) : []
+        );
         const modelLinks = Array.isArray(raw.product_phone_models)
           ? raw.product_phone_models
           : [];

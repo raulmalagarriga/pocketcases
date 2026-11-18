@@ -42,6 +42,7 @@ export function ProductCard({
       name: "Original",
       hex_code: "#F06292",
       sku_suffix: "-ORG",
+      image_url: product.primary_image_url,
     };
 
   const availableModels =
@@ -55,6 +56,8 @@ export function ProductCard({
     product.default_finish || "Grip Mate"
   );
   const [justAdded, setJustAdded] = useState(false);
+
+  const activeImageUrl = selectedColor?.image_url || product.primary_image_url;
 
   useEffect(() => {
     const models =
@@ -99,7 +102,7 @@ export function ProductCard({
         sku: `${product.sku}${selectedColor.sku_suffix}`,
         title: product.title,
         priceUsd: product.price_usd,
-        imageUrl: product.primary_image_url,
+        imageUrl: activeImageUrl,
         cardBgStyle: product.card_bg_style,
         deviceModel: selectedDevice,
         finish: selectedFinish,
@@ -153,9 +156,9 @@ export function ProductCard({
             className={`relative block w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm grayscale-[30%]`}
           >
             <img
-              alt={product.title}
+              alt={`${product.title} - ${selectedColor.name}`}
               className="w-full h-full object-cover rounded-DEFAULT transition-transform duration-300 group-hover:scale-105"
-              src={product.primary_image_url}
+              src={activeImageUrl}
             />
             <div className="absolute inset-0 bg-surface/40 backdrop-blur-[1px] flex items-center justify-center">
               <span className="bg-inverse-surface text-inverse-on-surface font-label-badge text-label-badge px-3 py-1 rounded-full shadow-[1px_1px_0px_#2a3235] uppercase font-bold">
@@ -300,9 +303,9 @@ export function ProductCard({
           }}
         >
           <img
-            alt={product.title}
+            alt={`${product.title} - ${selectedColor.name}`}
             className="w-full h-full object-cover rounded-DEFAULT transition-transform duration-300 group-hover:scale-105"
-            src={product.primary_image_url}
+            src={activeImageUrl}
           />
           {product.color_variants.length > 0 && (
             <span className="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur font-label-badge text-label-badge px-2 py-0.5 rounded-full text-on-surface font-bold inline-flex items-center gap-1.5 shadow-[1px_1px_0px_#2a3235] transition-all">

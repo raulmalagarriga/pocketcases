@@ -35,6 +35,7 @@ export interface ProductColorVariant {
   stock_units: number;
   is_default: boolean;
   sort_order: number;
+  image_url?: string | null;
 }
 
 export interface ProductPhoneModel {
@@ -109,6 +110,37 @@ export interface HeroBannerConfig {
   card_2: HeroShowcaseCard;
 }
 
+export interface SocialProofItem {
+  id: string;
+  image_url: string;
+  quote: string;
+  handle: string;
+  rating: number;
+}
+
+export interface SocialProofConfig {
+  enabled: boolean;
+  hashtag: string;
+  title: string;
+  subtitle: string;
+  cta_text: string;
+  cta_url: string;
+  items: SocialProofItem[];
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface FaqConfig {
+  enabled: boolean;
+  badge_text: string;
+  title: string;
+  items: FaqItem[];
+}
+
 export interface StoreSettings {
   id: number;
   store_name: string;
@@ -133,6 +165,8 @@ export interface StoreSettings {
     holder: string;
   };
   hero_config: HeroBannerConfig;
+  social_proof_config?: SocialProofConfig;
+  faq_config?: FaqConfig;
 }
 
 export interface CartItem {

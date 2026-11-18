@@ -120,20 +120,28 @@ export function Navbar({ settings, products }: NavbarProps) {
   };
 
   const handleNavClick = (path: string, href: string) => {
-    if (path !== "about") {
-      setActiveCategory(path);
-    }
-    if (pathname !== "/") {
-      router.push(`/${href}`);
+    if (path === "about") {
+      if (pathname !== "/") {
+        router.push(`/${href}`);
+        return;
+      }
+      smoothScrollTo(href);
       return;
     }
-    smoothScrollTo(href);
+
+    setActiveCategory(path);
+    if (pathname !== "/catalog") {
+      router.push("/catalog");
+      return;
+    }
+    smoothScrollTo("#product-catalog");
   };
 
   const handleViewAllSearchResults = () => {
     setIsSearchOpen(false);
-    if (pathname !== "/") {
-      router.push("/#product-catalog");
+    setActiveCategory("all");
+    if (pathname !== "/catalog") {
+      router.push("/catalog");
       return;
     }
     smoothScrollTo("#product-catalog");
@@ -159,7 +167,7 @@ export function Navbar({ settings, products }: NavbarProps) {
           <nav className="hidden lg:flex items-center gap-space-xs font-label-lg text-label-lg flex-nowrap whitespace-nowrap">
             {NAV_ITEMS.map((item) => {
               const isActive =
-                pathname === "/" &&
+                pathname === "/catalog" &&
                 ((item.path === "all" && activeCategory === "all") ||
                   (item.path !== "all" &&
                     item.path !== "about" &&

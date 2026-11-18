@@ -11,6 +11,7 @@ export const colorVariantSchema = z.object({
   stock_units: z.coerce.number().int().min(0, "El stock no puede ser negativo"),
   is_default: z.boolean().default(false),
   sort_order: z.number().int().default(0),
+  image_url: z.string().nullable().optional(),
 });
 
 export const productFormSchema = z.object({

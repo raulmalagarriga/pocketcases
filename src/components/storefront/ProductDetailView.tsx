@@ -70,8 +70,12 @@ export function ProductDetailView({
 
   const galleryImages = useMemo(() => {
     if (!product) return [];
+    const variantUrls = (product.color_variants || [])
+      .map((cv) => cv.image_url)
+      .filter((u): u is string => Boolean(u));
     const urls = [
       product.primary_image_url,
+      ...variantUrls,
       ...(product.gallery_urls || []),
     ].filter(Boolean);
     return Array.from(new Set(urls));
@@ -89,6 +93,7 @@ export function ProductDetailView({
         stock_units: 10,
         is_default: true,
         sort_order: 1,
+        image_url: "",
       };
     }
     return (
@@ -103,6 +108,7 @@ export function ProductDetailView({
         stock_units: product.total_stock,
         is_default: true,
         sort_order: 1,
+        image_url: product.primary_image_url,
       }
     );
   }, [product]);
@@ -128,11 +134,13 @@ export function ProductDetailView({
 
   useEffect(() => {
     if (product) {
-      setSelectedImage(product.primary_image_url);
-      setSelectedColor(
+      const initialVariant =
         product.color_variants.find((c) => c.is_default) ||
-          product.color_variants[0] ||
-          defaultColor
+        product.color_variants[0] ||
+        defaultColor;
+      setSelectedColor(initialVariant);
+      setSelectedImage(
+        initialVariant?.image_url || product.primary_image_url
       );
       const models =
         product.supported_models && product.supported_models.length > 0
@@ -217,7 +225,10 @@ export function ProductDetailView({
           sku: `${product.sku}${selectedColor.sku_suffix}`,
           title: product.title,
           priceUsd: product.price_usd,
-          imageUrl: selectedImage || product.primary_image_url,
+          imageUrl:
+            selectedColor?.image_url ||
+            selectedImage ||
+            product.primary_image_url,
           cardBgStyle: product.card_bg_style,
           deviceModel: selectedDevice,
           finish: selectedFinish,
@@ -272,7 +283,7 @@ export function ProductDetailView({
           </Link>
           <span>/</span>
           <Link
-            href="/#product-catalog"
+            href="/catalog"
             className="hover:text-primary transition-colors"
           >
             Colección
@@ -286,7 +297,7 @@ export function ProductDetailView({
         </nav>
 
         <Link
-          href="/#product-catalog"
+          href="/catalog"
           className="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md font-bold shadow-[2px_2px_0px_#2a3235] hover:bg-primary-fixed/40 transition-all"
         >
           <span className="material-symbols-outlined text-[16px]">
@@ -535,7 +546,12 @@ export function ProductDetailView({
                     <button
                       key={variant.id}
                       type="button"
-                      onClick={() => setSelectedColor(variant)}
+                      onClick={() => {
+                        setSelectedColor(variant);
+                        setSelectedImage(
+                          variant.image_url || product.primary_image_url
+                        );
+                      }}
                       className={`flex items-center gap-2 px-3 py-2 rounded-full font-label-md text-label-md transition-all cursor-pointer ${
                         isSelected
                           ? "bg-primary-fixed text-on-primary-fixed font-extrabold ring-2 ring-primary shadow-[2px_2px_0px_#2a3235]"
@@ -765,7 +781,7 @@ export function ProductDetailView({
                 </h2>
               </div>
               <Link
-                href="/#product-catalog"
+                href="/catalog"
                 className="font-label-lg text-label-md text-primary font-bold hover:underline flex items-center gap-1"
               >
                 <span>Ver todo el catálogo</span>

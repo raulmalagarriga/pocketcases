@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
 import { getLocalCachedSettings } from "@/lib/queries/cms";
@@ -11,6 +12,8 @@ interface FooterProps {
 }
 
 export function Footer({ settings }: FooterProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
   const [liveLogoUrl, setLiveLogoUrl] = useState<string>(
@@ -40,6 +43,10 @@ export function Footer({ settings }: FooterProps) {
     e.preventDefault();
     setActiveCategory(category);
     setSearchQuery("");
+    if (pathname !== "/catalog") {
+      router.push("/catalog");
+      return;
+    }
     smoothScrollTo("#product-catalog");
   };
 
@@ -48,6 +55,10 @@ export function Footer({ settings }: FooterProps) {
     selector: string
   ) => {
     e.preventDefault();
+    if (pathname !== "/") {
+      router.push(`/${selector}`);
+      return;
+    }
     smoothScrollTo(selector);
   };
 
@@ -105,7 +116,7 @@ export function Footer({ settings }: FooterProps) {
               <ul className="space-y-space-xs font-body-md text-body-md text-on-surface-variant">
                 <li className="hover:text-primary transition-colors">
                   <a
-                    href="#product-catalog"
+                    href="/catalog"
                     onClick={(e) => handleCategoryClick(e, "iphone")}
                   >
                     Serie iPhone 16
@@ -113,7 +124,7 @@ export function Footer({ settings }: FooterProps) {
                 </li>
                 <li className="hover:text-primary transition-colors">
                   <a
-                    href="#product-catalog"
+                    href="/catalog"
                     onClick={(e) => handleCategoryClick(e, "magsafe")}
                   >
                     Grips MagSafe
@@ -121,7 +132,7 @@ export function Footer({ settings }: FooterProps) {
                 </li>
                 <li className="hover:text-primary transition-colors">
                   <a
-                    href="#product-catalog"
+                    href="/catalog"
                     onClick={(e) => handleCategoryClick(e, "collabs")}
                   >
                     Charms y Accesorios
@@ -129,7 +140,7 @@ export function Footer({ settings }: FooterProps) {
                 </li>
                 <li className="hover:text-primary transition-colors">
                   <a
-                    href="#product-catalog"
+                    href="/catalog"
                     onClick={(e) => handleCategoryClick(e, "slim")}
                   >
                     Fundas AirPods
@@ -137,7 +148,7 @@ export function Footer({ settings }: FooterProps) {
                 </li>
                 <li className="hover:text-primary transition-colors">
                   <a
-                    href="#product-catalog"
+                    href="/catalog"
                     onClick={(e) => handleCategoryClick(e, "all")}
                   >
                     Tarjetas de Regalo

@@ -4,7 +4,7 @@ import { Navbar } from "@/components/storefront/Navbar";
 import { TopMarquee } from "@/components/storefront/TopMarquee";
 import { HeroSection } from "@/components/storefront/HeroSection";
 import { TrustMetricsBar } from "@/components/storefront/TrustMetricsBar";
-import { ProductCatalog } from "@/components/storefront/ProductCatalog";
+import { FeaturedProductsCarousel } from "@/components/storefront/FeaturedProductsCarousel";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { SocialProofReel } from "@/components/storefront/SocialProofReel";
 import { FaqSection } from "@/components/storefront/FaqSection";
@@ -23,10 +23,10 @@ export default async function StorefrontPage() {
           <TopMarquee />
           <HeroSection settings={settings} />
           <TrustMetricsBar />
-          <ProductCatalog initialProducts={products} settings={settings} />
+          <FeaturedProductsCarousel products={products} settings={settings} />
           <CartDrawer settings={settings} />
-          <SocialProofReel />
-          <FaqSection />
+          <SocialProofReel settings={settings} />
+          <FaqSection settings={settings} />
         </div>
       </main>
       <Footer settings={settings} />

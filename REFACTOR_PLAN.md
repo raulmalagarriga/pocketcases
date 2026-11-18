@@ -92,6 +92,30 @@
   4. **Configuración Completa de la Barra de Delivery Gratis y Regalo en el Carrito (`CartDrawer.tsx` y `StoreSettingsView.tsx`)**:
      - Permitir activar/desactivar (`enable_free_shipping_bar`) o personalizar los textos (`free_shipping_locked_text`, `free_shipping_unlocked_text`), monto mínimo (`free_shipping_threshold_usd`) y tarifa plana (`shipping_flat_rate_usd`) de la barra de delivery gratis del carrito, así como activar/desactivar o editar el banner de regalo (`enable_free_gift_banner`, `free_gift_text`).
 
+### FASE R7: Landing con Carrusel de Destacados, Página `/catalog` Independiente, Imagen Propia por Variante de Color, Social Proof y FAQs Configurables (Cerradas por Defecto)
+- **Estado**: `COMPLETADA ✅`
+- **Alcance**:
+  1. **Imagen Distinta por Variante de Color (`image_url` en `ProductColorVariant`)**:
+     - Añadir `image_url: string` a `ProductColorVariant` y migración SQL `supabase/migrations/0004_variants_images_and_landing_configs.sql`.
+     - Al seleccionar un swatch de color en cualquier tarjeta o detalle de producto, cambiar inmediatamente la foto mostrada por `selectedColor.image_url` y guardarla en el carrito.
+  2. **Landing Principal con Más Respiro (`FeaturedProductsCarousel.tsx`) + Nueva Página `/catalog`**:
+     - En la Landing (`/`), mostrar únicamente un carrusel horizontal de productos destacados con controles Anterior/Siguiente y CTA hacia `/catalog`.
+     - Mover el catálogo completo con filtros y ordenamiento a su propia página dedicada `/catalog`.
+  3. **Preguntas Frecuentes (FAQ) Cerradas por Defecto y Configurables (`faq_config`)**:
+     - Iniciar los acordeones cerrados por defecto (`openIds = []`) y conectarlos a `settings.faq_config`.
+  4. **Sección `#POCKETCASESENLACALLE` (`SocialProofReel.tsx`) Configurable (`social_proof_config`)**:
+     - Conectar `SocialProofReel.tsx` a `settings.social_proof_config`.
+
+### FASE R8: Rediseño Visual Limpio del Admin CMS (Alineación de Inputs, Drawer con Imagen por Variante y Editor de Social Proof + FAQs)
+- **Estado**: `EN PROGRESO`
+- **Alcance**:
+  1. **Limpieza Visual y Alineación Estricta en el CMS**:
+     - Sistema uniforme de inputs (`h-10`, bordes limpios `border-slate-200`, etiquetas alineadas, eliminación de sombras pesadas en inputs internos) y ocultación de la barra de acciones por lote cuando no hay filas seleccionadas (`selectedIds = []` por defecto).
+  2. **Rediseño de `ProductFormDrawer.tsx` en 3 Pestañas Limpias + Subida de Imagen por Variante de Color**:
+     - Pestañas: `1. Información y Precios`, `2. Variantes de Color e Imágenes` (con foto individual subible por cada variante de color) y `3. Modelos e Inventario`.
+  3. **Rediseño de `StoreSettingsView.tsx` en 4 Pestañas Limpias**:
+     - `1. Marca, Moneda BCV y Pagos`, `2. Envíos y Carrito`, `3. Banner Principal (Hero)` y `4. Social Proof (#EnLaCalle) y FAQs`.
+
 ---
 
 ## Registro de Progreso y Commits
@@ -103,4 +127,6 @@
 | **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | `0b63f34` |
 | **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | `f945274` |
 | **FASE R5** | ✅ Completada | Subagente `68bc5611` | `tsc --noEmit` OK (0 errores) | `1398207` |
-| **FASE R6** | ✅ Completada | Subagente `639bd27b` | `tsc --noEmit` OK (0 errores) | Commit Fase R6 |
+| **FASE R6** | ✅ Completada | Subagente `639bd27b` | `tsc --noEmit` OK (0 errores) | `9468b62` |
+| **FASE R7** | ✅ Completada | Subagente `00f8909b` | `tsc --noEmit` OK (0 errores) | Commit Fase R7 |
+| **FASE R8** | 🔄 En progreso | — | — | — |

@@ -4,6 +4,7 @@ import {
   ALL_SUPPORTED_MODELS,
   INITIAL_STORE_SETTINGS,
   normalizeStoreSettings,
+  normalizeProductColorVariants,
 } from "@/lib/seed-data";
 import {
   Order,
@@ -214,11 +215,12 @@ export async function fetchCmsProducts(): Promise<Product[]> {
     }
 
     return data.map((raw: Record<string, unknown>) => {
-      const variants = Array.isArray(raw.color_variants)
-        ? [...raw.color_variants].sort(
-            (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-          )
-        : [];
+      const variants = normalizeProductColorVariants(
+        Array.isArray(raw.color_variants) ? raw.color_variants : [],
+        String(raw.sku || raw.slug || ""),
+        String(raw.primary_image_url || ""),
+        Array.isArray(raw.gallery_urls) ? (raw.gallery_urls as string[]) : []
+      );
       const modelLinks = Array.isArray(raw.product_phone_models)
         ? raw.product_phone_models
         : [];
@@ -347,13 +349,18 @@ export async function saveProductToSupabase(
     created_at: existingProduct?.created_at || now,
     updated_at: now,
     supported_models: values.supported_models,
-    color_variants: values.color_variants.map((cv, idx) => ({
-      ...cv,
-      product_id: productId,
-      name_en: cv.name_en || cv.name,
-      is_default: idx === 0,
-      sort_order: idx + 1,
-    })),
+    color_variants: normalizeProductColorVariants(
+      values.color_variants.map((cv, idx) => ({
+        ...cv,
+        product_id: productId,
+        name_en: cv.name_en || cv.name,
+        is_default: idx === 0,
+        sort_order: idx + 1,
+      })),
+      values.sku.toUpperCase(),
+      values.primary_image_url,
+      values.gallery_urls
+    ),
   };
 
   if (isSupabaseConfigured()) {
@@ -415,6 +422,7 @@ export async function saveProductToSupabase(
             stock_units: cv.stock_units,
             is_default: idx === 0,
             sort_order: idx + 1,
+            image_url: cv.image_url || constructedProduct.primary_image_url,
           }))
         );
 
@@ -803,6 +811,8 @@ export async function saveStoreSettingsToSupabase(
           free_shipping_unlocked_text: normalized.free_shipping_unlocked_text,
           enable_free_gift_banner: normalized.enable_free_gift_banner,
           free_gift_text: normalized.free_gift_text,
+          social_proof_config: normalized.social_proof_config,
+          faq_config: normalized.faq_config,
         },
         { onConflict: "id" }
       );

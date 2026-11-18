@@ -1,17 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
 import { DEFAULT_HERO_CONFIG } from "@/lib/seed-data";
 import { getLocalCachedSettings } from "@/lib/queries/cms";
-import { ScrollReveal, smoothScrollTo } from "@/components/ui/ScrollReveal";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface HeroSectionProps {
   settings: StoreSettings;
 }
 
 export function HeroSection({ settings }: HeroSectionProps) {
+  const router = useRouter();
   const { setActiveCategory, setSearchQuery } = useCartStore();
   const [liveSettings, setLiveSettings] = useState<StoreSettings>(settings);
 
@@ -33,8 +35,10 @@ export function HeroSection({ settings }: HeroSectionProps) {
   const card1 = hero.card_1 || DEFAULT_HERO_CONFIG.card_1;
   const card2 = hero.card_2 || DEFAULT_HERO_CONFIG.card_2;
 
-  const scrollToCatalog = () => {
-    smoothScrollTo("#product-catalog");
+  const navigateToCatalog = (category: string, keyword = "") => {
+    setActiveCategory(category);
+    setSearchQuery(keyword);
+    router.push("/catalog");
   };
 
   return (
@@ -113,27 +117,23 @@ export function HeroSection({ settings }: HeroSectionProps) {
             <a
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory("all");
-                setSearchQuery("");
-                scrollToCatalog();
+                navigateToCatalog("all", "");
               }}
               className="w-full sm:w-auto text-center px-space-xl py-3.5 bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-[3px_3px_0px_#2a3235] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#2a3235] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
-              href="#product-catalog"
+              href="/catalog"
             >
               <span>{hero.primary_cta_text}</span>
               <span className="material-symbols-outlined text-[20px]">
-                arrow_downward
+                arrow_forward
               </span>
             </a>
             <a
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory("magsafe");
-                setSearchQuery("");
-                scrollToCatalog();
+                navigateToCatalog("magsafe", "");
               }}
               className="w-full sm:w-auto text-center px-space-lg py-3.5 bg-surface-container-lowest text-primary font-label-lg text-label-lg rounded-full shadow-[3px_3px_0px_#2a3235] hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center justify-center gap-2"
-              href="#product-catalog"
+              href="/catalog"
             >
               <span className="material-symbols-outlined text-[20px]">
                 trip_origin
@@ -194,12 +194,13 @@ export function HeroSection({ settings }: HeroSectionProps) {
           <div className="relative w-full max-w-lg grid grid-cols-2 gap-space-md p-space-md bg-surface-container-lowest rounded-xl shadow-[4px_4px_0px_#2a3235]">
             {/* Card Mockup 1 */}
             <a
-              href="#product-catalog"
+              href="/catalog"
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory(card1.category_filter || "all");
-                setSearchQuery(card1.search_keyword || "");
-                scrollToCatalog();
+                navigateToCatalog(
+                  card1.category_filter || "all",
+                  card1.search_keyword || ""
+                );
               }}
               className="group relative rounded-lg overflow-hidden bg-primary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235]"
             >
@@ -223,12 +224,13 @@ export function HeroSection({ settings }: HeroSectionProps) {
 
             {/* Card Mockup 2 */}
             <a
-              href="#product-catalog"
+              href="/catalog"
               onClick={(e) => {
                 e.preventDefault();
-                setActiveCategory(card2.category_filter || "magsafe");
-                setSearchQuery(card2.search_keyword || "");
-                scrollToCatalog();
+                navigateToCatalog(
+                  card2.category_filter || "magsafe",
+                  card2.search_keyword || ""
+                );
               }}
               className="group relative rounded-lg overflow-hidden bg-secondary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235] mt-6"
             >

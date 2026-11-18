@@ -1,50 +1,40 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SocialProofConfig, StoreSettings } from "@/types/database";
+import { DEFAULT_SOCIAL_PROOF_CONFIG } from "@/lib/seed-data";
+import { getLocalCachedSettings } from "@/lib/queries/cms";
 
-const REELS = [
-  {
-    id: 1,
-    imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD_zRR7YhS3NVSrRBKEYa6u5_hHGnxMc89pxY3TZmfInVmov4-BsJusIpXe-637MsyZ7ouClHeYY_VTvrR1nC8V4eXctFAEScoW5ZuAkSrcGM3amrwmVfHZTO2HMktxplQ_2ctL0dCmr1j-TwDssKwSHHHMYPctCJ5v9gu_0vJrUpcacIDPE5NCs8SaKE0tIqId9aO3EG-QIspO_DufqPrg5wfEb3Y2sF_9iZpCeA",
-    alt: "Customer aesthetic mirror selfie wearing oversized pastel knit sweater holding iPhone with Strawberry Milkshake wavy case in modern sunny apartment",
-    quote:
-      '"¡Se me cayó bajando las escaleras y ni un solo rasguño! Es demasiado bella."',
-    handle: "@mia.in.ccs • Compradora Verificada",
-    badgeClass: "text-primary-fixed",
-  },
-  {
-    id: 2,
-    imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDKUmmJnRbu6TGrqwvH5KeQLWpDJhOta1805Mls64d2lTsZZIcIt9rfNOu9-XncnKywOLQH6GbPnrffG5OKsGyFPr0K3dSDCE-FNB-FniG43qh0o-vEkdHsqM1FT03b-B8I2BkO8tLmmyrkuVhdTN521HwcZKa3CtFROR87H9NaCx0PrLrbc-rpS-UdZv46sfTumUSVsL-M2EtuDB1G1ipk9smmCuG41vl5wjvjtA",
-    alt: "Close up aesthetic flat lay photo of girl desk setup with Matcha swirl phone case, matcha latte cup, mechanical pastel keyboard and sunglasses",
-    quote:
-      '"El agarre se siente supersuave y el MagSafe pega con muchísima fuerza."',
-    handle: "@chloe.designs • Compradora Verificada",
-    badgeClass: "text-tertiary-fixed",
-  },
-  {
-    id: 3,
-    imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBQauvziJMfircGLEHl-2Pw8Z4b3055oiSSx2unBQspDaU7sykP1aQo8aeaGC1ZNWLRlffEz-cr2075uxYuQM28_pH96-drzReRZtZvSlYE4QABxKFMTEafgbNodyHBwsH3lDI-6t9qbmfc2ICanwTBmOEg3b9nCCrGh7WFEMF_Q_jf_CvWEQfUbBwPgtgaNvqgn3IhjZAhapzNENlYpisTodS45DCT5c2KQ25zng",
-    alt: "Cool trendy Gen Z girl holding phone with retro floral groovy case against a colorful vintage wall in Soho New York",
-    quote:
-      '"Pagué por WhatsApp y el delivery me llegó rapidísimo, brutal el servicio."',
-    handle: "@elena_k • Compradora Verificada",
-    badgeClass: "text-primary-fixed",
-  },
-  {
-    id: 4,
-    imageUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD6OodEXL_Z6-BjsHPK6RVu5nf0PIBXVIMdjBuixeeraJLFqnIqYhniefgyYHm8PxjOB54XFtPG1CocgRFenTwg_tZ2EnmUfF6ZNoLZZbX_1EAzMfB22P7mN44qIl-vTqv_cTPuvessAqqfU5kPQxbrb3Io5YV7DQPH1awOiAu0u-2Ehr1J-Ylhvbl9xxK0nK7ibXGDNFANMxFMiUmqxFaSGLAOJyun5flYwN1IoA",
-    alt: "Sunlit aesthetic rooftop photo holding chrome mirror sorbet phone case showing vibrant colorful reflections of city skyline",
-    quote:
-      '"El espejo de atrás es tan nítido que me sirve para retocarme el maquillaje. Obsesionada."',
-    handle: "@hannah.rooftop • Compradora Verificada",
-    badgeClass: "text-tertiary-fixed",
-  },
-];
+interface SocialProofReelProps {
+  settings?: StoreSettings;
+}
 
-export function SocialProofReel() {
+export function SocialProofReel({ settings }: SocialProofReelProps) {
+  const [socialConfig, setSocialConfig] = useState<SocialProofConfig>(
+    settings?.social_proof_config || DEFAULT_SOCIAL_PROOF_CONFIG
+  );
+
+  useEffect(() => {
+    const cached = getLocalCachedSettings();
+    const resolved =
+      cached?.social_proof_config ||
+      settings?.social_proof_config ||
+      DEFAULT_SOCIAL_PROOF_CONFIG;
+    setSocialConfig({
+      ...DEFAULT_SOCIAL_PROOF_CONFIG,
+      ...resolved,
+      items:
+        Array.isArray(resolved.items) && resolved.items.length > 0
+          ? resolved.items
+          : DEFAULT_SOCIAL_PROOF_CONFIG.items,
+    });
+  }, [settings]);
+
+  if (socialConfig.enabled === false) {
+    return null;
+  }
+
   return (
     <section
       id="social-proof"
@@ -57,27 +47,26 @@ export function SocialProofReel() {
               <span className="material-symbols-outlined text-[14px]">
                 photo_camera
               </span>{" "}
-              #POCKETCASESENLACALLE
+              {socialConfig.hashtag}
             </span>
             <h2 className="font-headline-lg text-headline-lg text-on-surface">
-              En la Calle con Pocket Cases
+              {socialConfig.title}
             </h2>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Fotos reales compartidas por nuestra comunidad en Caracas, Lechería,
-              Maracaibo y más.
+              {socialConfig.subtitle}
             </p>
           </div>
           <div className="flex items-center gap-space-sm">
             <a
               className="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-primary-fixed transition-all flex items-center gap-1.5"
-              href="https://instagram.com"
+              href={socialConfig.cta_url || "https://instagram.com"}
               rel="noopener noreferrer"
               target="_blank"
             >
               <span className="material-symbols-outlined text-[18px]">
                 photo_camera
               </span>
-              <span>Etiqueta a @pocketcases para aparecer</span>
+              <span>{socialConfig.cta_text}</span>
             </a>
           </div>
         </div>
@@ -85,45 +74,50 @@ export function SocialProofReel() {
 
       {/* 4-Card Photo Reel Carousel Preview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-space-md">
-        {REELS.map((reel, idx) => (
-          <ScrollReveal
-            key={reel.id}
-            direction="scale"
-            delayMs={idx * 100}
-            className="h-full"
-          >
-            <div className="group relative rounded-lg overflow-hidden bg-surface-container shadow-[3px_3px_0px_#2a3235] h-full">
-              <div className="aspect-[4/5] w-full overflow-hidden">
-                <img
-                  alt={reel.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  src={reel.imageUrl}
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-space-md text-white">
-                <div className="flex items-center gap-1 text-[#f59e0b] text-[14px] mb-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className="material-symbols-outlined text-[14px]"
-                      style={{ fontVariationSettings: "'FILL' 1" }}
-                    >
-                      star
-                    </span>
-                  ))}
+        {socialConfig.items.map((reel, idx) => {
+          const badgeClass =
+            idx % 2 === 0 ? "text-primary-fixed" : "text-tertiary-fixed";
+          const starCount = Math.max(1, Math.min(5, Number(reel.rating || 5)));
+          return (
+            <ScrollReveal
+              key={reel.id || `reel-${idx}`}
+              direction="scale"
+              delayMs={idx * 100}
+              className="h-full"
+            >
+              <div className="group relative rounded-lg overflow-hidden bg-surface-container shadow-[3px_3px_0px_#2a3235] h-full">
+                <div className="aspect-[4/5] w-full overflow-hidden">
+                  <img
+                    alt={reel.handle}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    src={reel.image_url}
+                  />
                 </div>
-                <p className="font-body-sm text-body-sm font-semibold text-white line-clamp-2">
-                  {reel.quote}
-                </p>
-                <span
-                  className={`font-label-badge text-label-badge ${reel.badgeClass} mt-1`}
-                >
-                  {reel.handle}
-                </span>
+                <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-end p-space-md text-white">
+                  <div className="flex items-center gap-1 text-[#f59e0b] text-[14px] mb-1">
+                    {Array.from({ length: starCount }).map((_, starIdx) => (
+                      <span
+                        key={starIdx}
+                        className="material-symbols-outlined text-[14px]"
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        star
+                      </span>
+                    ))}
+                  </div>
+                  <p className="font-body-sm text-body-sm font-semibold text-white line-clamp-2">
+                    {reel.quote}
+                  </p>
+                  <span
+                    className={`font-label-badge text-label-badge ${badgeClass} mt-1`}
+                  >
+                    {reel.handle}
+                  </span>
+                </div>
               </div>
-            </div>
-          </ScrollReveal>
-        ))}
+            </ScrollReveal>
+          );
+        })}
       </div>
     </section>
   );

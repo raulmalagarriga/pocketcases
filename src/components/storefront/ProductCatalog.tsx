@@ -6,7 +6,10 @@ import { ProductCard } from "./ProductCard";
 import { WaitlistModal } from "./WaitlistModal";
 import { useCartStore } from "@/store/useCartStore";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import { ALL_SUPPORTED_MODELS } from "@/lib/seed-data";
+import {
+  ALL_SUPPORTED_MODELS,
+  normalizeProductColorVariants,
+} from "@/lib/seed-data";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface ProductCatalogProps {
@@ -79,11 +82,14 @@ export function ProductCatalog({
                 ? Number(raw.compare_at_price_usd)
                 : null,
             cost_usd: Number(raw.cost_usd ?? 0),
-            color_variants: Array.isArray(raw.color_variants)
-              ? [...raw.color_variants].sort(
-                  (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-                )
-              : [],
+            color_variants: normalizeProductColorVariants(
+              Array.isArray(raw.color_variants) ? raw.color_variants : [],
+              String(raw.sku || raw.slug || ""),
+              String(raw.primary_image_url || ""),
+              Array.isArray(raw.gallery_urls)
+                ? (raw.gallery_urls as string[])
+                : []
+            ),
             supported_models:
               supportedModels.length > 0
                 ? supportedModels
