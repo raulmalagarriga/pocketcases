@@ -118,6 +118,11 @@ export interface StoreSettings {
   show_ves_reference: boolean;
   free_shipping_threshold_usd: number;
   shipping_flat_rate_usd: number;
+  enable_free_shipping_bar?: boolean;
+  free_shipping_locked_text?: string;
+  free_shipping_unlocked_text?: string;
+  enable_free_gift_banner?: boolean;
+  free_gift_text?: string;
   pago_movil_details: {
     bank: string;
     phone: string;

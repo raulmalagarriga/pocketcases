@@ -57,11 +57,14 @@ export function Footer({ settings }: FooterProps) {
         <ScrollReveal direction="up">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl pb-space-2xl">
             <div className="lg:col-span-2 space-y-space-md">
-              <div className="flex items-center">
+              <div className="flex items-center shrink-0">
                 <img
                   alt={settings?.store_name || "Pocket Cases"}
-                  className="h-11 w-auto object-contain rounded-lg shadow-[2px_2px_0px_#2a3235]"
+                  className="h-12 w-[124px] shrink-0 object-contain rounded-lg shadow-[2px_2px_0px_#2a3235] bg-[#d8f3c8]"
                   src={liveLogoUrl || "/logo.png"}
+                  onError={(e) => {
+                    e.currentTarget.src = "/logo.png";
+                  }}
                 />
               </div>
               <p className="font-body-md text-body-md text-on-surface-variant max-w-sm">

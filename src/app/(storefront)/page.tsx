@@ -17,7 +17,7 @@ export default async function StorefrontPage() {
 
   return (
     <>
-      <Navbar settings={settings} />
+      <Navbar settings={settings} products={products} />
       <main className="w-full bg-background">
         <div className="flex flex-col w-full">
           <TopMarquee />

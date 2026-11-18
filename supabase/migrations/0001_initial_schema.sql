@@ -115,6 +115,11 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
   show_ves_reference BOOLEAN NOT NULL DEFAULT TRUE,
   free_shipping_threshold_usd NUMERIC(10, 2) NOT NULL DEFAULT 35.00,
   shipping_flat_rate_usd NUMERIC(10, 2) NOT NULL DEFAULT 4.00,
+  enable_free_shipping_bar BOOLEAN NOT NULL DEFAULT TRUE,
+  free_shipping_locked_text TEXT NOT NULL DEFAULT '¡Agrega {amount} más para envío GRATIS!',
+  free_shipping_unlocked_text TEXT NOT NULL DEFAULT '¡Desbloqueaste envío GRATIS a nivel nacional!',
+  enable_free_gift_banner BOOLEAN NOT NULL DEFAULT TRUE,
+  free_gift_text TEXT NOT NULL DEFAULT '¡Charm de regalo incluido!',
   pago_movil_details JSONB NOT NULL DEFAULT '{"bank": "Banesco (0134)", "phone": "0412-0000000", "rif": "J-50123456-0"}'::JSONB,
   zelle_details JSONB NOT NULL DEFAULT '{"email": "pagos@pocketcases.co", "holder": "Pocket Cases Inc."}'::JSONB,
   hero_config JSONB NOT NULL DEFAULT '{

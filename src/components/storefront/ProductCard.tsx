@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { Product, StoreSettings } from "@/types/database";
 import { DEFAULT_CARD_MODELS } from "@/lib/seed-data";
 import { useCartStore } from "@/store/useCartStore";
@@ -147,12 +148,13 @@ export function ProductCard({
             </button>
           </div>
 
-          <div
-            className={`relative w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm grayscale-[30%]`}
+          <Link
+            href={`/products/${product.slug}`}
+            className={`relative block w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm grayscale-[30%]`}
           >
             <img
               alt={product.title}
-              className="w-full h-full object-cover rounded-DEFAULT"
+              className="w-full h-full object-cover rounded-DEFAULT transition-transform duration-300 group-hover:scale-105"
               src={product.primary_image_url}
             />
             <div className="absolute inset-0 bg-surface/40 backdrop-blur-[1px] flex items-center justify-center">
@@ -160,12 +162,23 @@ export function ProductCard({
                 {product.restock_badge_text || "Vuelve en 3 días"}
               </span>
             </div>
-          </div>
+          </Link>
 
           <div className="space-y-1">
-            <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
-              {product.title}
-            </h3>
+            <div className="flex items-start justify-between gap-2">
+              <Link
+                href={`/products/${product.slug}`}
+                className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors font-bold leading-tight"
+              >
+                {product.title}
+              </Link>
+              <Link
+                href={`/products/${product.slug}`}
+                className="font-label-badge text-[10px] text-primary font-bold hover:underline shrink-0 pt-0.5"
+              >
+                Ver →
+              </Link>
+            </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
               {product.subtitle}
             </p>
@@ -279,8 +292,9 @@ export function ProductCard({
         </div>
 
         {/* Image Container with Pastel Background */}
-        <div
-          className={`relative w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm transition-all duration-300`}
+        <Link
+          href={`/products/${product.slug}`}
+          className={`relative block w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm transition-all duration-300`}
           style={{
             boxShadow: `inset 0 0 0 2px ${selectedColor.hex_code}80`,
           }}
@@ -302,13 +316,24 @@ export function ProductCard({
           <span className="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur font-label-badge text-label-badge px-2 py-0.5 rounded-full text-on-surface font-bold">
             {product.category_badge}
           </span>
-        </div>
+        </Link>
 
         {/* Product Details */}
         <div className="space-y-1">
-          <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">
-            {product.title}
-          </h3>
+          <div className="flex items-start justify-between gap-2">
+            <Link
+              href={`/products/${product.slug}`}
+              className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors font-bold leading-tight"
+            >
+              {product.title}
+            </Link>
+            <Link
+              href={`/products/${product.slug}`}
+              className="font-label-badge text-[10px] text-primary font-bold hover:underline shrink-0 pt-0.5"
+            >
+              Ver →
+            </Link>
+          </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             {product.subtitle}
           </p>

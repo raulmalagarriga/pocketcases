@@ -268,8 +268,11 @@ export function StoreSettingsView({
                 <div className="p-3 bg-surface-container-lowest rounded-xl shadow-[2px_2px_0px_#2a3235] flex items-center justify-center">
                   <img
                     src={formState.logo_url || "/logo.png"}
+                    onError={(e) => {
+                      e.currentTarget.src = "/logo.png";
+                    }}
                     alt={formState.store_name || "Pocket Cases"}
-                    className="h-14 w-auto object-contain rounded-lg"
+                    className="h-14 w-auto object-contain rounded-lg shrink-0"
                   />
                 </div>
               </div>
@@ -553,10 +556,11 @@ export function StoreSettingsView({
               </div>
               <div>
                 <h2 className="font-headline-sm text-headline-sm text-on-surface font-extrabold">
-                  Cuenta Zelle &amp; Envíos Nacionales (MRW / Zoom)
+                  Cuenta Zelle &amp; Envíos Nacionales (MRW / Zoom / Delivery)
                 </h2>
                 <p className="font-label-badge text-[11px] text-on-surface-variant">
-                  Pagos en divisas y reglas de envío gratis en toda Venezuela
+                  Pagos en divisas y configuración de barra de delivery gratis /
+                  regalo en el carrito
                 </p>
               </div>
             </div>
@@ -605,10 +609,35 @@ export function StoreSettingsView({
               </div>
             </div>
 
+            {/* Toggle: Mostrar Barra de Envío Gratis en el Carrito */}
+            <label className="flex items-center justify-between p-3 rounded-lg bg-secondary-fixed/40 cursor-pointer shadow-[1px_1px_0px_#2a3235] mt-1">
+              <div className="pr-3">
+                <span className="font-label-md text-label-md text-on-surface font-bold block">
+                  Mostrar Barra de Envío Gratis en el Carrito (
+                  <code className="text-xs">enable_free_shipping_bar</code>)
+                </span>
+                <span className="font-label-badge text-[11px] text-on-surface-variant">
+                  Si lo desactivas, se oculta la barra verde de progreso de
+                  delivery gratis en el carrito
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={formState.enable_free_shipping_bar !== false}
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    enable_free_shipping_bar: e.target.checked,
+                  })
+                }
+                className="w-5 h-5 accent-primary rounded cursor-pointer shrink-0"
+              />
+            </label>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-1">
               <div>
                 <label className="block font-label-badge text-label-badge text-on-surface-variant uppercase mb-1.5">
-                  Meta de Envío Gratis ($ USD)
+                  Monto mínimo para Envío Gratis ($ USD)
                 </label>
                 <input
                   type="number"
@@ -627,7 +656,7 @@ export function StoreSettingsView({
 
               <div>
                 <label className="block font-label-badge text-label-badge text-on-surface-variant uppercase mb-1.5">
-                  Tarifa Plana Envío MRW/Zoom ($ USD)
+                  Costo de Envío Estándar ($ USD)
                 </label>
                 <input
                   type="number"
@@ -643,6 +672,103 @@ export function StoreSettingsView({
                   className="w-full px-3.5 py-2.5 rounded-lg bg-surface-container-low font-headline-sm text-body-md text-on-surface font-extrabold shadow-[1px_1px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
+            </div>
+
+            {formState.enable_free_shipping_bar !== false && (
+              <div className="grid grid-cols-1 gap-space-sm pt-1">
+                <div>
+                  <label className="block font-label-badge text-label-badge text-on-surface-variant uppercase mb-1">
+                    Texto cuando falta monto — usa{" "}
+                    <code className="text-primary font-bold">{"{amount}"}</code>{" "}
+                    para el monto faltante
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      formState.free_shipping_locked_text ||
+                      "¡Agrega {amount} más para envío GRATIS!"
+                    }
+                    onChange={(e) =>
+                      setFormState({
+                        ...formState,
+                        free_shipping_locked_text: e.target.value,
+                      })
+                    }
+                    placeholder="¡Agrega {amount} más para envío GRATIS!"
+                    className="w-full px-3.5 py-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface shadow-[1px_1px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-label-badge text-label-badge text-on-surface-variant uppercase mb-1">
+                    Texto cuando desbloquea Envío Gratis
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      formState.free_shipping_unlocked_text ||
+                      "¡Desbloqueaste envío GRATIS a nivel nacional!"
+                    }
+                    onChange={(e) =>
+                      setFormState({
+                        ...formState,
+                        free_shipping_unlocked_text: e.target.value,
+                      })
+                    }
+                    placeholder="¡Desbloqueaste envío GRATIS a nivel nacional!"
+                    className="w-full px-3.5 py-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface shadow-[1px_1px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Toggle: Mostrar Banner de Regalo en el Carrito */}
+            <div className="pt-2 border-t border-outline-variant/30 flex flex-col gap-space-sm">
+              <label className="flex items-center justify-between p-3 rounded-lg bg-tertiary-fixed/30 cursor-pointer shadow-[1px_1px_0px_#2a3235]">
+                <div className="pr-3">
+                  <span className="font-label-md text-label-md text-on-surface font-bold block">
+                    Mostrar Banner de Regalo en el Carrito (
+                    <code className="text-xs">enable_free_gift_banner</code>)
+                  </span>
+                  <span className="font-label-badge text-[11px] text-on-surface-variant">
+                    Activa o desactiva la píldora de regalo incluido al final de
+                    los productos en el carrito
+                  </span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formState.enable_free_gift_banner !== false}
+                  onChange={(e) =>
+                    setFormState({
+                      ...formState,
+                      enable_free_gift_banner: e.target.checked,
+                    })
+                  }
+                  className="w-5 h-5 accent-primary rounded cursor-pointer shrink-0"
+                />
+              </label>
+
+              {formState.enable_free_gift_banner !== false && (
+                <div>
+                  <label className="block font-label-badge text-label-badge text-on-surface-variant uppercase mb-1">
+                    Texto del Banner de Regalo (<code className="text-xs">free_gift_text</code>)
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      formState.free_gift_text || "¡Charm de regalo incluido!"
+                    }
+                    onChange={(e) =>
+                      setFormState({
+                        ...formState,
+                        free_gift_text: e.target.value,
+                      })
+                    }
+                    placeholder="¡Charm de regalo incluido!"
+                    className="w-full px-3.5 py-2 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface shadow-[1px_1px_0px_#2a3235] focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

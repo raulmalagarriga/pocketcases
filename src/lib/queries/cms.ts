@@ -798,6 +798,11 @@ export async function saveStoreSettingsToSupabase(
           ...basePayload,
           logo_url: normalized.logo_url,
           hero_config: normalized.hero_config,
+          enable_free_shipping_bar: normalized.enable_free_shipping_bar,
+          free_shipping_locked_text: normalized.free_shipping_locked_text,
+          free_shipping_unlocked_text: normalized.free_shipping_unlocked_text,
+          enable_free_gift_banner: normalized.enable_free_gift_banner,
+          free_gift_text: normalized.free_gift_text,
         },
         { onConflict: "id" }
       );

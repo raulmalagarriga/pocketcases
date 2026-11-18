@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
 import { buildWhatsAppCheckoutUrl } from "@/lib/whatsapp";
+import { getLocalCachedSettings } from "@/lib/queries/cms";
 import { CheckoutModalVE } from "./CheckoutModalVE";
 
 interface CartDrawerProps {
@@ -31,6 +32,16 @@ export function CartDrawer({ settings }: CartDrawerProps) {
   } = useCartStore();
 
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [liveSettings, setLiveSettings] = useState<StoreSettings>(settings);
+
+  useEffect(() => {
+    const cached = getLocalCachedSettings();
+    if (cached) {
+      setLiveSettings((prev) => ({ ...prev, ...cached }));
+    } else {
+      setLiveSettings(settings);
+    }
+  }, [settings, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -49,27 +60,40 @@ export function CartDrawer({ settings }: CartDrawerProps) {
     0
   );
 
-  const threshold = settings.free_shipping_threshold_usd || 35.0;
+  const showFreeShippingBar = liveSettings.enable_free_shipping_bar !== false;
+  const showFreeGiftBanner = liveSettings.enable_free_gift_banner !== false;
+  const threshold = liveSettings.free_shipping_threshold_usd || 35.0;
   const freeShippingProgress = Math.min(
     100,
-    Math.round((subtotalUsd / threshold) * 100)
+    Math.round((subtotalUsd / Math.max(1, threshold)) * 100)
   );
-  const isFreeShippingUnlocked = subtotalUsd >= threshold;
+  const isFreeShippingUnlocked = showFreeShippingBar
+    ? subtotalUsd >= threshold
+    : liveSettings.shipping_flat_rate_usd === 0;
   const remainingForFreeShipping = Math.max(0, threshold - subtotalUsd);
   const shippingUsd =
     items.length === 0
       ? 0
       : isFreeShippingUnlocked
       ? 0
-      : settings.shipping_flat_rate_usd;
+      : liveSettings.shipping_flat_rate_usd;
   const totalUsd = subtotalUsd + shippingUsd;
-  const totalVes = totalUsd * settings.bcv_exchange_rate;
+  const totalVes = totalUsd * liveSettings.bcv_exchange_rate;
 
-  const whatsappCheckoutUrl = buildWhatsAppCheckoutUrl(items, settings);
+  const lockedShippingText = (
+    liveSettings.free_shipping_locked_text ||
+    "¡Agrega {amount} más para envío GRATIS!"
+  ).replace("{amount}", `$${remainingForFreeShipping.toFixed(2)}`);
+
+  const unlockedShippingText =
+    liveSettings.free_shipping_unlocked_text ||
+    "¡Desbloqueaste envío GRATIS a nivel nacional!";
+
+  const whatsappCheckoutUrl = buildWhatsAppCheckoutUrl(items, liveSettings);
 
   const formatPrice = (usd: number) => {
     if (currencyMode === "VES") {
-      return `Bs. ${(usd * settings.bcv_exchange_rate).toFixed(2)}`;
+      return `Bs. ${(usd * liveSettings.bcv_exchange_rate).toFixed(2)}`;
     }
     return `$${usd.toFixed(2)}`;
   };
@@ -124,29 +148,29 @@ export function CartDrawer({ settings }: CartDrawerProps) {
         </div>
 
         {/* Free Shipping Progress Tracker Meter */}
-        <div className="bg-secondary-fixed/60 px-space-lg py-space-sm">
-          <div className="flex items-center justify-between text-on-secondary-fixed font-label-md text-label-md mb-1.5">
-            <span className="font-bold flex items-center gap-1">
-              <span className="material-symbols-outlined text-[16px] text-tertiary">
-                {isFreeShippingUnlocked ? "celebration" : "local_shipping"}
-              </span>{" "}
-              {isFreeShippingUnlocked
-                ? "¡Desbloqueaste envío GRATIS a nivel nacional!"
-                : `¡Agrega $${remainingForFreeShipping.toFixed(
-                    2
-                  )} más para envío GRATIS!`}
-            </span>
-            <span className="font-bold text-tertiary font-label-badge text-label-badge uppercase">
-              {freeShippingProgress}% Desbloqueado
-            </span>
+        {showFreeShippingBar && (
+          <div className="bg-secondary-fixed/60 px-space-lg py-space-sm">
+            <div className="flex items-center justify-between text-on-secondary-fixed font-label-md text-label-md mb-1.5 gap-2">
+              <span className="font-bold flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px] text-tertiary">
+                  {isFreeShippingUnlocked ? "celebration" : "local_shipping"}
+                </span>{" "}
+                {isFreeShippingUnlocked
+                  ? unlockedShippingText
+                  : lockedShippingText}
+              </span>
+              <span className="font-bold text-tertiary font-label-badge text-label-badge uppercase shrink-0">
+                {freeShippingProgress}% Desbloqueado
+              </span>
+            </div>
+            <div className="w-full h-2.5 rounded-full bg-surface-container-lowest overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]">
+              <div
+                className="h-full bg-tertiary rounded-full transition-all duration-500"
+                style={{ width: `${freeShippingProgress}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="w-full h-2.5 rounded-full bg-surface-container-lowest overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]">
-            <div
-              className="h-full bg-tertiary rounded-full transition-all duration-500"
-              style={{ width: `${freeShippingProgress}%` }}
-            ></div>
-          </div>
-        </div>
+        )}
 
         {/* Cart Items Scrollable Content */}
         <div
@@ -236,19 +260,22 @@ export function CartDrawer({ settings }: CartDrawerProps) {
               })}
 
               {/* Free Gift Add-on Teaser */}
-              <div className="p-space-sm rounded-DEFAULT bg-tertiary-fixed/30 border-0 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-tertiary text-[20px]">
-                    redeem
-                  </span>
-                  <span className="font-label-md text-label-md text-on-surface font-medium">
-                    ¡Charm de regalo incluido!
+              {showFreeGiftBanner && (
+                <div className="p-space-sm rounded-DEFAULT bg-tertiary-fixed/30 border-0 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-tertiary text-[20px]">
+                      redeem
+                    </span>
+                    <span className="font-label-md text-label-md text-on-surface font-medium">
+                      {liveSettings.free_gift_text ||
+                        "¡Charm de regalo incluido!"}
+                    </span>
+                  </div>
+                  <span className="font-label-badge text-label-badge text-tertiary font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full">
+                    $0.00
                   </span>
                 </div>
-                <span className="font-label-badge text-label-badge text-tertiary font-bold bg-surface-container-lowest px-2 py-0.5 rounded-full">
-                  $0.00
-                </span>
-              </div>
+              )}
             </>
           )}
         </div>
@@ -272,7 +299,9 @@ export function CartDrawer({ settings }: CartDrawerProps) {
                 {items.length === 0
                   ? "$0.00"
                   : isFreeShippingUnlocked
-                  ? "GRATIS"
+                  ? showFreeShippingBar
+                    ? "GRATIS"
+                    : "GRATIS / Por coordinar"
                   : `$${shippingUsd.toFixed(2)}`}
               </span>
             </div>
@@ -282,10 +311,10 @@ export function CartDrawer({ settings }: CartDrawerProps) {
                 <span className="text-primary" id="cartTotalText">
                   ${totalUsd.toFixed(2)}
                 </span>
-                {settings.show_ves_reference && (
+                {liveSettings.show_ves_reference && (
                   <p className="font-label-badge text-label-badge text-outline font-bold">
                     Ref. Bs. {totalVes.toFixed(2)} (Tasa BCV{" "}
-                    {settings.bcv_exchange_rate})
+                    {liveSettings.bcv_exchange_rate})
                   </p>
                 )}
               </div>

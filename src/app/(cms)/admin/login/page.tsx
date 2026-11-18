@@ -53,8 +53,11 @@ export default function AdminLoginPage() {
         <div className="flex flex-col items-center text-center mb-space-lg">
           <img
             src="/logo.png"
+            onError={(e) => {
+              e.currentTarget.src = "/logo.png";
+            }}
             alt="Pocket Cases"
-            className="h-14 w-auto object-contain rounded-xl shadow-[2px_2px_0px_#2a3235] mb-space-sm"
+            className="h-14 w-[140px] shrink-0 object-contain rounded-xl shadow-[2px_2px_0px_#2a3235] mb-space-sm bg-[#d8f3c8]"
           />
           <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-2.5 py-0.5 rounded-full font-bold uppercase mb-1 shadow-[1px_1px_0px_#2a3235]">
             ADMIN CMS PORTAL

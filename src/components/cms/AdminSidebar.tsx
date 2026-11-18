@@ -43,8 +43,11 @@ export function AdminSidebar({
         <div className="px-space-md pb-space-lg flex items-center justify-between gap-2">
           <img
             src={logoUrl || "/logo.png"}
+            onError={(e) => {
+              e.currentTarget.src = "/logo.png";
+            }}
             alt="Pocket Cases"
-            className="h-10 w-auto object-contain rounded-lg shadow-[2px_2px_0px_#2a3235]"
+            className="h-11 w-[112px] shrink-0 object-contain rounded-lg shadow-[2px_2px_0px_#2a3235] bg-[#d8f3c8]"
           />
           <span className="font-label-badge text-label-badge text-on-tertiary-container bg-tertiary-fixed px-2 py-0.5 rounded-full font-bold shadow-[1px_1px_0px_#2a3235] shrink-0">
             ADMIN CMS

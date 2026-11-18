@@ -78,17 +78,19 @@
 
 ### FASE R5: Logo Oficial Configurable (Sin Texto Redundante) y Editor del Banner Principal (`HeroSection`) en el CMS
 - **Estado**: `COMPLETADA ✅`
+
+### FASE R6: Fix Visibilidad del Logo en Header, Buscador Predictivo con Foto, Vista de Detalle de Producto (`/products/[slug]`) y Configuración de Delivery Gratis en Carrito
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
-  1. **Logo Oficial (`/logo.png`) y Eliminación de Texto Redundante**:
-     - Usar el logo oficial subido por el usuario (`public/logo.png` y `public/logo-full.png`) como valor por defecto (`logo_url: "/logo.png"`).
-     - En `Navbar.tsx`, `Footer.tsx`, `AdminSidebar.tsx`, `AdminHeader.tsx` y `admin/login/page.tsx`: mostrar **únicamente el logo** (eliminando el texto `"Pocket Cases"` al lado por ser redundante con el diseño del logo). En `AdminHeader.tsx` quitar el logo repetido junto al buscador ya que ya está visible en `AdminSidebar.tsx`.
-     - Permitir **subir/cambiar el logo desde el Admin CMS** (subida directa a Supabase Storage `product-images` y persistencia en `store_settings.logo_url`).
-  2. **Banner Principal (`HeroSection.tsx`) 100% Configurable desde el CMS**:
-     - Crear migración `supabase/migrations/0002_logo_and_hero_config.sql` añadiendo `logo_url TEXT DEFAULT '/logo.png'` y `hero_config JSONB` a `public.store_settings`.
-     - Conectar `HeroSection.tsx` y `Footer.tsx` a `settings` (`logo_url` y `hero_config`).
-     - En el CMS (`StoreSettingsView.tsx` y pestaña/sección de **Identidad & Banner Principal**), permitir editar:
-       - Logo de la tienda (con botón de subida de imagen).
-       - Píldora superior (`badge_text`), Título principal (`headline_prefix`, `headline_highlight` con onda SVG, `headline_suffix`), Subtítulo (`subheadline`), Rating (`rating_score`, `rating_text`), Textos de los 2 botones CTA (`primary_cta_text`, `secondary_cta_text`), Sello rotatorio (`stamp_line_1`, `stamp_line_2`), Burbuja inferior (`feature_bubble_title`, `feature_bubble_subtitle`, `feature_bubble_badge`) y las **2 Tarjetas Destacadas del Mosaico** (con opción de autocompletar desde cualquier producto del catálogo o subir imagen/título/precio/etiqueta propios).
+  1. **Visibilidad del Logo en `Navbar.tsx`**:
+     - Agregar `shrink-0` al contenedor `<a>` / `<Link>` del logo y dimensiones explícitas (`h-12 w-auto min-w-[100px] shrink-0`) para evitar que Flexbox colapse el ancho del logo a `0px` frente a los demás elementos de la barra superior.
+  2. **Buscador en Vivo con Dropdown de Resultados (con Foto) en `Navbar.tsx`**:
+     - Al escribir en el buscador del Header, mostrar un popover flotante debajo del input con los productos coincidentes (miniatura con foto, nombre, categoría, estado de stock y precio en USD/Bs.).
+     - Al hacer clic en un resultado del buscador (o en la foto/título de cualquier `ProductCard`), navegar a la **Vista de Detalle del Producto (`/products/[slug]`)**.
+  3. **Vista de Detalle del Producto (`src/app/(storefront)/products/[slug]/page.tsx` y `src/components/storefront/ProductDetailView.tsx`)**:
+     - Galería interactiva con imagen principal + miniaturas (`gallery_urls`), selector de color (swatches con nombre y stock por color), selector de modelo de teléfono (`supported_models`), selector de acabado (`Grip Mate` / `Brillo Jelly`), selector de cantidad, botón de agregar al carrito, botón de compra directa por WhatsApp y sección de productos relacionados.
+  4. **Configuración Completa de la Barra de Delivery Gratis y Regalo en el Carrito (`CartDrawer.tsx` y `StoreSettingsView.tsx`)**:
+     - Permitir activar/desactivar (`enable_free_shipping_bar`) o personalizar los textos (`free_shipping_locked_text`, `free_shipping_unlocked_text`), monto mínimo (`free_shipping_threshold_usd`) y tarifa plana (`shipping_flat_rate_usd`) de la barra de delivery gratis del carrito, así como activar/desactivar o editar el banner de regalo (`enable_free_gift_banner`, `free_gift_text`).
 
 ---
 
@@ -100,4 +102,5 @@
 | **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | `6455a47` |
 | **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | `0b63f34` |
 | **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | `f945274` |
-| **FASE R5** | ✅ Completada | Subagente `68bc5611` | `tsc --noEmit` OK (0 errores) | Commit Fase R5 |
+| **FASE R5** | ✅ Completada | Subagente `68bc5611` | `tsc --noEmit` OK (0 errores) | `1398207` |
+| **FASE R6** | ✅ Completada | Subagente `639bd27b` | `tsc --noEmit` OK (0 errores) | Commit Fase R6 |

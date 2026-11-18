@@ -52,6 +52,11 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   show_ves_reference: true,
   free_shipping_threshold_usd: 35.0,
   shipping_flat_rate_usd: 4.0,
+  enable_free_shipping_bar: true,
+  free_shipping_locked_text: "¡Agrega {amount} más para envío GRATIS!",
+  free_shipping_unlocked_text: "¡Desbloqueaste envío GRATIS a nivel nacional!",
+  enable_free_gift_banner: true,
+  free_gift_text: "¡Charm de regalo incluido!",
   pago_movil_details: {
     bank: "Banesco (0134)",
     phone: "0412-0000000",
@@ -137,6 +142,28 @@ export function normalizeStoreSettings(
       raw.shipping_flat_rate_usd ??
         INITIAL_STORE_SETTINGS.shipping_flat_rate_usd
     ),
+    enable_free_shipping_bar:
+      raw.enable_free_shipping_bar !== undefined
+        ? Boolean(raw.enable_free_shipping_bar)
+        : INITIAL_STORE_SETTINGS.enable_free_shipping_bar,
+    free_shipping_locked_text:
+      typeof raw.free_shipping_locked_text === "string" &&
+      raw.free_shipping_locked_text.trim()
+        ? raw.free_shipping_locked_text
+        : INITIAL_STORE_SETTINGS.free_shipping_locked_text,
+    free_shipping_unlocked_text:
+      typeof raw.free_shipping_unlocked_text === "string" &&
+      raw.free_shipping_unlocked_text.trim()
+        ? raw.free_shipping_unlocked_text
+        : INITIAL_STORE_SETTINGS.free_shipping_unlocked_text,
+    enable_free_gift_banner:
+      raw.enable_free_gift_banner !== undefined
+        ? Boolean(raw.enable_free_gift_banner)
+        : INITIAL_STORE_SETTINGS.enable_free_gift_banner,
+    free_gift_text:
+      typeof raw.free_gift_text === "string" && raw.free_gift_text.trim()
+        ? raw.free_gift_text
+        : INITIAL_STORE_SETTINGS.free_gift_text,
     pago_movil_details: {
       ...INITIAL_STORE_SETTINGS.pago_movil_details,
       ...rawPagoMovil,

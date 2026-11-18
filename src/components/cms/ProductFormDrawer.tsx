@@ -224,6 +224,7 @@ export function ProductFormDrawer({
   const watchedModels = watch("supported_models") || [];
   const watchedColorVariants = watch("color_variants") || [];
   const watchedTitle = watch("title");
+  const watchedSlug = watch("slug");
   const watchedSku = watch("sku");
   const watchedIsLive = watch("is_live");
 
@@ -387,7 +388,11 @@ export function ProductFormDrawer({
             <div className="flex items-center gap-2">
               <Link
                 className="flex items-center gap-1 font-label-md text-label-md text-primary hover:underline px-2 py-1"
-                href="/"
+                href={
+                  watchedSlug || product?.slug
+                    ? `/products/${watchedSlug || product?.slug}`
+                    : "/"
+                }
                 target="_blank"
               >
                 <span>View Live on Storefront</span>
