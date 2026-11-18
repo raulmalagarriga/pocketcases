@@ -20,33 +20,33 @@ export function MetricsStrip({ products }: MetricsStripProps) {
   ).length;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-md">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       {/* Total Products */}
-      <div className="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+      <div className="bg-white border border-slate-200/90 p-4 rounded-xl shadow-sm flex items-center justify-between">
         <div>
-          <span className="font-label-badge text-label-badge text-on-surface-variant uppercase">
+          <span className="text-[11px] font-label-md font-bold text-slate-500 uppercase tracking-wider">
             Total Products
           </span>
-          <p className="font-headline-sm text-headline-sm text-on-surface font-extrabold mt-0.5">
+          <p className="font-headline-sm text-xl text-on-surface font-extrabold mt-0.5">
             {totalCount} Active
           </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+        <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center">
           <span className="material-symbols-outlined text-[20px]">cases</span>
         </div>
       </div>
 
       {/* Live in Store */}
-      <div className="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+      <div className="bg-white border border-slate-200/90 p-4 rounded-xl shadow-sm flex items-center justify-between">
         <div>
-          <span className="font-label-badge text-label-badge text-tertiary uppercase">
+          <span className="text-[11px] font-label-md font-bold text-emerald-700 uppercase tracking-wider">
             Live in Store
           </span>
-          <p className="font-headline-sm text-headline-sm text-tertiary font-extrabold mt-0.5">
+          <p className="font-headline-sm text-xl text-emerald-700 font-extrabold mt-0.5">
             {liveCount} Visible
           </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-tertiary-fixed text-on-tertiary-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+        <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
           <span className="material-symbols-outlined text-[20px]">
             storefront
           </span>
@@ -54,16 +54,16 @@ export function MetricsStrip({ products }: MetricsStripProps) {
       </div>
 
       {/* Out of Stock */}
-      <div className="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+      <div className="bg-white border border-slate-200/90 p-4 rounded-xl shadow-sm flex items-center justify-between">
         <div>
-          <span className="font-label-badge text-label-badge text-error uppercase">
+          <span className="text-[11px] font-label-md font-bold text-rose-700 uppercase tracking-wider">
             Stockout Alerts
           </span>
-          <p className="font-headline-sm text-headline-sm text-error font-extrabold mt-0.5">
+          <p className="font-headline-sm text-xl text-rose-700 font-extrabold mt-0.5">
             {stockoutCount} Items
           </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+        <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center">
           <span className="material-symbols-outlined text-[20px]">
             inventory
           </span>
@@ -71,16 +71,16 @@ export function MetricsStrip({ products }: MetricsStripProps) {
       </div>
 
       {/* Low Inventory Alerts */}
-      <div className="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] flex items-center justify-between">
+      <div className="bg-white border border-slate-200/90 p-4 rounded-xl shadow-sm flex items-center justify-between">
         <div>
-          <span className="font-label-badge text-label-badge text-primary font-bold uppercase">
+          <span className="text-[11px] font-label-md font-bold text-primary uppercase tracking-wider">
             Low Stock Warning
           </span>
-          <p className="font-headline-sm text-headline-sm text-primary font-extrabold mt-0.5">
+          <p className="font-headline-sm text-xl text-primary font-extrabold mt-0.5">
             {lowStockCount} Cases
           </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shadow-[1px_1px_0px_#2a3235]">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center">
           <span className="material-symbols-outlined text-[20px]">
             notification_important
           </span>

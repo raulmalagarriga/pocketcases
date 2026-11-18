@@ -53,10 +53,7 @@ export function CmsProductManager({
   const [categoryFilter, setCategoryFilter] = useState("All Types");
   const [stockFilter, setStockFilter] = useState("All Status");
   const [visibilityFilter, setVisibilityFilter] = useState("All Items");
-  const [selectedIds, setSelectedIds] = useState<string[]>([
-    initialProducts[0]?.id || "prod-1",
-    initialProducts[1]?.id || "prod-2",
-  ]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [syncing, setSyncing] = useState(false);
@@ -512,10 +509,10 @@ export function CmsProductManager({
 
 
                 {/* Action Button Group */}
-                <div className="flex items-center flex-wrap gap-space-sm">
+                <div className="flex items-center flex-wrap gap-2.5">
                   <button
                     onClick={handleInventorySync}
-                    className="flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
+                    className="h-10 flex items-center gap-1.5 px-3.5 rounded-lg border border-slate-300 bg-white text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
                     type="button"
                   >
                     <span
@@ -530,7 +527,7 @@ export function CmsProductManager({
 
                   <button
                     onClick={handleExportCsv}
-                    className="flex items-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
+                    className="h-10 flex items-center gap-1.5 px-3.5 rounded-lg border border-slate-300 bg-white text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
                     type="button"
                   >
                     <span className="material-symbols-outlined text-[18px]">
@@ -544,10 +541,10 @@ export function CmsProductManager({
                       setEditingProduct(null);
                       setDrawerOpen(true);
                     }}
-                    className="flex items-center gap-1.5 px-space-lg py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:opacity-95 transition-transform active:translate-x-0.5 active:translate-y-0.5"
+                    className="h-10 flex items-center gap-1.5 px-4 rounded-lg bg-primary text-white text-xs font-bold shadow-sm hover:opacity-95 transition-opacity"
                     type="button"
                   >
-                    <span className="material-symbols-outlined text-[20px]">
+                    <span className="material-symbols-outlined text-[19px]">
                       add
                     </span>
                     <span>Add New Product</span>
@@ -560,34 +557,34 @@ export function CmsProductManager({
             </div>
 
             {/* Search, Filter & Bulk Action Controls Strip */}
-            <div className="bg-surface-container-lowest p-space-md rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] mb-space-lg flex flex-col gap-space-md">
+            <div className="bg-white border border-slate-200/90 p-4 rounded-xl shadow-sm mb-6 flex flex-col gap-3">
               {/* Top Filter Controls */}
-              <div className="flex flex-col lg:flex-row gap-space-md items-stretch lg:items-center justify-between">
+              <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
                 {/* Search Input */}
                 <div className="relative flex-1 min-w-[260px]">
-                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[19px]">
                     search
                   </span>
                   <input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
+                    className="w-full h-10 pl-10 pr-4 rounded-lg bg-white border border-slate-300 text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all"
                     placeholder="Search by product title, SKU, or phone model..."
                     type="text"
                   />
                 </div>
 
                 {/* Filter Dropdowns Group */}
-                <div className="flex items-center flex-wrap gap-space-sm">
+                <div className="flex items-center flex-wrap gap-2.5">
                   {/* Category Filter */}
-                  <div className="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
-                    <span className="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">
+                  <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg px-3">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-2">
                       Category:
                     </span>
                     <select
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer"
+                      className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
                     >
                       <option>All Types</option>
                       <option>MagSafe Tough</option>
@@ -602,14 +599,14 @@ export function CmsProductManager({
                   </div>
 
                   {/* Stock Status Filter */}
-                  <div className="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
-                    <span className="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">
+                  <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg px-3">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-2">
                       Stock:
                     </span>
                     <select
                       value={stockFilter}
                       onChange={(e) => setStockFilter(e.target.value)}
-                      className="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer"
+                      className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
                     >
                       <option>All Status</option>
                       <option>In Stock</option>
@@ -619,14 +616,14 @@ export function CmsProductManager({
                   </div>
 
                   {/* Visibility Filter */}
-                  <div className="flex items-center bg-surface-container-low rounded-lg px-3 py-1.5 shadow-[1px_1px_0px_#2a3235]">
-                    <span className="font-label-badge text-label-badge text-on-surface-variant uppercase mr-2">
+                  <div className="h-10 flex items-center bg-white border border-slate-300 rounded-lg px-3">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-2">
                       Visibility:
                     </span>
                     <select
                       value={visibilityFilter}
                       onChange={(e) => setVisibilityFilter(e.target.value)}
-                      className="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer"
+                      className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
                     >
                       <option>All Items</option>
                       <option>Active on Web</option>
@@ -636,55 +633,57 @@ export function CmsProductManager({
                 </div>
               </div>
 
-              {/* Bulk Action Strip (Selected items banner) */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm bg-secondary-container/40 p-2.5 rounded-lg">
-                <div className="flex items-center gap-space-sm">
-                  <div className="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md">
-                    {selectedIds.length}
+              {/* Bulk Action Strip (Only shown when selectedIds.length > 0) */}
+              {selectedIds.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-lg">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-6 h-6 rounded-md bg-primary text-white flex items-center justify-center text-xs font-bold">
+                      {selectedIds.length}
+                    </div>
+                    <span className="text-xs font-bold text-slate-700">
+                      Products selected for batch operations
+                    </span>
                   </div>
-                  <span className="font-label-md text-label-md text-on-surface">
-                    Products selected for batch operations
-                  </span>
+                  <div className="flex items-center flex-wrap gap-2">
+                    <button
+                      onClick={handleBatchChangeStatus}
+                      className="h-8 px-3 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors"
+                      type="button"
+                    >
+                      Change Status
+                    </button>
+                    <button
+                      onClick={handleBatchDiscount}
+                      className="h-8 px-3 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors"
+                      type="button"
+                    >
+                      Apply Discount (-15%)
+                    </button>
+                    <button
+                      onClick={handleBatchOutOfStock}
+                      className="h-8 px-3 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors"
+                      type="button"
+                    >
+                      Set Out of Stock
+                    </button>
+                    <button
+                      onClick={handleBatchDelete}
+                      className="h-8 px-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-bold hover:bg-rose-100 transition-colors"
+                      type="button"
+                    >
+                      Delete Selected
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center flex-wrap gap-space-xs">
-                  <button
-                    onClick={handleBatchChangeStatus}
-                    className="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
-                    type="button"
-                  >
-                    Change Status
-                  </button>
-                  <button
-                    onClick={handleBatchDiscount}
-                    className="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
-                    type="button"
-                  >
-                    Apply Discount (-15%)
-                  </button>
-                  <button
-                    onClick={handleBatchOutOfStock}
-                    className="px-3 py-1 bg-surface-container-lowest text-on-surface rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
-                    type="button"
-                  >
-                    Set Out of Stock
-                  </button>
-                  <button
-                    onClick={handleBatchDelete}
-                    className="px-3 py-1 bg-error-container text-on-error-container rounded-full font-label-badge text-label-badge shadow-[1px_1px_0px_#2a3235] hover:opacity-90 transition-transform active:translate-x-0.5 active:translate-y-0.5"
-                    type="button"
-                  >
-                    Delete Selected
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Rich Product Management Table */}
-            <div className="bg-surface-container-lowest rounded-DEFAULT shadow-[3px_3px_0px_#2a3235] overflow-hidden">
+            <div className="bg-white border border-slate-200/90 rounded-xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-surface-container-high text-on-surface font-label-badge text-label-badge uppercase tracking-wider">
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
                       <th className="py-3.5 px-4 w-12 text-center">
                         <input
                           checked={
@@ -708,7 +707,7 @@ export function CmsProductManager({
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y-0 font-body-sm text-body-sm">
+                  <tbody className="divide-y divide-slate-100 font-body-sm text-body-sm">
                     {paginatedProducts.map((product) => {
                       const isSelected = selectedIds.includes(product.id);
                       const gmPercent =
@@ -737,11 +736,11 @@ export function CmsProductManager({
                       return (
                         <tr
                           key={product.id}
-                          className={`hover:bg-surface-container-low transition-colors group ${
+                          className={`hover:bg-slate-50/80 transition-colors group ${
                             isDraft
-                              ? "bg-surface-container/30"
+                              ? "bg-slate-50/40"
                               : product.promo_tag === "HOT DROP"
-                              ? "bg-primary-fixed/10"
+                              ? "bg-primary-fixed/5"
                               : ""
                           }`}
                         >
@@ -1036,7 +1035,7 @@ export function CmsProductManager({
               </div>
 
               {/* Table Pagination Footer */}
-              <div className="flex flex-col sm:flex-row items-center justify-between px-space-md py-3 bg-surface-container-low border-t-0 gap-space-sm font-label-md text-label-md text-on-surface-variant">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-slate-50 border-t border-slate-200 gap-3 text-xs font-bold text-slate-600">
                 <div className="flex items-center gap-2">
                   <span>
                     Showing {showingFrom} to {showingTo} of{" "}
@@ -1045,7 +1044,7 @@ export function CmsProductManager({
                   <select
                     value={pageSize}
                     onChange={(e) => setPageSize(Number(e.target.value))}
-                    className="bg-surface-container-lowest text-on-surface rounded px-2 py-0.5 text-xs shadow-[1px_1px_0px_#2a3235] focus:outline-none cursor-pointer"
+                    className="h-8 bg-white border border-slate-300 text-slate-800 rounded-lg px-2 text-xs focus:outline-none cursor-pointer"
                   >
                     <option value={10}>10 per page</option>
                     <option value={25}>25 per page</option>
@@ -1058,7 +1057,7 @@ export function CmsProductManager({
                       setCurrentPage((prev) => Math.max(1, prev - 1))
                     }
                     disabled={safeCurrentPage <= 1}
-                    className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high disabled:opacity-40"
+                    className="w-8 h-8 rounded-lg border border-slate-300 bg-white text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-40"
                     type="button"
                   >
                     <span className="material-symbols-outlined text-[18px]">
@@ -1070,10 +1069,10 @@ export function CmsProductManager({
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`w-8 h-8 rounded flex items-center justify-center shadow-[1px_1px_0px_#2a3235] ${
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
                           pageNum === safeCurrentPage
-                            ? "bg-primary text-on-primary font-bold"
-                            : "bg-surface-container-lowest text-on-surface hover:bg-surface-container-high"
+                            ? "bg-primary text-white"
+                            : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
                         }`}
                         type="button"
                       >
@@ -1086,7 +1085,7 @@ export function CmsProductManager({
                       setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                     }
                     disabled={safeCurrentPage >= totalPages}
-                    className="w-8 h-8 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high disabled:opacity-40"
+                    className="w-8 h-8 rounded-lg border border-slate-300 bg-white text-slate-700 flex items-center justify-center hover:bg-slate-100 disabled:opacity-40"
                     type="button"
                   >
                     <span className="material-symbols-outlined text-[18px]">

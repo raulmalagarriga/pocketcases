@@ -107,7 +107,7 @@
      - Conectar `SocialProofReel.tsx` a `settings.social_proof_config`.
 
 ### FASE R8: Rediseño Visual Limpio del Admin CMS (Alineación de Inputs, Drawer con Imagen por Variante y Editor de Social Proof + FAQs)
-- **Estado**: `EN PROGRESO`
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
   1. **Limpieza Visual y Alineación Estricta en el CMS**:
      - Sistema uniforme de inputs (`h-10`, bordes limpios `border-slate-200`, etiquetas alineadas, eliminación de sombras pesadas en inputs internos) y ocultación de la barra de acciones por lote cuando no hay filas seleccionadas (`selectedIds = []` por defecto).
@@ -128,5 +128,5 @@
 | **FASE R4** | ✅ Completada | Subagente `e725b326` | `tsc --noEmit` OK (0 errores) | `f945274` |
 | **FASE R5** | ✅ Completada | Subagente `68bc5611` | `tsc --noEmit` OK (0 errores) | `1398207` |
 | **FASE R6** | ✅ Completada | Subagente `639bd27b` | `tsc --noEmit` OK (0 errores) | `9468b62` |
-| **FASE R7** | ✅ Completada | Subagente `00f8909b` | `tsc --noEmit` OK (0 errores) | Commit Fase R7 |
-| **FASE R8** | 🔄 En progreso | — | — | — |
+| **FASE R7** | ✅ Completada | Subagente `00f8909b` | `tsc --noEmit` OK (0 errores) | `95fa927` |
+| **FASE R8** | ✅ Completada | Subagente `162b1986` | `tsc --noEmit` OK (0 errores) | Commit Fase R8 |

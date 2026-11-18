@@ -25,6 +25,9 @@ interface ProductFormDrawerProps {
 const DEFAULT_MOCKUP_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuDPJzbgU-02_BVyJCLt7cVdXWf3F-ndekRHY7ZS5lfxlhX46pJ2b_PEV8eVPn75rnvZquerkrRuzALZxKgoUJENnbVuZvn5_AQXNiB_N3zA3VBSsY_afWTW-1CTub6rxQrg2uylgPPjggGcgqbd0mcCbJOAHhkz037nSiH4emSlZxbwFZ-SbbGB68zQyBU-AJmw3enmbbJcX4kHwb5kCIjdoIWmk6Ys_BB6MCRgZA";
 
+const DEFAULT_MOCKUP_URL_2 =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuCfAmOfzZaA4Vc6Ya8AuHP4mkN7PQ5tR75FJZFpe_0JcvVMaNu6QjXFhfpORmoukcG9cS9V_3BhkuR6pMc1cgOioE1Naz8uoiW_4BeKtRc3yK1BWPesoLaKKCUEvW6MjPGKvwpzLzrU3gyJAtv0f4FjAJjWgo6LWiof6JaqXonmb3JmTNsMZ-sREZAMrs37-KCQTpbSedv1TPZut2GBbW0BlhzZHfCiBE44NygXwA";
+
 const CATEGORIES_LIST = [
   "MagSafe Tough",
   "Dual Shock",
@@ -35,6 +38,15 @@ const CATEGORIES_LIST = [
   "Ultra Slim",
   "Vegan Leather",
 ];
+
+const LABEL_CLASS =
+  "block text-[11px] font-label-md font-bold uppercase tracking-wider text-slate-600 mb-1.5";
+const INPUT_CLASS =
+  "w-full h-10 px-3 rounded-lg bg-white border border-slate-300 text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all";
+const COMPACT_INPUT_CLASS =
+  "w-full h-9 px-2.5 rounded-lg bg-white border border-slate-300 text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all";
+const CARD_CLASS =
+  "bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4";
 
 function slugify(input: string): string {
   return input
@@ -51,13 +63,31 @@ export function ProductFormDrawer({
   onClose,
   onSaved,
 }: ProductFormDrawerProps) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    "info_pricing" | "variants_media" | "models_inventory"
+  >("info_pricing");
+
+  const primaryFileInputRef = useRef<HTMLInputElement | null>(null);
+  const galleryFileInputRef = useRef<HTMLInputElement | null>(null);
+  const variantFileInputRef = useRef<HTMLInputElement | null>(null);
+  const newVariantFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [uploadingPrimary, setUploadingPrimary] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingVariantId, setUploadingVariantId] = useState<string | null>(
+    null
+  );
+  const [targetVariantIdForUpload, setTargetVariantIdForUpload] = useState<
+    string | null
+  >(null);
+  const [uploadingNewVariantImg, setUploadingNewVariantImg] = useState(false);
 
   // New Color Variant inputs
   const [newColorName, setNewColorName] = useState("Baby Peach");
   const [newColorHex, setNewColorHex] = useState("#FDBA74");
-  const [newColorUnits, setNewColorUnits] = useState(24);
+  const [newColorUnits, setNewColorUnits] = useState(20);
+  const [newColorImageUrl, setNewColorImageUrl] = useState("");
+  const [variantWarning, setVariantWarning] = useState<string | null>(null);
 
   const {
     register,
@@ -100,6 +130,7 @@ export function ProductFormDrawer({
           stock_units: 28,
           is_default: true,
           sort_order: 1,
+          image_url: DEFAULT_MOCKUP_URL,
         },
         {
           id: "cv-init-2",
@@ -110,12 +141,16 @@ export function ProductFormDrawer({
           stock_units: 20,
           is_default: false,
           sort_order: 2,
+          image_url: DEFAULT_MOCKUP_URL_2,
         },
       ],
     },
   });
 
   useEffect(() => {
+    setActiveTab("info_pricing");
+    setVariantWarning(null);
+
     if (product) {
       reset({
         id: product.id,
@@ -154,6 +189,7 @@ export function ProductFormDrawer({
                 stock_units: cv.stock_units,
                 is_default: cv.is_default,
                 sort_order: cv.sort_order,
+                image_url: cv.image_url || product.primary_image_url,
               }))
             : [
                 {
@@ -165,6 +201,7 @@ export function ProductFormDrawer({
                   stock_units: product.total_stock,
                   is_default: true,
                   sort_order: 1,
+                  image_url: product.primary_image_url,
                 },
               ],
       });
@@ -201,6 +238,7 @@ export function ProductFormDrawer({
             stock_units: 28,
             is_default: true,
             sort_order: 1,
+            image_url: DEFAULT_MOCKUP_URL,
           },
           {
             id: "cv-new-2",
@@ -211,6 +249,7 @@ export function ProductFormDrawer({
             stock_units: 32,
             is_default: false,
             sort_order: 2,
+            image_url: DEFAULT_MOCKUP_URL_2,
           },
         ],
       });
@@ -227,25 +266,88 @@ export function ProductFormDrawer({
   const watchedSlug = watch("slug");
   const watchedSku = watch("sku");
   const watchedIsLive = watch("is_live");
+  const watchedPriceUsd = Number(watch("price_usd") || 0);
+  const watchedCostUsd = Number(watch("cost_usd") || 0);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const netProfitPerUnit = Math.max(0, watchedPriceUsd - watchedCostUsd);
+  const grossMarginPct =
+    watchedPriceUsd > 0
+      ? Math.round(((watchedPriceUsd - watchedCostUsd) / watchedPriceUsd) * 100)
+      : 0;
+
+  // Check duplicate image URLs across color variants
+  const imageCountMap = watchedColorVariants.reduce<Record<string, number>>(
+    (acc, cv) => {
+      const url = (cv.image_url || watchedPrimaryImage || "").trim();
+      if (url) {
+        acc[url] = (acc[url] || 0) + 1;
+      }
+      return acc;
+    },
+    {}
+  );
+
+  const handlePrimaryFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingImage(true);
+    setUploadingPrimary(true);
     try {
       const uploadedUrl = await uploadProductImage(file);
-      if (
-        !watchedPrimaryImage ||
-        watchedPrimaryImage === DEFAULT_MOCKUP_URL
-      ) {
-        setValue("primary_image_url", uploadedUrl, { shouldDirty: true });
-      } else {
-        setValue("gallery_urls", [...watchedGallery, uploadedUrl], {
-          shouldDirty: true,
-        });
-      }
+      setValue("primary_image_url", uploadedUrl, { shouldDirty: true });
     } finally {
-      setUploadingImage(false);
+      setUploadingPrimary(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleGalleryFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingGallery(true);
+    try {
+      const uploadedUrl = await uploadProductImage(file);
+      setValue("gallery_urls", [...watchedGallery, uploadedUrl], {
+        shouldDirty: true,
+      });
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleVariantFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file || !targetVariantIdForUpload) return;
+    const targetId = targetVariantIdForUpload;
+    setUploadingVariantId(targetId);
+    try {
+      const uploadedUrl = await uploadProductImage(file);
+      handleUpdateColorVariantImage(targetId, uploadedUrl);
+    } finally {
+      setUploadingVariantId(null);
+      setTargetVariantIdForUpload(null);
+      e.target.value = "";
+    }
+  };
+
+  const handleNewVariantFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingNewVariantImg(true);
+    try {
+      const uploadedUrl = await uploadProductImage(file);
+      setNewColorImageUrl(uploadedUrl);
+      setVariantWarning(null);
+    } finally {
+      setUploadingNewVariantImg(false);
       e.target.value = "";
     }
   };
@@ -275,6 +377,23 @@ export function ProductFormDrawer({
       .substring(0, 3)
       .toUpperCase()}`;
 
+    const candidateImage = (
+      newColorImageUrl.trim() ||
+      watchedPrimaryImage ||
+      DEFAULT_MOCKUP_URL
+    ).trim();
+
+    const isDuplicateImg = watchedColorVariants.some(
+      (cv) => (cv.image_url || watchedPrimaryImage || "").trim() === candidateImage
+    );
+    if (isDuplicateImg) {
+      setVariantWarning(
+        "Nota: La nueva variante tenía la misma foto que otro color. Sube o asigna una fotografía propia para cada tono."
+      );
+    } else {
+      setVariantWarning(null);
+    }
+
     const nextVariants = [
       ...watchedColorVariants,
       {
@@ -286,6 +405,7 @@ export function ProductFormDrawer({
         stock_units: Number(newColorUnits) || 0,
         is_default: watchedColorVariants.length === 0,
         sort_order: watchedColorVariants.length + 1,
+        image_url: candidateImage,
       },
     ];
     setValue("color_variants", nextVariants, { shouldValidate: true });
@@ -295,13 +415,12 @@ export function ProductFormDrawer({
     );
     setValue("total_stock", sumUnits);
     setNewColorName("");
+    setNewColorImageUrl("");
   };
 
   const handleRemoveColorVariant = (variantId: string) => {
     if (watchedColorVariants.length <= 1) return;
-    const nextVariants = watchedColorVariants.filter(
-      (c) => c.id !== variantId
-    );
+    const nextVariants = watchedColorVariants.filter((c) => c.id !== variantId);
     setValue("color_variants", nextVariants, { shouldValidate: true });
     const sumUnits = nextVariants.reduce(
       (sum, item) => sum + Number(item.stock_units || 0),
@@ -336,6 +455,30 @@ export function ProductFormDrawer({
     });
   };
 
+  const handleUpdateColorVariantHex = (variantId: string, hex: string) => {
+    const nextVariants = watchedColorVariants.map((c) =>
+      c.id === variantId ? { ...c, hex_code: hex } : c
+    );
+    setValue("color_variants", nextVariants, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  const handleUpdateColorVariantImage = (
+    variantId: string,
+    imageUrl: string
+  ) => {
+    const nextVariants = watchedColorVariants.map((c) =>
+      c.id === variantId ? { ...c, image_url: imageUrl } : c
+    );
+    setValue("color_variants", nextVariants, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setVariantWarning(null);
+  };
+
   const onSubmit = async (values: ProductFormValues) => {
     const saved = await saveProductToSupabase(values, product);
     onSaved(saved, !product);
@@ -343,716 +486,1067 @@ export function ProductFormDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden transition-opacity">
+    <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop Overlay */}
       <div
-        className="absolute inset-0 bg-inverse-surface/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity"
         onClick={onClose}
-      ></div>
+      />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-screen max-w-4xl bg-surface-container-lowest shadow-[-8px_0px_24px_rgba(42,50,53,0.15)] flex flex-col justify-between overflow-y-auto z-10"
+          className="w-screen max-w-3xl bg-slate-50 shadow-2xl border-l border-slate-200 flex flex-col justify-between overflow-hidden z-10"
         >
-          {/* Drawer Header */}
-          <div className="p-space-lg bg-surface-container-low flex items-center justify-between shadow-[0_2px_8px_rgba(42,50,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[2px_2px_0px_#2a3235]">
-                <span className="material-symbols-outlined text-[20px]">
-                  edit_note
-                </span>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-extrabold">
-                    {product
-                      ? `Edit: ${watchedTitle || product.title}`
-                      : "Create New Product"}
-                  </h2>
-                  <span
-                    className={`font-label-badge text-label-badge px-2 py-0.5 rounded-full font-bold ${
-                      watchedIsLive
-                        ? "bg-tertiary-fixed text-on-tertiary-container"
-                        : "bg-surface-container-highest text-on-surface-variant"
-                    }`}
-                  >
-                    {watchedIsLive ? "ONLINE" : "DRAFT"}
+          {/* Sticky Top Header + Tabs */}
+          <div className="bg-white border-b border-slate-200 px-6 pt-5 pb-0 shrink-0">
+            <div className="flex items-center justify-between gap-4 pb-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+                  <span className="material-symbols-outlined text-[20px]">
+                    edit_note
                   </span>
                 </div>
-                <p className="font-label-badge text-label-badge text-outline uppercase tracking-wider">
-                  SKU: {watchedSku} • Last updated today
-                </p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-headline-sm text-lg text-on-surface font-extrabold truncate">
+                      {product
+                        ? `Editar: ${watchedTitle || product.title}`
+                        : "Crear Nuevo Producto"}
+                    </h2>
+                    <span
+                      className={`font-label-badge text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
+                        watchedIsLive
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : "bg-slate-100 text-slate-600 border border-slate-200"
+                      }`}
+                    >
+                      {watchedIsLive ? "ACTIVO" : "BORRADOR"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    SKU: <span className="font-mono font-bold">{watchedSku}</span>{" "}
+                    • {watchedColorVariants.length} variantes de color
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Link
+                  className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                  href={
+                    watchedSlug || product?.slug
+                      ? `/products/${watchedSlug || product?.slug}`
+                      : "/"
+                  }
+                  target="_blank"
+                >
+                  <span>Ver en Tienda</span>
+                  <span className="material-symbols-outlined text-[15px]">
+                    open_in_new
+                  </span>
+                </Link>
+                <button
+                  className="w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                  onClick={onClose}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    close
+                  </span>
+                </button>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Link
-                className="flex items-center gap-1 font-label-md text-label-md text-primary hover:underline px-2 py-1"
-                href={
-                  watchedSlug || product?.slug
-                    ? `/products/${watchedSlug || product?.slug}`
-                    : "/"
-                }
-                target="_blank"
-              >
-                <span>View Live on Storefront</span>
-                <span className="material-symbols-outlined text-[16px]">
-                  open_in_new
-                </span>
-              </Link>
+
+            {/* 3 Clean Navigation Tabs */}
+            <div className="flex items-center gap-1 border-t border-slate-100 pt-2">
               <button
-                className="p-1.5 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors"
-                onClick={onClose}
                 type="button"
+                onClick={() => setActiveTab("info_pricing")}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all ${
+                  activeTab === "info_pricing"
+                    ? "border-primary text-primary bg-primary/5 rounded-t-lg"
+                    : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-t-lg"
+                }`}
               >
-                <span className="material-symbols-outlined text-[24px]">
-                  close
+                <span className="material-symbols-outlined text-[17px]">
+                  sell
                 </span>
+                <span>1. Información y Precios</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("variants_media")}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all ${
+                  activeTab === "variants_media"
+                    ? "border-primary text-primary bg-primary/5 rounded-t-lg"
+                    : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-t-lg"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[17px]">
+                  palette
+                </span>
+                <span>
+                  2. Variantes de Color e Imágenes ({watchedColorVariants.length})
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("models_inventory")}
+                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all ${
+                  activeTab === "models_inventory"
+                    ? "border-primary text-primary bg-primary/5 rounded-t-lg"
+                    : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-t-lg"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[17px]">
+                  smartphone
+                </span>
+                <span>3. Modelos Compatibles e Inventario</span>
               </button>
             </div>
           </div>
 
-          {/* Drawer Content Grid (Two Columns) */}
-          <div className="p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-xl flex-1">
-            {/* Left Column: Media Gallery Manager (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col gap-space-md">
-              <div>
-                <label className="font-label-md text-label-md text-on-surface font-bold block mb-1">
-                  Product Media &amp; Mockups
-                </label>
-                <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
-                  Upload multi-angle photos and 3D device renders (2000 ×
-                  2000px, PNG or WEBP recommended).
-                </p>
-              </div>
-
-              {/* Primary Featured Mockup Slot */}
-              <div className="relative group rounded-DEFAULT bg-primary-fixed/20 p-2 shadow-[2px_2px_0px_#2a3235]">
-                <img
-                  alt={watchedTitle || "Primary Mockup"}
-                  className="w-full h-56 object-cover rounded-DEFAULT"
-                  src={watchedPrimaryImage || DEFAULT_MOCKUP_URL}
-                />
-                <div className="absolute top-4 left-4 bg-primary text-on-primary font-label-badge text-[10px] px-2 py-0.5 rounded-full font-bold shadow-[1px_1px_0px_#2a3235]">
-                  PRIMARY DISPLAY
-                </div>
-                <div className="absolute bottom-4 right-4 flex items-center gap-1">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    title="Cambiar imagen principal"
-                    className="w-8 h-8 rounded-full bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high"
-                    type="button"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      crop
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (watchedGallery.length > 0) {
-                        setValue("primary_image_url", watchedGallery[0]);
-                        setValue("gallery_urls", watchedGallery.slice(1));
-                      } else {
-                        setValue("primary_image_url", DEFAULT_MOCKUP_URL);
-                      }
-                    }}
-                    title="Restablecer imagen"
-                    className="w-8 h-8 rounded-full bg-surface-container-lowest text-error flex items-center justify-center shadow-[1px_1px_0px_#2a3235] hover:bg-surface-container-high"
-                    type="button"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      delete
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Thumbnail Reel (Reorderable + Upload) */}
-              <div className="grid grid-cols-3 gap-2">
-                {watchedGallery.map((url, idx) => (
-                  <div
-                    key={`${url}-${idx}`}
-                    onClick={() => {
-                      // Click thumbnail to promote to Primary Display
-                      const currentPrimary = watchedPrimaryImage;
-                      const nextGallery = [...watchedGallery];
-                      nextGallery[idx] = currentPrimary;
-                      setValue("primary_image_url", url);
-                      setValue("gallery_urls", nextGallery);
-                    }}
-                    title="Clic para usar como imagen principal"
-                    className="relative rounded-lg bg-surface-container-low p-1 shadow-[1px_1px_0px_#2a3235] group cursor-pointer"
-                  >
-                    <img
-                      alt={`Gallery ${idx + 1}`}
-                      className="w-full h-20 object-cover rounded"
-                      src={url}
-                    />
-                    <span className="material-symbols-outlined absolute top-2 right-2 text-[14px] text-on-surface-variant">
-                      drag_indicator
-                    </span>
+          {/* Drawer Body Content */}
+          <div className="p-6 overflow-y-auto flex-1 space-y-5">
+            {/* TAB 1: INFORMACIÓN Y PRECIOS */}
+            {activeTab === "info_pricing" && (
+              <>
+                {/* Card 1: Datos Principales */}
+                <div className={CARD_CLASS}>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">
+                        Datos Principales del Producto
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Título, código SKU, categoría y enlace permanente en la
+                        tienda
+                      </p>
+                    </div>
                   </div>
-                ))}
 
-                {/* Upload Slot */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="rounded-lg bg-surface-container-low flex flex-col items-center justify-center h-20 text-outline hover:text-primary hover:bg-surface-container transition-colors cursor-pointer shadow-[1px_1px_0px_#2a3235]"
-                >
-                  <span className="material-symbols-outlined text-[24px]">
-                    add_photo_alternate
-                  </span>
-                  <span className="font-label-badge text-[9px] uppercase font-bold mt-1">
-                    {uploadingImage ? "Uploading..." : "+ Upload"}
-                  </span>
-                </button>
+                  {/* Row 1: Title (2 cols) + SKU (1 col) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className={LABEL_CLASS}>Product Title</label>
+                      <input
+                        {...register("title", {
+                          onChange: (e) => {
+                            if (!product) {
+                              setValue("slug", slugify(e.target.value));
+                            }
+                          },
+                        })}
+                        placeholder="Ej. Strawberry Milkshake Wave"
+                        className={INPUT_CLASS}
+                        type="text"
+                      />
+                      {errors.title && (
+                        <span className="text-error text-xs mt-1 block">
+                          {errors.title.message}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className={LABEL_CLASS}>SKU Code</label>
+                      <input
+                        {...register("sku")}
+                        className={`${INPUT_CLASS} uppercase font-mono`}
+                        type="text"
+                      />
+                      {errors.sku && (
+                        <span className="text-error text-xs mt-1 block">
+                          {errors.sku.message}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Row 2: Subtitle (1 col) + Categoría (1 col) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Subtitle / Especificación
+                      </label>
+                      <input
+                        {...register("subtitle")}
+                        placeholder="Ej. Doble Armadura MagSafe"
+                        className={INPUT_CLASS}
+                        type="text"
+                      />
+                    </div>
+
+                    <div>
+                      <label className={LABEL_CLASS}>Categoría</label>
+                      <select
+                        {...register("category_badge")}
+                        className={INPUT_CLASS}
+                      >
+                        {CATEGORIES_LIST.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Row 3: URL Slug (2 cols) + Etiqueta Promo (1 col) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className={LABEL_CLASS}>URL Slug (Handle)</label>
+                      <div className="h-10 flex items-center rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-primary/25 focus-within:border-primary transition-all">
+                        <span className="bg-slate-100 px-3 h-full flex items-center text-xs text-slate-500 border-r border-slate-300 select-none shrink-0">
+                          /products/
+                        </span>
+                        <input
+                          {...register("slug")}
+                          className="flex-1 h-full px-3 text-sm text-on-surface bg-white focus:outline-none"
+                          placeholder="strawberry-milkshake-wave"
+                          type="text"
+                        />
+                      </div>
+                      {errors.slug && (
+                        <span className="text-error text-xs mt-1 block">
+                          {errors.slug.message}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className={LABEL_CLASS}>Etiqueta Promo</label>
+                      <select {...register("promo_tag")} className={INPUT_CLASS}>
+                        <option value="">Ninguna (Sin etiqueta)</option>
+                        <option value="BESTSELLER">BESTSELLER</option>
+                        <option value="HOT DROP">HOT DROP</option>
+                        <option value="WAITLIST">WAITLIST</option>
+                        <option value="UNPUBLISHED">UNPUBLISHED</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Precios y Margen ($ USD) */}
+                <div className={CARD_CLASS}>
+                  <div className="border-b border-slate-100 pb-3">
+                    <h3 className="text-sm font-bold text-slate-800">
+                      Precios y Margen ($ USD)
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      El equivalente en Bolívares se calcula automáticamente con
+                      la tasa BCV configurada
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Precio de Venta ($ USD)
+                      </label>
+                      <input
+                        step="0.01"
+                        {...register("price_usd")}
+                        className={INPUT_CLASS}
+                        type="number"
+                      />
+                    </div>
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Precio Anterior (Compare-at)
+                      </label>
+                      <input
+                        step="0.01"
+                        {...register("compare_at_price_usd")}
+                        className={INPUT_CLASS}
+                        type="number"
+                      />
+                    </div>
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Costo Unitario ($ USD)
+                      </label>
+                      <input
+                        step="0.01"
+                        {...register("cost_usd")}
+                        className={INPUT_CLASS}
+                        type="number"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Clean Margin Summary Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <span className="material-symbols-outlined text-[18px] text-emerald-600">
+                        monitoring
+                      </span>
+                      <span>Rentabilidad estimada por unidad:</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-slate-700">
+                        Ganancia Neta:{" "}
+                        <strong className="text-slate-900">
+                          ${netProfitPerUnit.toFixed(2)} USD
+                        </strong>
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">
+                        Margen Bruto: {grossMarginPct}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 3: Visibilidad y Opciones de Venta */}
+                <div className={CARD_CLASS}>
+                  <div className="border-b border-slate-100 pb-3">
+                    <h3 className="text-sm font-bold text-slate-800">
+                      Visibilidad y Opciones de Venta
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Controla cómo aparece este producto en el catálogo público
+                    </p>
+                  </div>
+
+                  <div className="divide-y divide-slate-100">
+                    <div className="py-3 first:pt-0 flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Producto Activo en Storefront
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Visible en el catálogo público y resultados de búsqueda
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          {...register("is_live")}
+                          className="sr-only peer"
+                          type="checkbox"
+                        />
+                        <div className="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+                      </label>
+                    </div>
+
+                    <div className="py-3 flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Permitir Compra Directa por WhatsApp
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Habilita el botón de pedido inmediato vía WhatsApp en
+                          la vista del producto
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          {...register("allow_whatsapp_checkout")}
+                          className="sr-only peer"
+                          type="checkbox"
+                        />
+                        <div className="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+                      </label>
+                    </div>
+
+                    <div className="py-3 last:pb-0 flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Mostrar Insignia de Urgencia (Bajo Stock)
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Muestra la etiqueta destacada de últimas unidades
+                          disponibles
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          {...register("show_low_stock_badge")}
+                          className="sr-only peer"
+                          type="checkbox"
+                        />
+                        <div className="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* TAB 2: VARIANTES DE COLOR E IMÁGENES */}
+            {activeTab === "variants_media" && (
+              <>
+                {/* Hidden File Input for Per-Variant Photo Upload */}
                 <input
-                  ref={fileInputRef}
+                  ref={variantFileInputRef}
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/gif"
-                  onChange={handleFileChange}
+                  onChange={handleVariantFileChange}
                   className="hidden"
                 />
-              </div>
 
-              {/* Direct Image URL Input */}
-              <div className="flex flex-col gap-1">
-                <label className="font-label-badge text-label-badge text-on-surface-variant uppercase">
-                  Primary Image URL (or upload above)
-                </label>
-                <input
-                  {...register("primary_image_url")}
-                  className="px-2.5 py-1.5 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                  type="text"
-                />
-                {errors.primary_image_url && (
-                  <span className="text-error text-xs">
-                    {errors.primary_image_url.message}
-                  </span>
-                )}
-              </div>
+                {/* Card 1: Variantes de Color — Cada color con su propia foto, HEX y stock */}
+                <div className={CARD_CLASS}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">
+                        Variantes de Color — Cada color con su propia foto, HEX
+                        y stock
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Cada variante de color tiene su propia fotografía que
+                        cambia automáticamente cuando el cliente selecciona el
+                        tono en la tienda.
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold shrink-0 self-start sm:self-auto">
+                      {watchedColorVariants.length} Tonos Activos
+                    </span>
+                  </div>
 
-              {/* Dimensions spec info pill */}
-              <div className="bg-secondary-container/30 p-2.5 rounded-lg flex items-center gap-2">
-                <span className="material-symbols-outlined text-secondary text-[18px]">
-                  info
-                </span>
-                <p className="font-body-sm text-body-sm text-on-secondary-container">
-                  Square aspect ratio (1:1) keeps storefront grid seamlessly
-                  aligned across all devices.
-                </p>
-              </div>
-            </div>
+                  {variantWarning && (
+                    <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px] text-amber-600 shrink-0">
+                        warning
+                      </span>
+                      <span>{variantWarning}</span>
+                    </div>
+                  )}
 
-            {/* Right Column: Product Attributes & Pricing (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col gap-space-md">
-              {/* Product Title & SKU */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
-                <div className="sm:col-span-2 flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Product Title
-                  </label>
-                  <input
-                    {...register("title", {
-                      onChange: (e) => {
-                        if (!product) {
-                          setValue("slug", slugify(e.target.value));
-                        }
-                      },
+                  {/* Color Variants List */}
+                  <div className="space-y-3">
+                    {watchedColorVariants.map((variant) => {
+                      const effectiveImg = (
+                        variant.image_url ||
+                        watchedPrimaryImage ||
+                        DEFAULT_MOCKUP_URL
+                      ).trim();
+                      const sharesImageWithAnother =
+                        watchedColorVariants.length > 1 &&
+                        (imageCountMap[effectiveImg] || 0) > 1;
+                      const isUploadingThis = uploadingVariantId === variant.id;
+
+                      return (
+                        <div
+                          key={variant.id}
+                          className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col gap-2.5"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                            {/* Variant Image Slot */}
+                            <div className="w-16 h-16 rounded-lg border border-slate-200 bg-white overflow-hidden shrink-0 relative group">
+                              <img
+                                src={effectiveImg}
+                                alt={variant.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTargetVariantIdForUpload(variant.id);
+                                  variantFileInputRef.current?.click();
+                                }}
+                                className="absolute inset-0 bg-slate-900/65 text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-0.5 cursor-pointer"
+                                title="Subir fotografía para este color"
+                              >
+                                <span className="material-symbols-outlined text-[15px]">
+                                  photo_camera
+                                </span>
+                                <span>
+                                  {isUploadingThis ? "..." : "Cambiar Foto"}
+                                </span>
+                              </button>
+                            </div>
+
+                            {/* Fields Grid (12 cols) */}
+                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 flex-1 items-end">
+                              {/* Color Picker + HEX (3 cols) */}
+                              <div className="sm:col-span-3">
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                                  Color HEX
+                                </label>
+                                <div className="flex items-center gap-1.5 h-9">
+                                  <input
+                                    type="color"
+                                    value={
+                                      /^#[0-9A-Fa-f]{6}$/.test(variant.hex_code)
+                                        ? variant.hex_code
+                                        : "#F06292"
+                                    }
+                                    onChange={(e) =>
+                                      handleUpdateColorVariantHex(
+                                        variant.id,
+                                        e.target.value.toUpperCase()
+                                      )
+                                    }
+                                    className="w-9 h-9 rounded-lg border border-slate-300 bg-white p-0.5 cursor-pointer shrink-0"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={variant.hex_code}
+                                    onChange={(e) =>
+                                      handleUpdateColorVariantHex(
+                                        variant.id,
+                                        e.target.value.toUpperCase()
+                                      )
+                                    }
+                                    className={`${COMPACT_INPUT_CLASS} font-mono uppercase text-xs`}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Nombre del Color (4 cols) */}
+                              <div className="sm:col-span-4">
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                                  Nombre del Color
+                                </label>
+                                <input
+                                  type="text"
+                                  value={variant.name}
+                                  onChange={(e) =>
+                                    handleUpdateColorVariantName(
+                                      variant.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className={COMPACT_INPUT_CLASS}
+                                  placeholder="Ej. Flor Pastel"
+                                />
+                              </div>
+
+                              {/* URL de Imagen de la Variante (3 cols) */}
+                              <div className="sm:col-span-3">
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                                  Foto URL del Color
+                                </label>
+                                <input
+                                  type="text"
+                                  value={variant.image_url || ""}
+                                  onChange={(e) =>
+                                    handleUpdateColorVariantImage(
+                                      variant.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className={`${COMPACT_INPUT_CLASS} text-xs`}
+                                  placeholder="URL o sube foto"
+                                />
+                              </div>
+
+                              {/* Stock (2 cols) */}
+                              <div className="sm:col-span-2">
+                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                                  Stock
+                                </label>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={variant.stock_units}
+                                  onChange={(e) =>
+                                    handleUpdateColorVariantStock(
+                                      variant.id,
+                                      parseInt(e.target.value, 10)
+                                    )
+                                  }
+                                  className={`${COMPACT_INPUT_CLASS} text-center font-bold`}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Delete Variant Button */}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveColorVariant(variant.id)
+                              }
+                              disabled={watchedColorVariants.length <= 1}
+                              className="h-9 w-9 rounded-lg border border-slate-200 bg-white text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0 self-end disabled:opacity-40"
+                              title="Eliminar variante de color"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">
+                                delete
+                              </span>
+                            </button>
+                          </div>
+
+                          {sharesImageWithAnother && (
+                            <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200/80 text-[11px] text-amber-800">
+                              <span>
+                                ⚠️ Esta variante comparte la misma URL de imagen
+                                que otro color. Sube una imagen distinta para
+                                este tono.
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTargetVariantIdForUpload(variant.id);
+                                  variantFileInputRef.current?.click();
+                                }}
+                                className="font-bold underline hover:text-amber-950 shrink-0"
+                              >
+                                Subir foto propia
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
                     })}
-                    placeholder="e.g. Strawberry Milkshake Wave"
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
-                    type="text"
-                  />
-                  {errors.title && (
-                    <span className="text-error text-xs">
-                      {errors.title.message}
-                    </span>
-                  )}
-                </div>
+                  </div>
 
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    SKU Code
-                  </label>
-                  <input
-                    {...register("sku")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface uppercase focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                    type="text"
-                  />
-                  {errors.sku && (
-                    <span className="text-error text-xs">
-                      {errors.sku.message}
-                    </span>
-                  )}
-                </div>
-              </div>
+                  {/* + Agregar Nueva Variante de Color Box */}
+                  <div className="p-4 rounded-xl border border-dashed border-slate-300 bg-slate-50/40 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                        + Agregar Nueva Variante de Color
+                      </span>
+                      {newColorImageUrl && (
+                        <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">
+                            check_circle
+                          </span>
+                          Foto asignada para el nuevo color
+                        </span>
+                      )}
+                    </div>
 
-              {/* URL Slug & Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
-                <div className="sm:col-span-2 flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Storefront URL Handle
-                  </label>
-                  <div className="flex items-center">
-                    <span className="bg-surface-container-high px-3 py-2 rounded-l-lg font-label-badge text-label-badge text-on-surface-variant shadow-[1px_1px_0px_#2a3235]">
-                      pocketcases.co/products/
-                    </span>
                     <input
-                      {...register("slug")}
-                      className="flex-1 px-3 py-2 rounded-r-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                      type="text"
+                      ref={newVariantFileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      onChange={handleNewVariantFileChange}
+                      className="hidden"
                     />
-                  </div>
-                  {errors.slug && (
-                    <span className="text-error text-xs">
-                      {errors.slug.message}
-                    </span>
-                  )}
-                </div>
 
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Category
-                  </label>
-                  <select
-                    {...register("category_badge")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                  >
-                    {CATEGORIES_LIST.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Subtitle / Protection Spec, Promo Badge Tag & Default Finish */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Subtitle / Protection Spec
-                  </label>
-                  <input
-                    {...register("subtitle")}
-                    placeholder="e.g. Doble Armadura MagSafe"
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
-                    type="text"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Promo Badge Tag
-                  </label>
-                  <select
-                    {...register("promo_tag")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                  >
-                    <option value="">None (Sin etiqueta)</option>
-                    <option value="BESTSELLER">BESTSELLER</option>
-                    <option value="HOT DROP">HOT DROP</option>
-                    <option value="WAITLIST">WAITLIST</option>
-                    <option value="UNPUBLISHED">UNPUBLISHED</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Default Finish
-                  </label>
-                  <select
-                    {...register("default_finish")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                  >
-                    <option value="Grip Mate">Grip Mate</option>
-                    <option value="Brillo Jelly">Brillo Jelly</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Supported Phone Models Pills Multi-select */}
-              <div className="flex flex-col gap-space-xs">
-                <div className="flex items-center justify-between">
-                  <label className="font-label-md text-label-md text-on-surface font-bold flex items-center gap-1.5">
-                    <span>Supported iPhone &amp; Galaxy Models</span>
-                    <span className="font-label-badge text-label-badge bg-secondary-fixed text-on-secondary-fixed px-2 py-0.2 rounded-full font-bold">
-                      {watchedModels.length} Supported
-                    </span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValue("supported_models", ALL_SUPPORTED_MODELS, {
-                          shouldValidate: true,
-                        })
-                      }
-                      className="text-primary hover:underline font-label-badge text-[10px] uppercase font-bold"
-                    >
-                      Select All (13-16)
-                    </button>
-                    <span className="text-outline text-xs">•</span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValue(
-                          "supported_models",
-                          [ALL_SUPPORTED_MODELS[0]],
-                          { shouldValidate: true }
-                        )
-                      }
-                      className="text-on-surface-variant hover:text-error font-label-badge text-[10px] uppercase font-bold"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {ALL_SUPPORTED_MODELS.map((modelName) => {
-                    const checked = watchedModels.includes(modelName);
-                    return (
-                      <label
-                        key={modelName}
-                        onClick={() => toggleModel(modelName)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-badge text-label-badge font-bold shadow-[1px_1px_0px_#2a3235] cursor-pointer transition-colors ${
-                          checked
-                            ? "bg-inverse-surface text-inverse-on-surface"
-                            : "bg-surface-container text-on-surface-variant"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {}}
-                          className="accent-primary w-3 h-3 rounded"
-                        />
-                        <span>{modelName}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Color Variant Manager & Hex Codes */}
-              <div className="bg-surface-container-low p-space-md rounded-lg shadow-[1px_1px_0px_#2a3235] flex flex-col gap-space-sm border border-outline-variant/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-[20px]">
-                      palette
-                    </span>
-                    <span className="font-label-md text-label-md text-on-surface font-bold">
-                      Color Variant Manager &amp; Hex Codes
-                    </span>
-                  </div>
-                  <span className="font-label-badge text-[10px] bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full font-bold uppercase">
-                    {watchedColorVariants.length} Swatches Configured
-                  </span>
-                </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Configure color shades with precise hexadecimal codes,
-                  individual inventory pools, and SKU suffixes.
-                </p>
-
-                <div className="flex flex-col gap-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {watchedColorVariants.map((variant) => (
-                      <div
-                        key={variant.id}
-                        className="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-container-lowest shadow-[1px_1px_0px_#2a3235]"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <div
-                            className="w-7 h-7 rounded-full shadow-[1px_1px_0px_#2a3235] shrink-0 border border-outline-variant"
-                            style={{ backgroundColor: variant.hex_code }}
-                          ></div>
-                          <div className="min-w-0 flex-1">
-                            <input
-                              type="text"
-                              value={variant.name}
-                              onChange={(e) =>
-                                handleUpdateColorVariantName(
-                                  variant.id,
-                                  e.target.value
-                                )
-                              }
-                              aria-label="Color variant name"
-                              className="w-full bg-transparent font-label-md text-label-md text-on-surface font-bold leading-tight focus:outline-none focus:bg-surface-container-low rounded px-1 -ml-1"
-                            />
-                            <p className="font-label-badge text-[10px] text-outline truncate">
-                              {variant.hex_code} • SKU: {variant.sku_suffix}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <div className="flex items-center gap-1 bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded">
-                            <input
-                              type="number"
-                              min={0}
-                              value={variant.stock_units}
-                              onChange={(e) =>
-                                handleUpdateColorVariantStock(
-                                  variant.id,
-                                  parseInt(e.target.value, 10)
-                                )
-                              }
-                              aria-label="Color variant stock units"
-                              className="w-12 bg-surface-container-lowest text-on-surface font-label-badge text-[11px] font-bold text-center rounded px-1 py-0.5 focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                            />
-                            <span className="font-label-badge text-[9px] font-bold uppercase">
-                              uds
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveColorVariant(variant.id)}
-                            className="text-on-surface-variant hover:text-error transition-colors"
-                            title="Remove color variant"
-                          >
-                            <span className="material-symbols-outlined text-[16px]">
-                              delete
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add New Color Variant Sub-Form */}
-                  <div className="bg-surface-container p-2.5 rounded-lg flex flex-col gap-2 mt-1">
-                    <span className="font-label-badge text-label-badge text-on-surface-variant uppercase font-bold">
-                      + Add New Color Variant
-                    </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center">
-                      <div className="sm:col-span-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                      {/* Nombre del Nuevo Color (3 cols) */}
+                      <div className="sm:col-span-3">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                          Nombre del Color
+                        </label>
                         <input
                           value={newColorName}
                           onChange={(e) => setNewColorName(e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                          placeholder="Name (e.g. Cream Puff)"
+                          className={COMPACT_INPUT_CLASS}
+                          placeholder="Ej. Baby Peach"
                           type="text"
                         />
                       </div>
-                      <div className="sm:col-span-1 flex items-center gap-1.5">
-                        <input
-                          type="color"
-                          value={newColorHex}
-                          onChange={(e) => setNewColorHex(e.target.value)}
-                          className="w-8 h-8 rounded border border-outline-variant cursor-pointer p-0 bg-transparent"
-                        />
-                        <input
-                          value={newColorHex}
-                          onChange={(e) => setNewColorHex(e.target.value)}
-                          className="w-full px-2 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface uppercase focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                          placeholder="#HEX"
-                          type="text"
-                        />
+
+                      {/* Color Picker + HEX (3 cols) */}
+                      <div className="sm:col-span-3">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                          Tono #HEX
+                        </label>
+                        <div className="flex items-center gap-1.5 h-9">
+                          <input
+                            type="color"
+                            value={
+                              /^#[0-9A-Fa-f]{6}$/.test(newColorHex)
+                                ? newColorHex
+                                : "#FDBA74"
+                            }
+                            onChange={(e) =>
+                              setNewColorHex(e.target.value.toUpperCase())
+                            }
+                            className="w-9 h-9 rounded-lg border border-slate-300 bg-white p-0.5 cursor-pointer shrink-0"
+                          />
+                          <input
+                            value={newColorHex}
+                            onChange={(e) =>
+                              setNewColorHex(e.target.value.toUpperCase())
+                            }
+                            className={`${COMPACT_INPUT_CLASS} font-mono uppercase text-xs`}
+                            placeholder="#HEX"
+                            type="text"
+                          />
+                        </div>
                       </div>
-                      <div className="sm:col-span-1">
+
+                      {/* Stock Units (2 cols) */}
+                      <div className="sm:col-span-2">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                          Unidades
+                        </label>
                         <input
                           value={newColorUnits}
                           onChange={(e) =>
                             setNewColorUnits(Number(e.target.value))
                           }
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-surface-container-lowest font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                          placeholder="Units (e.g. 20)"
+                          className={COMPACT_INPUT_CLASS}
+                          placeholder="20"
                           type="number"
+                          min={0}
                         />
                       </div>
-                      <div className="sm:col-span-1">
+
+                      {/* Upload Photo + Add Variant Buttons (4 cols) */}
+                      <div className="sm:col-span-4 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            newVariantFileInputRef.current?.click()
+                          }
+                          className="h-9 px-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            upload
+                          </span>
+                          <span>
+                            {uploadingNewVariantImg
+                              ? "..."
+                              : newColorImageUrl
+                              ? "Foto OK"
+                              : "Subir Foto"}
+                          </span>
+                        </button>
+
                         <button
                           type="button"
                           onClick={handleAddColorVariant}
-                          className="w-full py-1.5 px-3 rounded-lg bg-primary text-on-primary font-label-badge text-label-badge uppercase font-bold shadow-[1px_1px_0px_#2a3235] hover:opacity-90 flex items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5"
+                          className="h-9 flex-1 px-3 rounded-lg bg-primary text-white text-xs font-bold hover:opacity-95 flex items-center justify-center gap-1 transition-all"
                         >
                           <span className="material-symbols-outlined text-[16px]">
                             add
                           </span>
-                          <span>Add Color</span>
+                          <span>Agregar</span>
                         </button>
                       </div>
                     </div>
+
+                    {/* Optional direct URL input for the new variant photo */}
+                    <div>
+                      <input
+                        type="text"
+                        value={newColorImageUrl}
+                        onChange={(e) => setNewColorImageUrl(e.target.value)}
+                        placeholder="O pega aquí la URL de la fotografía específica para este nuevo color..."
+                        className={`${COMPACT_INPUT_CLASS} text-xs`}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Pricing & Cost Grid */}
-              <div className="grid grid-cols-3 gap-space-md">
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Retail Price ($ USD)
-                  </label>
+                {/* Card 2: Portada Principal y Galería Adicional del Producto */}
+                <div className={CARD_CLASS}>
+                  <div className="border-b border-slate-100 pb-3">
+                    <h3 className="text-sm font-bold text-slate-800">
+                      Portada Principal y Galería Adicional del Producto
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Imagen principal de respaldo y ángulos adicionales para la
+                      galería de detalle
+                    </p>
+                  </div>
+
                   <input
-                    step="0.01"
-                    {...register("price_usd")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                    type="number"
+                    ref={primaryFileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={handlePrimaryFileChange}
+                    className="hidden"
                   />
-                </div>
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Compare-at Price (Was)
-                  </label>
+
                   <input
-                    step="0.01"
-                    {...register("compare_at_price_usd")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                    type="number"
+                    ref={galleryFileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={handleGalleryFileChange}
+                    className="hidden"
                   />
-                </div>
-                <div className="flex flex-col gap-space-xs">
-                  <label className="font-label-md text-label-md text-on-surface font-bold">
-                    Unit Cost ($ USD)
-                  </label>
-                  <input
-                    step="0.01"
-                    {...register("cost_usd")}
-                    className="px-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                    type="number"
-                  />
-                </div>
-              </div>
 
-              {/* Inventory & Stock Controls */}
-              <div className="bg-surface-container-low p-space-md rounded-lg shadow-[1px_1px_0px_#2a3235] flex flex-col gap-space-sm">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-md text-label-md text-on-surface font-bold">
-                    Inventory Levels &amp; Thresholds
-                  </span>
-                  <label className="flex items-center gap-1.5 cursor-pointer">
-                    <input
-                      {...register("track_inventory")}
-                      className="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer"
-                      type="checkbox"
-                    />
-                    <span className="font-label-badge text-label-badge text-on-surface">
-                      Track live quantity
-                    </span>
-                  </label>
-                </div>
-                <div className="grid grid-cols-3 gap-space-md">
-                  <div className="flex flex-col gap-space-xs">
-                    <label className="font-label-badge text-label-badge text-on-surface-variant uppercase">
-                      Current Available Stock
+                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                    <div className="w-28 h-28 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 relative">
+                      <img
+                        src={watchedPrimaryImage || DEFAULT_MOCKUP_URL}
+                        alt={watchedTitle || "Portada"}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-1.5 left-1.5 bg-slate-900/75 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
+                        Portada
+                      </span>
+                    </div>
+
+                    <div className="flex-1 w-full space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => primaryFileInputRef.current?.click()}
+                          className="h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-bold flex items-center gap-1.5 hover:opacity-95 transition-opacity"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            upload
+                          </span>
+                          <span>
+                            {uploadingPrimary
+                              ? "Subiendo..."
+                              : "Subir Portada"}
+                          </span>
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className={LABEL_CLASS}>
+                          URL de Portada Principal
+                        </label>
+                        <input
+                          {...register("primary_image_url")}
+                          className={INPUT_CLASS}
+                          type="text"
+                        />
+                        {errors.primary_image_url && (
+                          <span className="text-error text-xs mt-1 block">
+                            {errors.primary_image_url.message}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Gallery Strip */}
+                  <div className="pt-2">
+                    <label className={LABEL_CLASS}>
+                      Miniaturas Adicionales de Galería ({watchedGallery.length}
+                      )
                     </label>
-                    <input
-                      {...register("total_stock")}
-                      className="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                      type="number"
-                    />
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+                      {watchedGallery.map((url, idx) => (
+                        <div
+                          key={`${url}-${idx}`}
+                          className="relative group h-20 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden"
+                        >
+                          <img
+                            src={url}
+                            alt={`Miniatura ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentPrimary = watchedPrimaryImage;
+                                const nextGallery = [...watchedGallery];
+                                nextGallery[idx] = currentPrimary;
+                                setValue("primary_image_url", url);
+                                setValue("gallery_urls", nextGallery);
+                              }}
+                              title="Usar como portada"
+                              className="w-7 h-7 rounded bg-white text-slate-800 flex items-center justify-center hover:bg-slate-100"
+                            >
+                              <span className="material-symbols-outlined text-[15px]">
+                                star
+                              </span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setValue(
+                                  "gallery_urls",
+                                  watchedGallery.filter((_, i) => i !== idx),
+                                  { shouldDirty: true }
+                                );
+                              }}
+                              title="Eliminar miniatura"
+                              className="w-7 h-7 rounded bg-white text-rose-600 flex items-center justify-center hover:bg-rose-50"
+                            >
+                              <span className="material-symbols-outlined text-[15px]">
+                                delete
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        onClick={() => galleryFileInputRef.current?.click()}
+                        className="h-20 rounded-lg border border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-primary flex flex-col items-center justify-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">
+                          add_photo_alternate
+                        </span>
+                        <span className="text-[10px] font-bold uppercase">
+                          {uploadingGallery
+                            ? "Subiendo..."
+                            : "+ Subir Miniatura"}
+                        </span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-space-xs">
-                    <label className="font-label-badge text-label-badge text-on-surface-variant uppercase">
-                      Low Stock Threshold
+                </div>
+              </>
+            )}
+
+            {/* TAB 3: MODELOS COMPATIBLES E INVENTARIO */}
+            {activeTab === "models_inventory" && (
+              <>
+                {/* Card 1: Control de Stock General */}
+                <div className={CARD_CLASS}>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">
+                        Control de Stock General y Acabado
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Disponibilidad global, umbral de alerta y acabado
+                        predeterminado
+                      </p>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                      <input
+                        {...register("track_inventory")}
+                        className="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer"
+                        type="checkbox"
+                      />
+                      <span>Monitorear inventario</span>
                     </label>
-                    <input
-                      {...register("low_stock_threshold")}
-                      className="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                      type="number"
-                    />
                   </div>
-                  <div className="flex flex-col gap-space-xs">
-                    <label className="font-label-badge text-label-badge text-on-surface-variant uppercase">
-                      Stock Status
-                    </label>
-                    <select
-                      {...register("stock_status")}
-                      className="px-3 py-1.5 rounded-lg bg-surface-container-lowest font-body-md text-body-md text-on-surface focus:outline-none shadow-[1px_1px_0px_#2a3235]"
-                    >
-                      <option value="in_stock">In Stock (Activo)</option>
-                      <option value="low_stock">Low Stock</option>
-                      <option value="out_of_stock">
-                        Out of Stock (Agotado)
-                      </option>
-                      <option value="draft">Draft (Borrador)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
 
-              {/* Instant Toggle Switches Group */}
-              <div className="flex flex-col gap-space-sm pt-space-xs">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
-                  <div>
-                    <p className="font-label-md text-label-md text-on-surface font-bold">
-                      Product Active on Storefront
-                    </p>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Visible in catalog and search listings
-                    </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Stock Total Disponible
+                      </label>
+                      <input
+                        {...register("total_stock")}
+                        className={INPUT_CLASS}
+                        type="number"
+                      />
+                    </div>
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Alerta de Bajo Stock
+                      </label>
+                      <input
+                        {...register("low_stock_threshold")}
+                        className={INPUT_CLASS}
+                        type="number"
+                      />
+                    </div>
+                    <div>
+                      <label className={LABEL_CLASS}>
+                        Estado de Inventario
+                      </label>
+                      <select
+                        {...register("stock_status")}
+                        className={INPUT_CLASS}
+                      >
+                        <option value="in_stock">In Stock (Activo)</option>
+                        <option value="low_stock">Low Stock</option>
+                        <option value="out_of_stock">
+                          Out of Stock (Agotado)
+                        </option>
+                        <option value="draft">Draft (Borrador)</option>
+                      </select>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      {...register("is_live")}
-                      className="sr-only peer"
-                      type="checkbox"
-                    />
-                    <div className="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
-                  </label>
-                </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
-                  <div>
-                    <p className="font-label-md text-label-md text-on-surface font-bold">
-                      Allow WhatsApp Direct Order
-                    </p>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Enables quick checkout button on product view
-                    </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                    <div>
+                      <label className={LABEL_CLASS}>Acabado por Defecto</label>
+                      <select
+                        {...register("default_finish")}
+                        className={INPUT_CLASS}
+                      >
+                        <option value="Grip Mate">Grip Mate</option>
+                        <option value="Brillo Jelly">Brillo Jelly</option>
+                      </select>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      {...register("allow_whatsapp_checkout")}
-                      className="sr-only peer"
-                      type="checkbox"
-                    />
-                    <div className="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
-                  </label>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
-                  <div>
-                    <p className="font-label-md text-label-md text-on-surface font-bold">
-                      Display Low Stock Urgency Badge
-                    </p>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Pops up &ldquo;Only 3 left!&rdquo; notification pill
-                    </p>
+                {/* Card 2: Modelos de Teléfono Compatibles */}
+                <div className={CARD_CLASS}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-slate-800">
+                        Modelos de Teléfono Compatibles (iPhone &amp; Samsung
+                        Galaxy)
+                      </h3>
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                        {watchedModels.length} Seleccionados
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setValue("supported_models", ALL_SUPPORTED_MODELS, {
+                            shouldValidate: true,
+                          })
+                        }
+                        className="text-primary hover:underline text-xs font-bold"
+                      >
+                        Seleccionar Todos
+                      </button>
+                      <span className="text-slate-300">•</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setValue(
+                            "supported_models",
+                            [ALL_SUPPORTED_MODELS[0]],
+                            { shouldValidate: true }
+                          )
+                        }
+                        className="text-slate-500 hover:text-rose-600 text-xs font-bold"
+                      >
+                        Limpiar
+                      </button>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      {...register("show_low_stock_badge")}
-                      className="sr-only peer"
-                      type="checkbox"
-                    />
-                    <div className="w-10 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
-                  </label>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {ALL_SUPPORTED_MODELS.map((modelName) => {
+                      const checked = watchedModels.includes(modelName);
+                      return (
+                        <button
+                          key={modelName}
+                          type="button"
+                          onClick={() => toggleModel(modelName)}
+                          className={`h-9 px-3 rounded-lg border text-xs font-semibold flex items-center justify-between transition-all ${
+                            checked
+                              ? "bg-slate-900 text-white border-slate-900"
+                              : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <span className="truncate">{modelName}</span>
+                          {checked && (
+                            <span className="material-symbols-outlined text-[15px] text-primary-fixed shrink-0">
+                              check
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
 
-          {/* Drawer Action Footer */}
-          <div className="p-space-md bg-surface-container-low border-t-0 flex items-center justify-between shadow-[0_-2px_8px_rgba(42,50,53,0.05)]">
+          {/* Sticky Drawer Footer */}
+          <div className="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-between shrink-0">
             <button
-              className="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:bg-surface-container-high transition-transform active:translate-x-0.5 active:translate-y-0.5"
+              className="h-10 px-4 rounded-lg border border-slate-300 bg-white text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors"
               onClick={onClose}
               type="button"
             >
-              Discard Changes
+              Cancelar
             </button>
-            <div className="flex items-center gap-space-sm">
-              <button
-                disabled={isSubmitting}
-                className="px-space-lg py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[2px_2px_0px_#2a3235] hover:opacity-95 transition-transform active:translate-x-0.5 active:translate-y-0.5"
-                type="submit"
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+            <button
+              disabled={isSubmitting}
+              className="h-10 px-6 rounded-lg bg-primary text-white text-xs font-bold hover:opacity-95 transition-opacity disabled:opacity-60 flex items-center gap-1.5"
+              type="submit"
+            >
+              <span className="material-symbols-outlined text-[17px]">
+                save
+              </span>
+              <span>
+                {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+              </span>
+            </button>
           </div>
         </form>
       </div>
