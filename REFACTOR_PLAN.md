@@ -8,10 +8,10 @@
 ## Diagnóstico de Problemas Detectados
 
 ### 1. Storefront (`(storefront)`)
-- [ ] **Carrito abierto por defecto**: En `src/store/useCartStore.ts`, `isOpen` inicia en `true`, abriendo el drawer lateral apenas carga la página. Debe iniciar en `false` (`cerrado`), con un backdrop que permita cerrarlo al hacer clic fuera o presionar `Escape`.
-- [ ] **Ítems pre-cargados en el carrito**: El carrito inicia con 2 productos hardcodeados (`DEFAULT_CART_ITEMS`). Debe iniciar vacío (`[]`) para visitantes nuevos.
-- [ ] **Modelos de teléfono estáticos en `ProductCard`**: El `<select>` de modelos en la tarjeta usa `DEFAULT_CARD_MODELS` fijo en lugar de `product.supported_models` proveniente de Supabase.
-- [ ] **Enlaces de navegación y Footer**: Los enlaces del Footer (`Serie iPhone 16`, `Grips MagSafe`, etc.) y las tarjetas del mosaico del Hero deben filtrar activamente el catálogo al hacer scroll hacia `#product-catalog`.
+- [x] **Carrito abierto por defecto**: En `src/store/useCartStore.ts`, `isOpen` inicia en `false`, con un backdrop que permite cerrarlo al hacer clic fuera o presionar `Escape`.
+- [x] **Ítems pre-cargados en el carrito**: El carrito inicia vacío (`[]`) para visitantes nuevos (`pocket-cases-cart-v2`).
+- [x] **Modelos de teléfono estáticos en `ProductCard`**: El `<select>` de modelos en la tarjeta usa `product.supported_models` proveniente de Supabase (con fallback seguro).
+- [x] **Enlaces de navegación y Footer**: Los enlaces del Footer (`Serie iPhone 16`, `Grips MagSafe`, etc.) y las tarjetas del mosaico del Hero filtran activamente el catálogo al hacer scroll hacia `#product-catalog`.
 
 ### 2. Panel Administrativo CMS (`(cms)/admin`) — Opciones sin funcionalidad
 - [ ] **Menú Lateral (`AdminSidebar.tsx`) sin vistas reales**: Los 7 módulos del sidebar (`Dashboard Overview`, `Product Catalog`, `Inventory & Stock`, `Orders`, `Customers`, `Analytics`, `Store Settings`) solo cambian un estado local sin renderizar sus vistas correspondientes.
@@ -31,7 +31,7 @@
 ## Fases de Ejecución y Prompts para Subagentes
 
 ### FASE R1: Corrección de UX e Interactividad del Storefront
-- **Estado**: `PENDIENTE`
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
   1. En `src/store/useCartStore.ts`: Cambiar `isOpen: false` por defecto e iniciar `items: []` (bumpear key de storage a `pocket-cases-cart-v2`).
   2. En `src/components/storefront/CartDrawer.tsx`: Agregar backdrop oscuro con `backdrop-blur-[2px]` cuando `isOpen === true` para cerrar al hacer clic fuera o con tecla `Escape`.
@@ -82,7 +82,7 @@
 
 | Fase | Estado | Subagente / Ejecución | Revisión TypeScript | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- |
-| **FASE R1** | ⏳ Pendiente | — | — | — |
+| **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | Commit Fase R1 |
 | **FASE R2** | ⏳ Pendiente | — | — | — |
 | **FASE R3** | ⏳ Pendiente | — | — | — |
 | **FASE R4** | ⏳ Pendiente | — | — | — |

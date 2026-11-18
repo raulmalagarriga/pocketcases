@@ -4,7 +4,14 @@ import React from "react";
 import { useCartStore } from "@/store/useCartStore";
 
 export function HeroSection() {
-  const { setActiveCategory } = useCartStore();
+  const { setActiveCategory, setSearchQuery } = useCartStore();
+
+  const scrollToCatalog = () => {
+    const el = document.getElementById("product-catalog");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section className="relative w-full max-w-7xl mx-auto px-margin md:px-margin-desktop pt-space-xl pb-space-2xl overflow-visible">
@@ -78,7 +85,12 @@ export function HeroSection() {
           {/* CTA Action Buttons */}
           <div className="pt-space-sm flex flex-wrap items-center gap-space-md w-full sm:w-auto">
             <a
-              onClick={() => setActiveCategory("all")}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveCategory("all");
+                setSearchQuery("");
+                scrollToCatalog();
+              }}
               className="w-full sm:w-auto text-center px-space-xl py-3.5 bg-primary-container text-on-primary-container font-label-lg text-label-lg rounded-full shadow-[3px_3px_0px_#2a3235] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#2a3235] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
               href="#product-catalog"
             >
@@ -88,7 +100,12 @@ export function HeroSection() {
               </span>
             </a>
             <a
-              onClick={() => setActiveCategory("magsafe")}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveCategory("magsafe");
+                setSearchQuery("");
+                scrollToCatalog();
+              }}
               className="w-full sm:w-auto text-center px-space-lg py-3.5 bg-surface-container-lowest text-primary font-label-lg text-label-lg rounded-full shadow-[3px_3px_0px_#2a3235] hover:bg-secondary-container hover:text-on-secondary-container transition-all flex items-center justify-center gap-2"
               href="#product-catalog"
             >
@@ -147,6 +164,12 @@ export function HeroSection() {
             {/* Card Mockup 1: Strawberry Wave */}
             <a
               href="#product-catalog"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveCategory("all");
+                setSearchQuery("Strawberry");
+                scrollToCatalog();
+              }}
               className="group relative rounded-lg overflow-hidden bg-primary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235]"
             >
               <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-primary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235]">
@@ -168,6 +191,12 @@ export function HeroSection() {
             {/* Card Mockup 2: Retro Floral Disco */}
             <a
               href="#product-catalog"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveCategory("magsafe");
+                setSearchQuery("");
+                scrollToCatalog();
+              }}
               className="group relative rounded-lg overflow-hidden bg-secondary-fixed p-space-md flex flex-col items-center text-center shadow-[2px_2px_0px_#2a3235] mt-6"
             >
               <span className="absolute top-2 left-2 bg-surface-container-lowest font-label-badge text-label-badge text-tertiary px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#2a3235]">

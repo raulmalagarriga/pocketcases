@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { StoreSettings } from "@/types/database";
 import { buildWhatsAppCheckoutUrl } from "@/lib/whatsapp";
@@ -31,6 +31,17 @@ export function CartDrawer({ settings }: CartDrawerProps) {
   } = useCartStore();
 
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeCart();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeCart]);
 
   const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotalUsd = items.reduce(
@@ -65,6 +76,15 @@ export function CartDrawer({ settings }: CartDrawerProps) {
 
   return (
     <>
+      {/* Backdrop overlay when Cart Drawer is open */}
+      {isOpen && (
+        <div
+          onClick={closeCart}
+          aria-hidden="true"
+          className="fixed inset-0 bg-inverse-surface/30 backdrop-blur-[2px] z-40 transition-opacity"
+        />
+      )}
+
       {/* INTERACTIVE CART DRAWER (Persistent / Toggleable Canvas Component) */}
       <aside
         className={`fixed top-0 right-0 h-full w-full max-w-md bg-surface-container-lowest z-50 shadow-[-8px_0px_32px_rgba(42,50,53,0.18)] flex flex-col justify-between transition-transform duration-300 ${
@@ -308,12 +328,12 @@ export function CartDrawer({ settings }: CartDrawerProps) {
         </div>
       </aside>
 
-      {/* Sticky Bottom Quick Cart Reopen Trigger (Shown when drawer is minimized) */}
+      {/* Sticky Bottom Quick Cart Reopen Trigger (Shown when drawer is minimized and cart has items) */}
       <button
         type="button"
         onClick={openCart}
         className={`${
-          isOpen ? "hidden" : "flex"
+          !isOpen && totalCount > 0 ? "flex" : "hidden"
         } fixed bottom-6 right-6 z-40 bg-primary-container text-on-primary-container font-label-lg text-label-lg px-space-lg py-3 rounded-full shadow-[4px_4px_0px_#2a3235] hover:scale-105 transition-transform items-center gap-2`}
         id="floatingCartPill"
       >

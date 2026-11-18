@@ -1,15 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
+import { useCartStore } from "@/store/useCartStore";
 
 export function Footer() {
   const [email, setEmail] = useState("");
   const [joined, setJoined] = useState(false);
+  const { setActiveCategory, setSearchQuery } = useCartStore();
 
   const handleJoin = () => {
     if (!email.trim()) return;
     setJoined(true);
     setEmail("");
+  };
+
+  const handleCategoryClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    category: string
+  ) => {
+    e.preventDefault();
+    setActiveCategory(category);
+    setSearchQuery("");
+    const el = document.getElementById("product-catalog");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -64,19 +79,44 @@ export function Footer() {
             </h3>
             <ul className="space-y-space-xs font-body-md text-body-md text-on-surface-variant">
               <li className="hover:text-primary transition-colors">
-                <a href="#product-catalog">Serie iPhone 16</a>
+                <a
+                  href="#product-catalog"
+                  onClick={(e) => handleCategoryClick(e, "iphone")}
+                >
+                  Serie iPhone 16
+                </a>
               </li>
               <li className="hover:text-primary transition-colors">
-                <a href="#product-catalog">Grips MagSafe</a>
+                <a
+                  href="#product-catalog"
+                  onClick={(e) => handleCategoryClick(e, "magsafe")}
+                >
+                  Grips MagSafe
+                </a>
               </li>
               <li className="hover:text-primary transition-colors">
-                <a href="#product-catalog">Charms y Accesorios</a>
+                <a
+                  href="#product-catalog"
+                  onClick={(e) => handleCategoryClick(e, "collabs")}
+                >
+                  Charms y Accesorios
+                </a>
               </li>
               <li className="hover:text-primary transition-colors">
-                <a href="#product-catalog">Fundas AirPods</a>
+                <a
+                  href="#product-catalog"
+                  onClick={(e) => handleCategoryClick(e, "slim")}
+                >
+                  Fundas AirPods
+                </a>
               </li>
               <li className="hover:text-primary transition-colors">
-                <a href="#product-catalog">Tarjetas de Regalo</a>
+                <a
+                  href="#product-catalog"
+                  onClick={(e) => handleCategoryClick(e, "all")}
+                >
+                  Tarjetas de Regalo
+                </a>
               </li>
             </ul>
           </div>

@@ -49,29 +49,46 @@ export function ProductCatalog({
         .select(
           `
           *,
-          color_variants:product_color_variants(*)
+          color_variants:product_color_variants(*),
+          product_phone_models(
+            is_available,
+            phone_models(name)
+          )
         `
         )
         .eq("is_live", true)
         .order("sort_order", { ascending: true });
 
       if (data && data.length > 0) {
-        const mapped = data.map((raw: Record<string, unknown>) => ({
-          ...(raw as unknown as Product),
-          price_usd: Number(raw.price_usd ?? 0),
-          compare_at_price_usd:
-            raw.compare_at_price_usd !== null &&
-            raw.compare_at_price_usd !== undefined
-              ? Number(raw.compare_at_price_usd)
-              : null,
-          cost_usd: Number(raw.cost_usd ?? 0),
-          color_variants: Array.isArray(raw.color_variants)
-            ? [...raw.color_variants].sort(
-                (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
-              )
-            : [],
-          supported_models: ALL_SUPPORTED_MODELS,
-        }));
+        const mapped = data.map((raw: Record<string, unknown>) => {
+          const modelLinks = Array.isArray(raw.product_phone_models)
+            ? raw.product_phone_models
+            : [];
+          const supportedModels = modelLinks
+            .filter((m: { is_available?: boolean }) => m.is_available !== false)
+            .map((m: { phone_models?: { name?: string } }) => m.phone_models?.name)
+            .filter((name): name is string => Boolean(name));
+
+          return {
+            ...(raw as unknown as Product),
+            price_usd: Number(raw.price_usd ?? 0),
+            compare_at_price_usd:
+              raw.compare_at_price_usd !== null &&
+              raw.compare_at_price_usd !== undefined
+                ? Number(raw.compare_at_price_usd)
+                : null,
+            cost_usd: Number(raw.cost_usd ?? 0),
+            color_variants: Array.isArray(raw.color_variants)
+              ? [...raw.color_variants].sort(
+                  (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+                )
+              : [],
+            supported_models:
+              supportedModels.length > 0
+                ? supportedModels
+                : ALL_SUPPORTED_MODELS,
+          };
+        });
         setProducts(mapped);
       }
     };
@@ -88,6 +105,13 @@ export function ProductCatalog({
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "product_color_variants" },
+        () => {
+          refreshCatalog();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "product_phone_models" },
         () => {
           refreshCatalog();
         }

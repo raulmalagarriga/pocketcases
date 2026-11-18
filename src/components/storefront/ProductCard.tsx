@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Product, StoreSettings } from "@/types/database";
 import { DEFAULT_CARD_MODELS } from "@/lib/seed-data";
 import { useCartStore } from "@/store/useCartStore";
@@ -43,12 +43,37 @@ export function ProductCard({
       sku_suffix: "-ORG",
     };
 
+  const availableModels =
+    product.supported_models && product.supported_models.length > 0
+      ? product.supported_models
+      : DEFAULT_CARD_MODELS;
+
   const [selectedColor, setSelectedColor] = useState(defaultColor);
-  const [selectedDevice, setSelectedDevice] = useState(DEFAULT_CARD_MODELS[0]);
+  const [selectedDevice, setSelectedDevice] = useState(availableModels[0]);
   const [selectedFinish, setSelectedFinish] = useState(
     product.default_finish || "Grip Mate"
   );
   const [justAdded, setJustAdded] = useState(false);
+
+  useEffect(() => {
+    const models =
+      product.supported_models && product.supported_models.length > 0
+        ? product.supported_models
+        : DEFAULT_CARD_MODELS;
+    if (!models.includes(selectedDevice)) {
+      setSelectedDevice(models[0]);
+    }
+  }, [product.supported_models, selectedDevice]);
+
+  useEffect(() => {
+    const currentVariant =
+      product.color_variants.find((c) => c.id === selectedColor.id) ||
+      product.color_variants.find((c) => c.is_default) ||
+      product.color_variants[0];
+    if (currentVariant && currentVariant.id !== selectedColor.id) {
+      setSelectedColor(currentVariant);
+    }
+  }, [product.color_variants, selectedColor.id]);
 
   const isWishlisted = wishlistIds.includes(product.id);
   const imageBgClass =
@@ -255,13 +280,25 @@ export function ProductCard({
 
         {/* Image Container with Pastel Background */}
         <div
-          className={`relative w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm`}
+          className={`relative w-full aspect-square rounded-DEFAULT ${imageBgClass} p-space-sm flex items-center justify-center overflow-hidden mb-space-sm transition-all duration-300`}
+          style={{
+            boxShadow: `inset 0 0 0 2px ${selectedColor.hex_code}80`,
+          }}
         >
           <img
             alt={product.title}
             className="w-full h-full object-cover rounded-DEFAULT transition-transform duration-300 group-hover:scale-105"
             src={product.primary_image_url}
           />
+          {product.color_variants.length > 0 && (
+            <span className="absolute top-2 left-2 bg-surface-container-lowest/90 backdrop-blur font-label-badge text-label-badge px-2 py-0.5 rounded-full text-on-surface font-bold inline-flex items-center gap-1.5 shadow-[1px_1px_0px_#2a3235] transition-all">
+              <span
+                className="w-2.5 h-2.5 rounded-full border border-outline-variant"
+                style={{ backgroundColor: selectedColor.hex_code }}
+              />
+              <span>{selectedColor.name}</span>
+            </span>
+          )}
           <span className="absolute bottom-2 right-2 bg-surface-container-lowest/90 backdrop-blur font-label-badge text-label-badge px-2 py-0.5 rounded-full text-on-surface font-bold">
             {product.category_badge}
           </span>
@@ -329,7 +366,7 @@ export function ProductCard({
             onChange={(e) => setSelectedDevice(e.target.value)}
             className="device-select w-full bg-surface-container-low text-on-surface font-body-sm text-body-sm py-1.5 px-space-sm rounded-DEFAULT border-0 focus:ring-1 focus:ring-primary shadow-[1px_1px_0px_#2a3235] cursor-pointer"
           >
-            {DEFAULT_CARD_MODELS.map((model) => (
+            {availableModels.map((model) => (
               <option key={model} value={model}>
                 {model}
               </option>
