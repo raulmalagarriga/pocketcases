@@ -14,7 +14,7 @@
 - [x] **Enlaces de navegación y Footer**: Los enlaces del Footer (`Serie iPhone 16`, `Grips MagSafe`, etc.) y las tarjetas del mosaico del Hero filtran activamente el catálogo al hacer scroll hacia `#product-catalog`.
 
 ### 2. Panel Administrativo CMS (`(cms)/admin`) — Opciones sin funcionalidad
-- [ ] **Menú Lateral (`AdminSidebar.tsx`) sin vistas reales**: Los 7 módulos del sidebar (`Dashboard Overview`, `Product Catalog`, `Inventory & Stock`, `Orders`, `Customers`, `Analytics`, `Store Settings`) solo cambian un estado local sin renderizar sus vistas correspondientes.
+- [x] **Menú Lateral (`AdminSidebar.tsx`) con vistas reales**: Los 7 módulos del sidebar (`Dashboard Overview`, `Product Catalog`, `Inventory & Stock`, `Orders`, `Customers`, `Analytics`, `Store Settings`) renderizan sus vistas completas conectadas a Supabase.
 - [x] **Paginación de la tabla estática**: El selector `10 / 25 / 50 per page` y los botones de página `1, 2, 3, <, >` paginan dinámicamente los productos.
 - [x] **Acciones por lote (Batch Operations) con persistencia en Supabase**: `Change Status`, `Apply Discount (-15%)`, `Set Out of Stock` y `Delete Selected` persisten directamente en la tabla `products` de Supabase.
 - [x] **Sincronización completa en `ProductFormDrawer.tsx`**:
@@ -53,7 +53,7 @@
      - Hacer funcional la campana de notificaciones en `AdminHeader.tsx` (popover con alertas de productos agotados y de bajo stock que al hacer clic filtran o abren el producto).
 
 ### FASE R3: Implementación de los Módulos Faltantes del CMS (Overview, Inventory Matrix, Orders, Customers/Waitlist, Analytics y Store Settings)
-- **Estado**: `PENDIENTE`
+- **Estado**: `COMPLETADA ✅`
 - **Alcance**:
   Implementar las vistas interactivas conectadas a Supabase para cada sección de `AdminSidebar.tsx`:
   1. `Dashboard Overview` (`src/components/cms/views/OverviewView.tsx`): KPIs globales, resumen de ingresos, órdenes recientes, alertas rápidas de inventario y tasa BCV activa.
@@ -83,6 +83,6 @@
 | Fase | Estado | Subagente / Ejecución | Revisión TypeScript | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- |
 | **FASE R1** | ✅ Completada | Subagente `7a4313fd` | `tsc --noEmit` OK (0 errores) | `b434c14` |
-| **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | Commit Fase R2 |
-| **FASE R3** | ⏳ Pendiente | — | — | — |
+| **FASE R2** | ✅ Completada | Subagente `df8880fd` | `tsc --noEmit` OK (0 errores) | `6455a47` |
+| **FASE R3** | ✅ Completada | Subagente `bbacad8b` | `tsc --noEmit` OK (0 errores) | Commit Fase R3 |
 | **FASE R4** | ⏳ Pendiente | — | — | — |

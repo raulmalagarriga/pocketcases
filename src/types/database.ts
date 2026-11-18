@@ -114,3 +114,33 @@ export interface CartItem {
   colorHex: string;
   quantity: number;
 }
+
+export type OrderPaymentMethod = "whatsapp" | "pago_movil" | "zelle" | "card";
+export type OrderStatus = "pending" | "confirmed" | "shipped" | "cancelled";
+
+export interface Order {
+  id: string;
+  order_number: number;
+  customer_name: string;
+  customer_phone: string;
+  customer_city: string;
+  shipping_agency: string | null;
+  payment_method: OrderPaymentMethod;
+  payment_reference: string | null;
+  items: CartItem[];
+  subtotal_usd: number;
+  shipping_usd: number;
+  total_usd: number;
+  exchange_rate_bcv: number;
+  status: OrderStatus;
+  created_at: string;
+}
+
+export interface WaitlistSubscription {
+  id: string;
+  product_id: string;
+  whatsapp_phone: string;
+  phone_model: string | null;
+  created_at: string;
+}
+

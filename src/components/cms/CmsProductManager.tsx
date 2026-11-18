@@ -1,15 +1,33 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Product, StockStatus } from "@/types/database";
+import {
+  Order,
+  Product,
+  StockStatus,
+  StoreSettings,
+  WaitlistSubscription,
+} from "@/types/database";
+import { INITIAL_STORE_SETTINGS } from "@/lib/seed-data";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { MetricsStrip } from "./MetricsStrip";
 import { ProductFormDrawer } from "./ProductFormDrawer";
+import { OverviewView } from "./views/OverviewView";
+import { InventoryMatrixView } from "./views/InventoryMatrixView";
+import { OrdersView } from "./views/OrdersView";
+import { CustomersView } from "./views/CustomersView";
+import { AnalyticsView } from "./views/AnalyticsView";
+import { StoreSettingsView } from "./views/StoreSettingsView";
 import {
   batchUpdateProductsInSupabase,
   deleteProductInSupabase,
+  fetchCmsOrders,
   fetchCmsProducts,
+  fetchStoreSettingsCms,
+  fetchWaitlistSubscriptions,
+  INITIAL_DEMO_ORDERS,
+  INITIAL_DEMO_WAITLIST,
   setLocalCachedProducts,
 } from "@/lib/queries/cms";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -24,6 +42,12 @@ export function CmsProductManager({
   userEmail,
 }: CmsProductManagerProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [orders, setOrders] = useState<Order[]>(INITIAL_DEMO_ORDERS);
+  const [waitlist, setWaitlist] =
+    useState<WaitlistSubscription[]>(INITIAL_DEMO_WAITLIST);
+  const [settings, setSettings] = useState<StoreSettings>(
+    INITIAL_STORE_SETTINGS
+  );
   const [activeSection, setActiveSection] = useState("product-catalog");
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All Types");
@@ -56,13 +80,29 @@ export function CmsProductManager({
 
   useEffect(() => {
     const load = async () => {
-      const latest = await fetchCmsProducts();
-      if (latest && latest.length > 0) {
-        setProducts(latest);
+      const [latestProducts, latestOrders, latestWaitlist, latestSettings] =
+        await Promise.all([
+          fetchCmsProducts(),
+          fetchCmsOrders(),
+          fetchWaitlistSubscriptions(),
+          fetchStoreSettingsCms(),
+        ]);
+      if (latestProducts && latestProducts.length > 0) {
+        setProducts(latestProducts);
+      }
+      if (latestOrders) {
+        setOrders(latestOrders);
+      }
+      if (latestWaitlist) {
+        setWaitlist(latestWaitlist);
+      }
+      if (latestSettings) {
+        setSettings(latestSettings);
       }
     };
     load();
   }, []);
+
 
   const persistProductsList = (nextList: Product[]) => {
     setProducts(nextList);
@@ -365,26 +405,109 @@ export function CmsProductManager({
 
         <main className="relative pt-20 bg-background w-full px-space-lg">
           <div className="flex flex-col w-full pb-space-2xl">
-            {/* Page Header & Key Operational Metrics Bar */}
-            <div className="flex flex-col gap-space-lg mb-space-xl">
-              {/* Breadcrumb & Top Title Flex Row */}
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
-                <div>
-                  <nav className="flex items-center gap-2 font-label-badge text-label-badge text-on-surface-variant uppercase tracking-wider mb-1">
-                    <span>Dashboard</span>
-                    <span className="material-symbols-outlined text-[12px] text-outline">
-                      chevron_right
-                    </span>
-                    <span>Products</span>
-                    <span className="material-symbols-outlined text-[12px] text-outline">
-                      chevron_right
-                    </span>
-                    <span className="text-primary font-bold">All Catalog</span>
-                  </nav>
-                  <h1 className="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
-                    Product Catalog &amp; Inventory Management
-                  </h1>
-                </div>
+            {activeSection === "dashboard-overview" && (
+              <OverviewView
+                products={products}
+                orders={orders}
+                waitlist={waitlist}
+                settings={settings}
+                onNavigate={setActiveSection}
+                onQuickRestock={(productId, addUnits) => {
+                  const target = products.find((p) => p.id === productId);
+                  if (!target) return;
+                  const nextTotal = target.total_stock + addUnits;
+                  updateProductField(productId, {
+                    total_stock: nextTotal,
+                    stock_status: "in_stock",
+                    is_live: true,
+                  });
+                  showToast(
+                    `Restock aplicado: +${addUnits} unidades a ${target.title}`
+                  );
+                }}
+                onEditProduct={(p) => {
+                  setEditingProduct(p);
+                  setDrawerOpen(true);
+                }}
+              />
+            )}
+
+            {activeSection === "inventory-stock" && (
+              <InventoryMatrixView
+                products={products}
+                onUpdateProducts={persistProductsList}
+                onEditProduct={(p) => {
+                  setEditingProduct(p);
+                  setDrawerOpen(true);
+                }}
+                onShowToast={showToast}
+              />
+            )}
+
+            {activeSection === "orders" && (
+              <OrdersView
+                orders={orders}
+                products={products}
+                settings={settings}
+                onUpdateOrders={setOrders}
+                onShowToast={showToast}
+              />
+            )}
+
+            {activeSection === "customers" && (
+              <CustomersView
+                orders={orders}
+                waitlist={waitlist}
+                products={products}
+                onUpdateWaitlist={setWaitlist}
+                onShowToast={showToast}
+              />
+            )}
+
+            {activeSection === "analytics" && (
+              <AnalyticsView
+                products={products}
+                settings={settings}
+                onEditProduct={(p) => {
+                  setEditingProduct(p);
+                  setDrawerOpen(true);
+                }}
+              />
+            )}
+
+            {activeSection === "store-settings" && (
+              <StoreSettingsView
+                settings={settings}
+                onUpdateSettings={setSettings}
+                onShowToast={showToast}
+              />
+            )}
+
+            {activeSection === "product-catalog" && (
+              <>
+                {/* Page Header & Key Operational Metrics Bar */}
+                <div className="flex flex-col gap-space-lg mb-space-xl">
+                  {/* Breadcrumb & Top Title Flex Row */}
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+                    <div>
+                      <nav className="flex items-center gap-2 font-label-badge text-label-badge text-on-surface-variant uppercase tracking-wider mb-1">
+                        <span>Dashboard</span>
+                        <span className="material-symbols-outlined text-[12px] text-outline">
+                          chevron_right
+                        </span>
+                        <span>Products</span>
+                        <span className="material-symbols-outlined text-[12px] text-outline">
+                          chevron_right
+                        </span>
+                        <span className="text-primary font-bold">
+                          All Catalog
+                        </span>
+                      </nav>
+                      <h1 className="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
+                        Product Catalog &amp; Inventory Management
+                      </h1>
+                    </div>
+
 
                 {/* Action Button Group */}
                 <div className="flex items-center flex-wrap gap-space-sm">
@@ -870,6 +993,17 @@ export function CmsProductManager({
                               </button>
 
                               <button
+                                onClick={() => setActiveSection("analytics")}
+                                className="p-1.5 rounded bg-surface-container text-on-surface hover:bg-tertiary hover:text-on-tertiary transition-colors"
+                                title="Quick Analytics"
+                                type="button"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">
+                                  trending_up
+                                </span>
+                              </button>
+
+                              <button
                                 onClick={() => handleDuplicateProduct(product)}
                                 className="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                 title="Duplicate SKU"
@@ -960,6 +1094,8 @@ export function CmsProductManager({
                 </div>
               </div>
             </div>
+              </>
+            )}
 
             {/* Interactive Slide-out Quick Edit Drawer */}
             <ProductFormDrawer

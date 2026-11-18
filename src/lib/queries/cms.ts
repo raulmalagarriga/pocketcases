@@ -1,9 +1,167 @@
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
-import { INITIAL_PRODUCTS, ALL_SUPPORTED_MODELS } from "@/lib/seed-data";
-import { Product } from "@/types/database";
+import {
+  INITIAL_PRODUCTS,
+  ALL_SUPPORTED_MODELS,
+  INITIAL_STORE_SETTINGS,
+} from "@/lib/seed-data";
+import {
+  Order,
+  Product,
+  StockStatus,
+  StoreSettings,
+  WaitlistSubscription,
+} from "@/types/database";
 import { ProductFormValues } from "@/lib/validations/productSchema";
 
 const LOCAL_CMS_STORAGE_KEY = "pocket-cases-cms-products-v1";
+const LOCAL_ORDERS_STORAGE_KEY = "pocket-cases-cms-orders-v1";
+const LOCAL_WAITLIST_STORAGE_KEY = "pocket-cases-cms-waitlist-v1";
+const LOCAL_SETTINGS_STORAGE_KEY = "pocket-cases-cms-settings-v1";
+
+export const INITIAL_DEMO_ORDERS: Order[] = [
+  {
+    id: "ord-demo-1",
+    order_number: 1042,
+    customer_name: "Valentina Mendoza",
+    customer_phone: "584129874512",
+    customer_city: "Caracas",
+    shipping_agency: "Delivery Express Caracas (Chacao)",
+    payment_method: "pago_movil",
+    payment_reference: "Ref: #849201",
+    items: [
+      {
+        id: "prod-1-iPhone 16 Pro-Grip Mate-#FDE047",
+        productId: "prod-1",
+        sku: "PKT-FLR-01",
+        title: "Retro Floral Groove",
+        priceUsd: 28.0,
+        imageUrl: INITIAL_PRODUCTS[0].primary_image_url,
+        cardBgStyle: "secondary-fixed",
+        deviceModel: "iPhone 16 Pro",
+        finish: "Grip Mate",
+        colorName: "Amarillo Mantequilla",
+        colorHex: "#FDE047",
+        quantity: 1,
+      },
+      {
+        id: "prod-2-iPhone 16 Pro-Brillo Jelly-#FDA4AF",
+        productId: "prod-2",
+        sku: "PKT-STW-02",
+        title: "Strawberry Milkshake Wave",
+        priceUsd: 32.0,
+        imageUrl: INITIAL_PRODUCTS[1].primary_image_url,
+        cardBgStyle: "primary-fixed",
+        deviceModel: "iPhone 16 Pro",
+        finish: "Brillo Jelly",
+        colorName: "Leche de Fresa",
+        colorHex: "#FDA4AF",
+        quantity: 1,
+      },
+    ],
+    subtotal_usd: 60.0,
+    shipping_usd: 0.0,
+    total_usd: 60.0,
+    exchange_rate_bcv: 45.8,
+    status: "confirmed",
+    created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+  },
+  {
+    id: "ord-demo-2",
+    order_number: 1041,
+    customer_name: "Alejandro Quintero",
+    customer_phone: "584143218976",
+    customer_city: "Lechería",
+    shipping_agency: "Zoom (Agencia Principal Lechería)",
+    payment_method: "zelle",
+    payment_reference: "Zelle: #AQ-9921",
+    items: [
+      {
+        id: "prod-5-iPhone 15 Pro Max-Brillo Jelly-#FDBA74",
+        productId: "prod-5",
+        sku: "PKT-SUN-05",
+        title: "Sunset Sorbet Glow",
+        priceUsd: 34.0,
+        imageUrl: INITIAL_PRODUCTS[4].primary_image_url,
+        cardBgStyle: "primary-fixed-dim",
+        deviceModel: "iPhone 15 Pro Max",
+        finish: "Brillo Jelly",
+        colorName: "Sorbete de Durazno",
+        colorHex: "#FDBA74",
+        quantity: 1,
+      },
+    ],
+    subtotal_usd: 34.0,
+    shipping_usd: 4.0,
+    total_usd: 38.0,
+    exchange_rate_bcv: 45.8,
+    status: "pending",
+    created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+  },
+  {
+    id: "ord-demo-3",
+    order_number: 1040,
+    customer_name: "Mariana Urdaneta",
+    customer_phone: "584246551109",
+    customer_city: "Maracaibo",
+    shipping_agency: "MRW (Delicias Norte)",
+    payment_method: "whatsapp",
+    payment_reference: "Pago Móvil Banesco #3319",
+    items: [
+      {
+        id: "prod-6-Galaxy S25 Ultra-Grip Mate-#E11D48",
+        productId: "prod-6",
+        sku: "PKT-CHR-05",
+        title: "Cosmic Cherry Pop",
+        priceUsd: 28.0,
+        imageUrl: INITIAL_PRODUCTS[5].primary_image_url,
+        cardBgStyle: "primary-fixed",
+        deviceModel: "Galaxy S25 Ultra",
+        finish: "Grip Mate",
+        colorName: "Glaseado Cereza",
+        colorHex: "#E11D48",
+        quantity: 2,
+      },
+    ],
+    subtotal_usd: 56.0,
+    shipping_usd: 0.0,
+    total_usd: 56.0,
+    exchange_rate_bcv: 45.8,
+    status: "shipped",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 19).toISOString(),
+  },
+];
+
+export const INITIAL_DEMO_WAITLIST: WaitlistSubscription[] = [
+  {
+    id: "wl-demo-1",
+    product_id: "prod-4",
+    whatsapp_phone: "584125550192",
+    phone_model: "iPhone 16 Pro Max",
+    created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+  },
+  {
+    id: "wl-demo-2",
+    product_id: "prod-7",
+    whatsapp_phone: "584148823401",
+    phone_model: "iPhone 15 Pro",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+  },
+  {
+    id: "wl-demo-3",
+    product_id: "prod-4",
+    whatsapp_phone: "584241197732",
+    phone_model: "Galaxy S25 Ultra",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
+  },
+  {
+    id: "wl-demo-4",
+    product_id: "prod-7",
+    whatsapp_phone: "584127749011",
+    phone_model: "iPhone 16 Pro",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+  },
+];
+
 
 export function getLocalCachedProducts(): Product[] | null {
   if (typeof window === "undefined") return null;
@@ -332,4 +490,391 @@ export async function deleteProductInSupabase(id: string): Promise<boolean> {
     return false;
   }
 }
+
+function getLocalCachedOrders(): Order[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LOCAL_ORDERS_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as Order[];
+  } catch {
+    return null;
+  }
+}
+
+function setLocalCachedOrders(orders: Order[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      LOCAL_ORDERS_STORAGE_KEY,
+      JSON.stringify(orders)
+    );
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+export async function fetchCmsOrders(): Promise<Order[]> {
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        const mapped: Order[] = data.map((raw: Record<string, unknown>) => ({
+          id: String(raw.id),
+          order_number: Number(raw.order_number ?? 1000),
+          customer_name: String(raw.customer_name ?? ""),
+          customer_phone: String(raw.customer_phone ?? ""),
+          customer_city: String(raw.customer_city ?? "Caracas"),
+          shipping_agency: raw.shipping_agency
+            ? String(raw.shipping_agency)
+            : "Delivery / MRW / Zoom",
+          payment_method: (raw.payment_method as Order["payment_method"]) ?? "whatsapp",
+          payment_reference: raw.payment_reference
+            ? String(raw.payment_reference)
+            : null,
+          items: Array.isArray(raw.items) ? (raw.items as Order["items"]) : [],
+          subtotal_usd: Number(raw.subtotal_usd ?? 0),
+          shipping_usd: Number(raw.shipping_usd ?? 0),
+          total_usd: Number(raw.total_usd ?? 0),
+          exchange_rate_bcv: Number(raw.exchange_rate_bcv ?? 45.8),
+          status: (raw.status as Order["status"]) ?? "pending",
+          created_at: String(raw.created_at ?? new Date().toISOString()),
+        }));
+        setLocalCachedOrders(mapped);
+        return mapped;
+      }
+    } catch {
+      // Fallback to local / demo orders
+    }
+  }
+
+  const cached = getLocalCachedOrders();
+  if (cached && cached.length > 0) return cached;
+  setLocalCachedOrders(INITIAL_DEMO_ORDERS);
+  return INITIAL_DEMO_ORDERS;
+}
+
+export async function updateOrderStatusInSupabase(
+  orderId: string,
+  status: Order["status"]
+): Promise<void> {
+  const cached = getLocalCachedOrders() || INITIAL_DEMO_ORDERS;
+  const updatedLocal = cached.map((o) =>
+    o.id === orderId ? { ...o, status } : o
+  );
+  setLocalCachedOrders(updatedLocal);
+
+  if (isSupabaseConfigured() && !orderId.startsWith("ord-demo-")) {
+    try {
+      const supabase = createClient();
+      await supabase.from("orders").update({ status }).eq("id", orderId);
+    } catch {
+      // Fallback handled locally
+    }
+  }
+}
+
+export async function createManualOrderInSupabase(
+  order: Omit<Order, "id" | "order_number" | "created_at">
+): Promise<Order> {
+  const cached = getLocalCachedOrders() || INITIAL_DEMO_ORDERS;
+  const nextNumber =
+    cached.reduce((max, o) => Math.max(max, o.order_number || 1000), 1040) + 1;
+
+  let createdOrder: Order = {
+    ...order,
+    id: `ord-demo-${Date.now()}`,
+    order_number: nextNumber,
+    created_at: new Date().toISOString(),
+  };
+
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("orders")
+        .insert({
+          customer_name: order.customer_name,
+          customer_phone: order.customer_phone,
+          customer_city: order.customer_city,
+          shipping_agency: order.shipping_agency,
+          payment_method: order.payment_method,
+          payment_reference: order.payment_reference,
+          items: order.items,
+          subtotal_usd: order.subtotal_usd,
+          shipping_usd: order.shipping_usd,
+          total_usd: order.total_usd,
+          exchange_rate_bcv: order.exchange_rate_bcv,
+          status: order.status,
+        })
+        .select("*")
+        .maybeSingle();
+
+      if (!error && data) {
+        createdOrder = {
+          id: String(data.id),
+          order_number: Number(data.order_number ?? nextNumber),
+          customer_name: String(data.customer_name),
+          customer_phone: String(data.customer_phone),
+          customer_city: String(data.customer_city),
+          shipping_agency: data.shipping_agency
+            ? String(data.shipping_agency)
+            : null,
+          payment_method: data.payment_method as Order["payment_method"],
+          payment_reference: data.payment_reference
+            ? String(data.payment_reference)
+            : null,
+          items: Array.isArray(data.items)
+            ? (data.items as Order["items"])
+            : order.items,
+          subtotal_usd: Number(data.subtotal_usd),
+          shipping_usd: Number(data.shipping_usd),
+          total_usd: Number(data.total_usd),
+          exchange_rate_bcv: Number(data.exchange_rate_bcv),
+          status: data.status as Order["status"],
+          created_at: String(data.created_at),
+        };
+      }
+    } catch {
+      // Fallback to local
+    }
+  }
+
+  setLocalCachedOrders([createdOrder, ...cached]);
+  return createdOrder;
+}
+
+function getLocalCachedWaitlist(): WaitlistSubscription[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LOCAL_WAITLIST_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as WaitlistSubscription[];
+  } catch {
+    return null;
+  }
+}
+
+function setLocalCachedWaitlist(list: WaitlistSubscription[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      LOCAL_WAITLIST_STORAGE_KEY,
+      JSON.stringify(list)
+    );
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export async function fetchWaitlistSubscriptions(): Promise<
+  WaitlistSubscription[]
+> {
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("waitlist_subscriptions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        const mapped: WaitlistSubscription[] = data.map(
+          (raw: Record<string, unknown>) => ({
+            id: String(raw.id),
+            product_id: String(raw.product_id),
+            whatsapp_phone: String(raw.whatsapp_phone),
+            phone_model: raw.phone_model ? String(raw.phone_model) : null,
+            created_at: String(raw.created_at ?? new Date().toISOString()),
+          })
+        );
+        setLocalCachedWaitlist(mapped);
+        return mapped;
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  const cached = getLocalCachedWaitlist();
+  if (cached) return cached;
+  setLocalCachedWaitlist(INITIAL_DEMO_WAITLIST);
+  return INITIAL_DEMO_WAITLIST;
+}
+
+export async function deleteWaitlistSubscriptionInSupabase(
+  id: string
+): Promise<void> {
+  const cached = getLocalCachedWaitlist() || INITIAL_DEMO_WAITLIST;
+  const filtered = cached.filter((item) => item.id !== id);
+  setLocalCachedWaitlist(filtered);
+
+  if (isSupabaseConfigured() && !id.startsWith("wl-demo-")) {
+    try {
+      const supabase = createClient();
+      await supabase.from("waitlist_subscriptions").delete().eq("id", id);
+    } catch {
+      // Handled locally
+    }
+  }
+}
+
+function getLocalCachedSettings(): StoreSettings | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SETTINGS_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as StoreSettings;
+  } catch {
+    return null;
+  }
+}
+
+function setLocalCachedSettings(settings: StoreSettings) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      LOCAL_SETTINGS_STORAGE_KEY,
+      JSON.stringify(settings)
+    );
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export async function fetchStoreSettingsCms(): Promise<StoreSettings> {
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("store_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+
+      if (!error && data) {
+        const parsed: StoreSettings = {
+          id: 1,
+          store_name: String(
+            data.store_name ?? INITIAL_STORE_SETTINGS.store_name
+          ),
+          whatsapp_number: String(
+            data.whatsapp_number ?? INITIAL_STORE_SETTINGS.whatsapp_number
+          ),
+          bcv_exchange_rate: Number(
+            data.bcv_exchange_rate ?? INITIAL_STORE_SETTINGS.bcv_exchange_rate
+          ),
+          show_ves_reference: Boolean(
+            data.show_ves_reference ?? INITIAL_STORE_SETTINGS.show_ves_reference
+          ),
+          free_shipping_threshold_usd: Number(
+            data.free_shipping_threshold_usd ??
+              INITIAL_STORE_SETTINGS.free_shipping_threshold_usd
+          ),
+          shipping_flat_rate_usd: Number(
+            data.shipping_flat_rate_usd ??
+              INITIAL_STORE_SETTINGS.shipping_flat_rate_usd
+          ),
+          pago_movil_details:
+            data.pago_movil_details &&
+            typeof data.pago_movil_details === "object"
+              ? (data.pago_movil_details as StoreSettings["pago_movil_details"])
+              : INITIAL_STORE_SETTINGS.pago_movil_details,
+          zelle_details:
+            data.zelle_details && typeof data.zelle_details === "object"
+              ? (data.zelle_details as StoreSettings["zelle_details"])
+              : INITIAL_STORE_SETTINGS.zelle_details,
+        };
+        setLocalCachedSettings(parsed);
+        return parsed;
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  return getLocalCachedSettings() || INITIAL_STORE_SETTINGS;
+}
+
+export async function saveStoreSettingsToSupabase(
+  settings: StoreSettings
+): Promise<StoreSettings> {
+  const normalized: StoreSettings = {
+    ...settings,
+    id: 1,
+    bcv_exchange_rate: Number(settings.bcv_exchange_rate),
+    free_shipping_threshold_usd: Number(settings.free_shipping_threshold_usd),
+    shipping_flat_rate_usd: Number(settings.shipping_flat_rate_usd),
+  };
+
+  setLocalCachedSettings(normalized);
+
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      await supabase.from("store_settings").upsert(
+        {
+          id: 1,
+          store_name: normalized.store_name,
+          whatsapp_number: normalized.whatsapp_number,
+          bcv_exchange_rate: normalized.bcv_exchange_rate,
+          show_ves_reference: normalized.show_ves_reference,
+          free_shipping_threshold_usd: normalized.free_shipping_threshold_usd,
+          shipping_flat_rate_usd: normalized.shipping_flat_rate_usd,
+          pago_movil_details: normalized.pago_movil_details,
+          zelle_details: normalized.zelle_details,
+        },
+        { onConflict: "id" }
+      );
+    } catch {
+      // Fallback to local
+    }
+  }
+
+  return normalized;
+}
+
+export async function updateColorVariantStockInSupabase(
+  variantId: string,
+  productId: string,
+  newVariantStock: number,
+  newTotalStock: number
+): Promise<void> {
+  const newStatus: StockStatus =
+    newTotalStock <= 0
+      ? "out_of_stock"
+      : newTotalStock <= 10
+      ? "low_stock"
+      : "in_stock";
+
+  if (!isSupabaseConfigured()) return;
+
+  try {
+    const supabase = createClient();
+    if (!variantId.startsWith("cv-")) {
+      await supabase
+        .from("product_color_variants")
+        .update({ stock_units: newVariantStock })
+        .eq("id", variantId);
+    }
+    if (!productId.startsWith("prod-")) {
+      await supabase
+        .from("products")
+        .update({
+          total_stock: newTotalStock,
+          stock_status: newStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", productId);
+    }
+  } catch {
+    // Fallback handled by caller's local state
+  }
+}
+
 
